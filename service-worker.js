@@ -4,9 +4,8 @@ var urlsToCache = [
     '/yanaifarm.github.io/dabimasFactor/index.html',
     '/yanaifarm.github.io/dabimasFactor/json/factor.json',
     '/yanaifarm.github.io/dabimasFactor/css/style.css',
-    '/yanaifarm.github.io/dabimasFactor/css/vue-select.css'
+    '/yanaifarm.github.io/dabimasFactor/css/vue-select.css',
     '/yanaifarm.github.io/dabimasFactor/css/vue-select.css.map',
-    
 ];
 
 // install cache
