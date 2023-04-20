@@ -3,12 +3,15 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>angulajs</title>
+  <title>ダビふぁく</title>
   <link href="./css/style.css" type="text/css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:100,500,900&amp;subset=japanese" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.14/vue.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-select/3.20.2/vue-select.js"></script>
   <link href="./css/vue-select.css" type="text/css" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" sizes="any"><!-- 32×32 -->
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"><!-- 180×180 -->
+  <link rel="manifest" href="manifest.json">
   <meta name="viewport"
     content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 </head>
@@ -544,6 +547,15 @@
 
 
 <script>
+// service workerの登録関係
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('service_worker.js').then(function(registration) {
+    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+}).catch(function(err) {
+    console.log('ServiceWorker registration failed: ', err);
+});
+}
+    
   var ua = navigator.userAgent.toLowerCase();
   var isiOS = (ua.indexOf('iphone') > -1) || (ua.indexOf('ipad') > -1);
   if (isiOS) {
