@@ -224,7 +224,7 @@ body {
 }
 
 .Broodmare {
-  background: linear-gradient(135deg, #b6ffbd 00%, #b6ffbd 70%, #fffcaa 50%, #fffcaa 100%);
+  background: linear-gradient(135deg, #fffcaa 00%, #fffcaa 70%, #b6ffbd 50%, #b6ffbd 100%);
   border-right: none;
   font-size: 10px;
 }
