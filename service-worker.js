@@ -1,5 +1,5 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-cache-v1';
+var CACHE_NAME = 'dabimas-factor-v1';
 var urlsToCache = [
     '/yanaifarm.github.io/dabimasFactor/index.html',
     '/yanaifarm.github.io/dabimasFactor/json/factor.json',
