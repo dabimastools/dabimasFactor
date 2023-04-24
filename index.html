@@ -18,529 +18,557 @@
 
 <body>
   <div id="app">
-    <table width="100%">
-      <tbody>
-        <tr>
-          <th class="f01">短</th>
-          <th class="f02">速</th>
-          <th class="f03">底</th>
-          <th class="f04">長</th>
-          <th class="f05">ダ</th>
-          <th class="f06">丈</th>
-          <th class="f07">早</th>
-          <th class="f08">晩</th>
-          <th class="f09">堅</th>
-          <th class="f10">難</th>
-          <th rowspan="2" ><img src="img/reset.png" alt="" align="center" width="40px" height="40px" onclick="location.reload();"></th>
-        </tr>
-        <tr>
-          <td>{{factorNumtoString[0]}}</td>
-          <td>{{factorNumtoString[1]}}</td>
-          <td>{{factorNumtoString[2]}}</td>
-          <td>{{factorNumtoString[3]}}</td>
-          <td>{{factorNumtoString[4]}}</td>
-          <td>{{factorNumtoString[5]}}</td>
-          <td>{{factorNumtoString[6]}}</td>
-          <td>{{factorNumtoString[7]}}</td>
-          <td>{{factorNumtoString[8]}}</td>
-          <td>{{factorNumtoString[9]}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <header>
+      <table width="100%">
+        <tbody>
+          <tr>
+            <th class="f01">短</th>
+            <th class="f02">速</th>
+            <th class="f03">底</th>
+            <th class="f04">長</th>
+            <th class="f05">ダ</th>
+            <th class="f06">丈</th>
+            <th class="f07">早</th>
+            <th class="f08">晩</th>
+            <th class="f09">堅</th>
+            <th class="f10">難</th>
+            <th rowspan="2" ><img src="img/reset.png" alt="" align="center" width="40px" height="40px" onclick="location.reload();"></th>
+          </tr>
+          <tr>
+            <td>{{factorNumtoString[0]}}</td>
+            <td>{{factorNumtoString[1]}}</td>
+            <td>{{factorNumtoString[2]}}</td>
+            <td>{{factorNumtoString[3]}}</td>
+            <td>{{factorNumtoString[4]}}</td>
+            <td>{{factorNumtoString[5]}}</td>
+            <td>{{factorNumtoString[6]}}</td>
+            <td>{{factorNumtoString[7]}}</td>
+            <td>{{factorNumtoString[8]}}</td>
+            <td>{{factorNumtoString[9]}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </header>
 
-    <table class="table_main" width="100%">
-      <tr>
-        <!-- <div :index="0"> -->
-        <td colspan="5" class="horse_all AliceBlue" width="15">
-          <v-select v-bind:options="factor"
-            v-model="selected[0]" @input=" onChange(0,0,selected[0].horseData,$event)" :clearable="false">
-            <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[0][0]" width="20">{{factorName[0][0]}}</td>
-        <td :class="styleFactorClass[0][1]" width="20">{{factorName[0][1]}}</td>
-        <td :class="styleFactorClass[0][2]" width="20">{{factorName[0][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="1"> -->
-        <td align="center" class="father_0" width="15">父</td>
-        <td colspan="4" class="omoshiro_0" width="15">
-          <v-select v-bind:options="factor"
-              v-model="selected[1]" @input=" onChange(0,1,selected[1].horseData,$event)" :clearable="false">
+    <main>
+      <table class="table_main" width="100%">
+        <tr>
+          <!-- <div :index="0"> -->
+          <td colspan="5" class="horse_all AliceBlue" width="15">
+            <v-select v-bind:options="factor" placeholder="種牡馬を選んでください"
+              v-model="selected[0]" @input=" onChange(0,0,selected[0].horseData,$event)" :clearable="false">
               <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[1][0]" width="20">{{factorName[1][0]}}</td>
-        <td :class="styleFactorClass[1][1]" width="20">{{factorName[1][1]}}</td>
-        <td :class="styleFactorClass[1][2]" width="20">{{factorName[1][2]}}</td>
-      </tr>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[0][0]" width="20">{{factorName[0][0]}}</td>
+          <td :class="styleFactorClass[0][1]" width="20">{{factorName[0][1]}}</td>
+          <td :class="styleFactorClass[0][2]" width="20">{{factorName[0][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="2"> -->
-          <td align="center" class="father_1" rowspan="7" width="15">
-          <td class="father_0" width="15">父</td>
-          <td colspan="3" class="horse_0">
+        <tr>
+          <!-- <div :index="1"> -->
+          <td align="center" class="father_0" width="15">父</td>
+          <td colspan="4" class="omoshiro_0" width="15">
             <v-select v-bind:options="factor"
-                v-model="selected[2]" @input=" onChange(0,2,selected[2].horseData,$event)" :clearable="false">
+                v-model="selected[1]" @input=" onChange(0,1,selected[1].horseData,$event)" :clearable="false">
                 <span slot="no-options">検索候補がありません</span>
             </v-select>
           </td>       
-          <td :class="styleFactorClass[2][0]" width="20">{{factorName[2][0]}}</td>
-          <td :class="styleFactorClass[2][1]" width="20">{{factorName[2][1]}}</td>
-          <td :class="styleFactorClass[2][2]" width="20">{{factorName[2][2]}}</td>
-        </div>
-      </tr>
+          <td :class="styleFactorClass[1][0]" width="20">{{factorName[1][0]}}</td>
+          <td :class="styleFactorClass[1][1]" width="20">{{factorName[1][1]}}</td>
+          <td :class="styleFactorClass[1][2]" width="20">{{factorName[1][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="4"> -->
-        <td align="center" class="father_1" rowspan="3" width="15">
-        <td class="father_0" width="15">父</td>
-        <td colspan="2" class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[4]" @input=" onChange(0,4,selected[4].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[4][0]" width="20">{{factorName[4][0]}}</td>
-        <td :class="styleFactorClass[4][1]" width="20">{{factorName[4][1]}}</td>
-        <td :class="styleFactorClass[4][2]" width="20">{{factorName[4][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="2"> -->
+            <td align="center" class="father_1" rowspan="7" width="15">
+            <td class="father_0" width="15">父</td>
+            <td colspan="3" class="horse_0">
+              <v-select v-bind:options="factor"
+                  v-model="selected[2]" @input=" onChange(0,2,selected[2].horseData,$event)" :clearable="false">
+                  <span slot="no-options">検索候補がありません</span>
+              </v-select>
+            </td>       
+            <td :class="styleFactorClass[2][0]" width="20">{{factorName[2][0]}}</td>
+            <td :class="styleFactorClass[2][1]" width="20">{{factorName[2][1]}}</td>
+            <td :class="styleFactorClass[2][2]" width="20">{{factorName[2][2]}}</td>
+          </div>
+        </tr>
 
-      <tr>
-        <!-- <div :index="8"> -->
-        <td align="center" class="father_1" width="15">
-        <td class="father" width="15">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[8]" @input=" onChange(0,8,selected[8].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[8][0]" width="20">{{factorName[8][0]}}</td>
-        <td :class="styleFactorClass[8][1]" width="20">{{factorName[8][1]}}</td>
-        <td :class="styleFactorClass[8][2]" width="20">{{factorName[8][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="4"> -->
+          <td align="center" class="father_1" rowspan="3" width="15">
+          <td class="father_0" width="15">父</td>
+          <td colspan="2" class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[4]" @input=" onChange(0,4,selected[4].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[4][0]" width="20">{{factorName[4][0]}}</td>
+          <td :class="styleFactorClass[4][1]" width="20">{{factorName[4][1]}}</td>
+          <td :class="styleFactorClass[4][2]" width="20">{{factorName[4][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="9"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="migoto_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[9]" @input=" onChange(0,9,selected[9].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[9][0]" width="20">{{factorName[9][0]}}</td>
-        <td :class="styleFactorClass[9][1]" width="20">{{factorName[9][1]}}</td>
-        <td :class="styleFactorClass[9][2]" width="20">{{factorName[9][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="8"> -->
+          <td align="center" class="father_1" width="15">
+          <td class="father" width="15">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[8]" @input=" onChange(0,8,selected[8].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[8][0]" width="20">{{factorName[8][0]}}</td>
+          <td :class="styleFactorClass[8][1]" width="20">{{factorName[8][1]}}</td>
+          <td :class="styleFactorClass[8][2]" width="20">{{factorName[8][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="5"> -->
-        <td class="mother_0">母</td>
-        <td class="father_0" rowspan="1">父</td>
-        <td colspan="2" class="omoshiro_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[5]" @input=" onChange(0,5,selected[5].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[5][0]" width="20">{{factorName[5][0]}}</td>
-        <td :class="styleFactorClass[5][1]" width="20">{{factorName[5][1]}}</td>
-        <td :class="styleFactorClass[5][2]" width="20">{{factorName[5][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="9"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="migoto_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[9]" @input=" onChange(0,9,selected[9].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[9][0]" width="20">{{factorName[9][0]}}</td>
+          <td :class="styleFactorClass[9][1]" width="20">{{factorName[9][1]}}</td>
+          <td :class="styleFactorClass[9][2]" width="20">{{factorName[9][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="10"> -->
-        <td class="mother_1" rowspan="2">
-        <td class="father_1">
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[10]" @input=" onChange(0,10,selected[10].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[10][0]" width="20">{{factorName[10][0]}}</td>
-        <td :class="styleFactorClass[10][1]" width="20">{{factorName[10][1]}}</td>
-        <td :class="styleFactorClass[10][2]" width="20">{{factorName[10][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="5"> -->
+          <td class="mother_0">母</td>
+          <td class="father_0" rowspan="1">父</td>
+          <td colspan="2" class="omoshiro_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[5]" @input=" onChange(0,5,selected[5].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[5][0]" width="20">{{factorName[5][0]}}</td>
+          <td :class="styleFactorClass[5][1]" width="20">{{factorName[5][1]}}</td>
+          <td :class="styleFactorClass[5][2]" width="20">{{factorName[5][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="11"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="migoto_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[11]" @input=" onChange(0,11,selected[11].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[11][0]" width="20">{{factorName[11][0]}}</td>
-        <td :class="styleFactorClass[11][1]" width="20">{{factorName[11][1]}}</td>
-        <td :class="styleFactorClass[11][2]" width="20">{{factorName[11][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="3"> -->
-        <td class="mother_0">母</td>
-        <td class="father_0">父</td>
-        <td colspan="3" class="omoshiro_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[3]" @input=" onChange(0,3,selected[3].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[3][0]" width="20">{{factorName[3][0]}}</td>
-        <td :class="styleFactorClass[3][1]" width="20">{{factorName[3][1]}}</td>
-        <td :class="styleFactorClass[3][2]" width="20">{{factorName[3][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="6"> -->
-        <td class="mother_1" rowspan="6">
-        <td class="father_1" rowspan="3">
-        <td class="father_0">父</td>
-        <td colspan="2" class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[6]" @input=" onChange(0,6,selected[6].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[6][0]" width="20">{{factorName[6][0]}}</td>
-        <td :class="styleFactorClass[6][1]" width="20">{{factorName[6][1]}}</td>
-        <td :class="styleFactorClass[6][2]" width="20">{{factorName[6][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="12"> -->
+        <tr>
+          <!-- <div :index="10"> -->
+          <td class="mother_1" rowspan="2">
           <td class="father_1">
           <td class="father">父</td>
           <td class="horse_0">
             <v-select v-bind:options="factor"
-                v-model="selected[12]" @input=" onChange(0,12,selected[12].horseData,$event)" :clearable="false">
+                v-model="selected[10]" @input=" onChange(0,10,selected[10].horseData,$event)" :clearable="false">
                 <span slot="no-options">検索候補がありません</span>
             </v-select>
           </td>       
-          <td :class="styleFactorClass[12][0]" width="20">{{factorName[12][0]}}</td>
-          <td :class="styleFactorClass[12][1]" width="20">{{factorName[12][1]}}</td>
-          <td :class="styleFactorClass[12][2]" width="20">{{factorName[12][2]}}</td>
-      </tr>
+          <td :class="styleFactorClass[10][0]" width="20">{{factorName[10][0]}}</td>
+          <td :class="styleFactorClass[10][1]" width="20">{{factorName[10][1]}}</td>
+          <td :class="styleFactorClass[10][2]" width="20">{{factorName[10][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="13"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="migoto_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[13]" @input=" onChange(0,13,selected[13].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[13][0]" width="20">{{factorName[13][0]}}</td>
-        <td :class="styleFactorClass[13][1]" width="20">{{factorName[13][1]}}</td>
-        <td :class="styleFactorClass[13][2]" width="20">{{factorName[13][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="7"> -->
-        <td class="mother_0">母</td>
-        <td class="father_0">父</td>
-        <td colspan="2" class="omoshiro_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[7]" @input=" onChange(0,7,selected[7].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[7][0]" width="20">{{factorName[7][0]}}</td>
-        <td :class="styleFactorClass[7][1]" width="20">{{factorName[7][1]}}</td>
-        <td :class="styleFactorClass[7][2]" width="20">{{factorName[7][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="14"> -->
-        <td class="mother_1" rowspan="2">
-        <td class="father_1" rowspan="1">
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[14]" @input=" onChange(0,14,selected[14].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[14][0]" width="20">{{factorName[14][0]}}</td>
-        <td :class="styleFactorClass[14][1]" width="20">{{factorName[14][1]}}</td>
-        <td :class="styleFactorClass[14][2]" width="20">{{factorName[14][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="15"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="migoto_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[15]" @input=" onChange(0,15,selected[15].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[15][0]" width="20">{{factorName[15][0]}}</td>
-        <td :class="styleFactorClass[15][1]" width="20">{{factorName[15][1]}}</td>
-        <td :class="styleFactorClass[15][2]" width="20">{{factorName[15][2]}}</td>
-      </tr>
-    </table>
-    <br>
-    <!-- 繫殖牝馬側 -->
-    <table class="table_main" width="100%">
-      <tr>
-        <!-- <div :index="0"> -->
-        <td colspan="8" class="horse_all SalmonPink">
-          繫殖牝馬
-        </td>       
-      </tr>
-
-      <tr>
-        <!-- <div :index="0"> -->
-        <td colspan="5" class="horse_all SalmonPink" width="15">
-          <v-select v-bind:options="broodmare" placeholder="繫殖牝馬"
-            v-model="selected[0 + 16]" @input="onChange(1,0,selected[0 + 16].horseData,$event)" :clearable="false">
-            <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[0 + 16][0]" width="20">{{factorName[0 + 16][0]}}</td>
-        <td :class="styleFactorClass[0 + 16][1]" width="20">{{factorName[0 + 16][1]}}</td>
-        <td :class="styleFactorClass[0 + 16][2]" width="20">{{factorName[0 + 16][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="1"> -->
-        <td align="center" class="father_0" width="15">父</td>
-        <td colspan="4" class="horse_all Broodmare" width="15">
-          <v-select v-bind:options="factor"
-              v-model="selected[1 + 16]" @input="onChange(1,1,selected[1 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[1 + 16][0]" width="20">{{factorName[1 + 16][0]}}</td>
-        <td :class="styleFactorClass[1 + 16][1]" width="20">{{factorName[1 + 16][1]}}</td>
-        <td :class="styleFactorClass[1 + 16][2]" width="20">{{factorName[1 + 16][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="2"> -->
-          <td align="center" class="father_1" rowspan="7" width="15">
-          <td class="father_0" width="15">父</td>
-          <td colspan="3" class="horse_0">
+        <tr>
+          <!-- <div :index="11"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="migoto_0">
             <v-select v-bind:options="factor"
-                v-model="selected[2 + 16]" @input="onChange(1,2,selected[2 + 16].horseData,$event)" :clearable="false">
+                v-model="selected[11]" @input=" onChange(0,11,selected[11].horseData,$event)" :clearable="false">
                 <span slot="no-options">検索候補がありません</span>
             </v-select>
           </td>       
-          <td :class="styleFactorClass[2 + 16][0]" width="20">{{factorName[2 + 16][0]}}</td>
-          <td :class="styleFactorClass[2 + 16][1]" width="20">{{factorName[2 + 16][1]}}</td>
-          <td :class="styleFactorClass[2 + 16][2]" width="20">{{factorName[2 + 16][2]}}</td>
-        </div>
-      </tr>
+          <td :class="styleFactorClass[11][0]" width="20">{{factorName[11][0]}}</td>
+          <td :class="styleFactorClass[11][1]" width="20">{{factorName[11][1]}}</td>
+          <td :class="styleFactorClass[11][2]" width="20">{{factorName[11][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="4"> -->
-        <td align="center" class="father_1" rowspan="3" width="15">
-        <td class="father_0" width="15">父</td>
-        <td colspan="2" class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[4 + 16]" @input="onChange(1,4,selected[4 + 16].horseData,$event)" :clearable="false">
+        <tr>
+          <!-- <div :index="3"> -->
+          <td class="mother_0">母</td>
+          <td class="father_0">父</td>
+          <td colspan="3" class="omoshiro_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[3]" @input=" onChange(0,3,selected[3].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[3][0]" width="20">{{factorName[3][0]}}</td>
+          <td :class="styleFactorClass[3][1]" width="20">{{factorName[3][1]}}</td>
+          <td :class="styleFactorClass[3][2]" width="20">{{factorName[3][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="6"> -->
+          <td class="mother_1" rowspan="6">
+          <td class="father_1" rowspan="3">
+          <td class="father_0">父</td>
+          <td colspan="2" class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[6]" @input=" onChange(0,6,selected[6].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[6][0]" width="20">{{factorName[6][0]}}</td>
+          <td :class="styleFactorClass[6][1]" width="20">{{factorName[6][1]}}</td>
+          <td :class="styleFactorClass[6][2]" width="20">{{factorName[6][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="12"> -->
+            <td class="father_1">
+            <td class="father">父</td>
+            <td class="horse_0">
+              <v-select v-bind:options="factor"
+                  v-model="selected[12]" @input=" onChange(0,12,selected[12].horseData,$event)" :clearable="false">
+                  <span slot="no-options">検索候補がありません</span>
+              </v-select>
+            </td>       
+            <td :class="styleFactorClass[12][0]" width="20">{{factorName[12][0]}}</td>
+            <td :class="styleFactorClass[12][1]" width="20">{{factorName[12][1]}}</td>
+            <td :class="styleFactorClass[12][2]" width="20">{{factorName[12][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="13"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="migoto_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[13]" @input=" onChange(0,13,selected[13].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[13][0]" width="20">{{factorName[13][0]}}</td>
+          <td :class="styleFactorClass[13][1]" width="20">{{factorName[13][1]}}</td>
+          <td :class="styleFactorClass[13][2]" width="20">{{factorName[13][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="7"> -->
+          <td class="mother_0">母</td>
+          <td class="father_0">父</td>
+          <td colspan="2" class="omoshiro_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[7]" @input=" onChange(0,7,selected[7].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[7][0]" width="20">{{factorName[7][0]}}</td>
+          <td :class="styleFactorClass[7][1]" width="20">{{factorName[7][1]}}</td>
+          <td :class="styleFactorClass[7][2]" width="20">{{factorName[7][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="14"> -->
+          <td class="mother_1" rowspan="2">
+          <td class="father_1" rowspan="1">
+          <td class="father">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[14]" @input=" onChange(0,14,selected[14].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[14][0]" width="20">{{factorName[14][0]}}</td>
+          <td :class="styleFactorClass[14][1]" width="20">{{factorName[14][1]}}</td>
+          <td :class="styleFactorClass[14][2]" width="20">{{factorName[14][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="15"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="migoto_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[15]" @input=" onChange(0,15,selected[15].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[15][0]" width="20">{{factorName[15][0]}}</td>
+          <td :class="styleFactorClass[15][1]" width="20">{{factorName[15][1]}}</td>
+          <td :class="styleFactorClass[15][2]" width="20">{{factorName[15][2]}}</td>
+        </tr>
+      </table>
+      <br>
+      <!-- 繫殖牝馬側 -->
+      <table class="table_main" width="100%">
+        <tr>
+          <!-- <div :index="0"> -->
+          <td colspan="5" class="horse_all SalmonPink" width="15">
+            <v-select v-bind:options="broodmare" placeholder="繫殖牝馬を選んでください"
+              v-model="selected[0 + 16]" @input="onChange(1,0,selected[0 + 16].horseData,$event)" :clearable="false">
               <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[4 + 16][0]" width="20">{{factorName[4 + 16][0]}}</td>
-        <td :class="styleFactorClass[4 + 16][1]" width="20">{{factorName[4 + 16][1]}}</td>
-        <td :class="styleFactorClass[4 + 16][2]" width="20">{{factorName[4 + 16][2]}}</td>
-      </tr>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[0 + 16][0]" width="20">{{factorName[0 + 16][0]}}</td>
+          <td :class="styleFactorClass[0 + 16][1]" width="20">{{factorName[0 + 16][1]}}</td>
+          <td :class="styleFactorClass[0 + 16][2]" width="20">{{factorName[0 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="8"> -->
-        <td align="center" class="father_1" width="15">
-        <td class="father" width="15">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[8 + 16]" @input="onChange(1,8,selected[8 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[8 + 16][0]" width="20">{{factorName[8 + 16][0]}}</td>
-        <td :class="styleFactorClass[8 + 16][1]" width="20">{{factorName[8 + 16][1]}}</td>
-        <td :class="styleFactorClass[8 + 16][2]" width="20">{{factorName[8 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="1"> -->
+          <td align="center" class="father_0" width="15">父</td>
+          <td colspan="4" class="horse_all Broodmare" width="15">
+            <v-select v-bind:options="factor"
+                v-model="selected[1 + 16]" @input="onChange(1,1,selected[1 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[1 + 16][0]" width="20">{{factorName[1 + 16][0]}}</td>
+          <td :class="styleFactorClass[1 + 16][1]" width="20">{{factorName[1 + 16][1]}}</td>
+          <td :class="styleFactorClass[1 + 16][2]" width="20">{{factorName[1 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="9"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[9 + 16]" @input="onChange(1,9,selected[9 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[9 + 16][0]" width="20">{{factorName[9 + 16][0]}}</td>
-        <td :class="styleFactorClass[9 + 16][1]" width="20">{{factorName[9 + 16][1]}}</td>
-        <td :class="styleFactorClass[9 + 16][2]" width="20">{{factorName[9 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="2"> -->
+            <td align="center" class="father_1" rowspan="7" width="15">
+            <td class="father_0" width="15">父</td>
+            <td colspan="3" class="horse_0">
+              <v-select v-bind:options="factor"
+                  v-model="selected[2 + 16]" @input="onChange(1,2,selected[2 + 16].horseData,$event)" :clearable="false">
+                  <span slot="no-options">検索候補がありません</span>
+              </v-select>
+            </td>       
+            <td :class="styleFactorClass[2 + 16][0]" width="20">{{factorName[2 + 16][0]}}</td>
+            <td :class="styleFactorClass[2 + 16][1]" width="20">{{factorName[2 + 16][1]}}</td>
+            <td :class="styleFactorClass[2 + 16][2]" width="20">{{factorName[2 + 16][2]}}</td>
+          </div>
+        </tr>
 
-      <tr>
-        <!-- <div :index="5"> -->
-        <td class="mother_0">母</td>
-        <td class="father_0" rowspan="1">父</td>
-        <td colspan="2" class="horse_all Broodmare">
-          <v-select v-bind:options="factor"
-              v-model="selected[5 + 16]" @input="onChange(1,5,selected[5 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[5 + 16][0]" width="20">{{factorName[5 + 16][0]}}</td>
-        <td :class="styleFactorClass[5 + 16][1]" width="20">{{factorName[5 + 16][1]}}</td>
-        <td :class="styleFactorClass[5 + 16][2]" width="20">{{factorName[5 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="4"> -->
+          <td align="center" class="father_1" rowspan="3" width="15">
+          <td class="father_0" width="15">父</td>
+          <td colspan="2" class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[4 + 16]" @input="onChange(1,4,selected[4 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[4 + 16][0]" width="20">{{factorName[4 + 16][0]}}</td>
+          <td :class="styleFactorClass[4 + 16][1]" width="20">{{factorName[4 + 16][1]}}</td>
+          <td :class="styleFactorClass[4 + 16][2]" width="20">{{factorName[4 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="10"> -->
-        <td class="mother_1" rowspan="2">
-        <td class="father_1">
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[10 + 16]" @input="onChange(1,10,selected[10 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[10 + 16][0]" width="20">{{factorName[10 + 16][0]}}</td>
-        <td :class="styleFactorClass[10 + 16][1]" width="20">{{factorName[10 + 16][1]}}</td>
-        <td :class="styleFactorClass[10 + 16][2]" width="20">{{factorName[10 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="8"> -->
+          <td align="center" class="father_1" width="15">
+          <td class="father" width="15">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[8 + 16]" @input="onChange(1,8,selected[8 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[8 + 16][0]" width="20">{{factorName[8 + 16][0]}}</td>
+          <td :class="styleFactorClass[8 + 16][1]" width="20">{{factorName[8 + 16][1]}}</td>
+          <td :class="styleFactorClass[8 + 16][2]" width="20">{{factorName[8 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="11"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[11 + 16]" @input="onChange(1,11,selected[11 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[11 + 16][0]" width="20">{{factorName[11 + 16][0]}}</td>
-        <td :class="styleFactorClass[11 + 16][1]" width="20">{{factorName[11 + 16][1]}}</td>
-        <td :class="styleFactorClass[11 + 16][2]" width="20">{{factorName[11 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="9"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[9 + 16]" @input="onChange(1,9,selected[9 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[9 + 16][0]" width="20">{{factorName[9 + 16][0]}}</td>
+          <td :class="styleFactorClass[9 + 16][1]" width="20">{{factorName[9 + 16][1]}}</td>
+          <td :class="styleFactorClass[9 + 16][2]" width="20">{{factorName[9 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="3"> -->
-        <td class="mother_0">母</td>
-        <td class="father_0">父</td>
-        <td colspan="3" class="horse_all Broodmare">
-          <v-select v-bind:options="factor"
-              v-model="selected[3 + 16]" @input="onChange(1,3,selected[3 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[3 + 16][0]" width="20">{{factorName[3 + 16][0]}}</td>
-        <td :class="styleFactorClass[3 + 16][1]" width="20">{{factorName[3 + 16][1]}}</td>
-        <td :class="styleFactorClass[3 + 16][2]" width="20">{{factorName[3 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="5"> -->
+          <td class="mother_0">母</td>
+          <td class="father_0" rowspan="1">父</td>
+          <td colspan="2" class="horse_all Broodmare">
+            <v-select v-bind:options="factor"
+                v-model="selected[5 + 16]" @input="onChange(1,5,selected[5 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[5 + 16][0]" width="20">{{factorName[5 + 16][0]}}</td>
+          <td :class="styleFactorClass[5 + 16][1]" width="20">{{factorName[5 + 16][1]}}</td>
+          <td :class="styleFactorClass[5 + 16][2]" width="20">{{factorName[5 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="6"> -->
-        <td class="mother_1" rowspan="6">
-        <td class="father_1" rowspan="3">
-        <td class="father_0">父</td>
-        <td colspan="2" class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[6 + 16]" @input="onChange(1,6,selected[6 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[6 + 16][0]" width="20">{{factorName[6 + 16][0]}}</td>
-        <td :class="styleFactorClass[6 + 16][1]" width="20">{{factorName[6 + 16][1]}}</td>
-        <td :class="styleFactorClass[6 + 16][2]" width="20">{{factorName[6 + 16][2]}}</td>
-      </tr>
-
-      <tr>
-        <!-- <div :index="12"> -->
+        <tr>
+          <!-- <div :index="10"> -->
+          <td class="mother_1" rowspan="2">
           <td class="father_1">
           <td class="father">父</td>
           <td class="horse_0">
             <v-select v-bind:options="factor"
-                v-model="selected[12 + 16]" @input="onChange(1,12,selected[12 + 16].horseData,$event)" :clearable="false">
+                v-model="selected[10 + 16]" @input="onChange(1,10,selected[10 + 16].horseData,$event)" :clearable="false">
                 <span slot="no-options">検索候補がありません</span>
             </v-select>
           </td>       
-          <td :class="styleFactorClass[12 + 16][0]" width="20">{{factorName[12 + 16][0]}}</td>
-          <td :class="styleFactorClass[12 + 16][1]" width="20">{{factorName[12 + 16][1]}}</td>
-          <td :class="styleFactorClass[12 + 16][2]" width="20">{{factorName[12 + 16][2]}}</td>
-      </tr>
+          <td :class="styleFactorClass[10 + 16][0]" width="20">{{factorName[10 + 16][0]}}</td>
+          <td :class="styleFactorClass[10 + 16][1]" width="20">{{factorName[10 + 16][1]}}</td>
+          <td :class="styleFactorClass[10 + 16][2]" width="20">{{factorName[10 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="13"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[13 + 16]" @input="onChange(1,13,selected[13 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[13 + 16][0]" width="20">{{factorName[13 + 16][0]}}</td>
-        <td :class="styleFactorClass[13 + 16][1]" width="20">{{factorName[13 + 16][1]}}</td>
-        <td :class="styleFactorClass[13 + 16][2]" width="20">{{factorName[13 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="11"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[11 + 16]" @input="onChange(1,11,selected[11 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[11 + 16][0]" width="20">{{factorName[11 + 16][0]}}</td>
+          <td :class="styleFactorClass[11 + 16][1]" width="20">{{factorName[11 + 16][1]}}</td>
+          <td :class="styleFactorClass[11 + 16][2]" width="20">{{factorName[11 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="7"> -->
-        <td class="mother_0">母</td>
-        <td class="father_0">父</td>
-        <td colspan="2" class="horse_all Broodmare">
-          <v-select v-bind:options="factor"
-              v-model="selected[7 + 16]" @input="onChange(1,7,selected[7 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[7 + 16][0]" width="20">{{factorName[7 + 16][0]}}</td>
-        <td :class="styleFactorClass[7 + 16][1]" width="20">{{factorName[7 + 16][1]}}</td>
-        <td :class="styleFactorClass[7 + 16][2]" width="20">{{factorName[7 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="3"> -->
+          <td class="mother_0">母</td>
+          <td class="father_0">父</td>
+          <td colspan="3" class="horse_all Broodmare">
+            <v-select v-bind:options="factor"
+                v-model="selected[3 + 16]" @input="onChange(1,3,selected[3 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[3 + 16][0]" width="20">{{factorName[3 + 16][0]}}</td>
+          <td :class="styleFactorClass[3 + 16][1]" width="20">{{factorName[3 + 16][1]}}</td>
+          <td :class="styleFactorClass[3 + 16][2]" width="20">{{factorName[3 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="14"> -->
-        <td class="mother_1" rowspan="2">
-        <td class="father_1" rowspan="1">
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[14 + 16]" @input="onChange(1,14,selected[14 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[14 + 16][0]" width="20">{{factorName[14 + 16][0]}}</td>
-        <td :class="styleFactorClass[14 + 16][1]" width="20">{{factorName[14 + 16][1]}}</td>
-        <td :class="styleFactorClass[14 + 16][2]" width="20">{{factorName[14 + 16][2]}}</td>
-      </tr>
+        <tr>
+          <!-- <div :index="6"> -->
+          <td class="mother_1" rowspan="6">
+          <td class="father_1" rowspan="3">
+          <td class="father_0">父</td>
+          <td colspan="2" class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[6 + 16]" @input="onChange(1,6,selected[6 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[6 + 16][0]" width="20">{{factorName[6 + 16][0]}}</td>
+          <td :class="styleFactorClass[6 + 16][1]" width="20">{{factorName[6 + 16][1]}}</td>
+          <td :class="styleFactorClass[6 + 16][2]" width="20">{{factorName[6 + 16][2]}}</td>
+        </tr>
 
-      <tr>
-        <!-- <div :index="15"> -->
-        <td class="mother">母</td>
-        <td class="father">父</td>
-        <td class="horse_0">
-          <v-select v-bind:options="factor"
-              v-model="selected[15 + 16]" @input="onChange(1,15,selected[15 + 16].horseData,$event)" :clearable="false">
-              <span slot="no-options">検索候補がありません</span>
-          </v-select>
-        </td>       
-        <td :class="styleFactorClass[15 + 16][0]" width="20">{{factorName[15 + 16][0]}}</td>
-        <td :class="styleFactorClass[15 + 16][1]" width="20">{{factorName[15 + 16][1]}}</td>
-        <td :class="styleFactorClass[15 + 16][2]" width="20">{{factorName[15 + 16][2]}}</td>
-      </tr>
-    </table>
+        <tr>
+          <!-- <div :index="12"> -->
+            <td class="father_1">
+            <td class="father">父</td>
+            <td class="horse_0">
+              <v-select v-bind:options="factor"
+                  v-model="selected[12 + 16]" @input="onChange(1,12,selected[12 + 16].horseData,$event)" :clearable="false">
+                  <span slot="no-options">検索候補がありません</span>
+              </v-select>
+            </td>       
+            <td :class="styleFactorClass[12 + 16][0]" width="20">{{factorName[12 + 16][0]}}</td>
+            <td :class="styleFactorClass[12 + 16][1]" width="20">{{factorName[12 + 16][1]}}</td>
+            <td :class="styleFactorClass[12 + 16][2]" width="20">{{factorName[12 + 16][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="13"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[13 + 16]" @input="onChange(1,13,selected[13 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[13 + 16][0]" width="20">{{factorName[13 + 16][0]}}</td>
+          <td :class="styleFactorClass[13 + 16][1]" width="20">{{factorName[13 + 16][1]}}</td>
+          <td :class="styleFactorClass[13 + 16][2]" width="20">{{factorName[13 + 16][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="7"> -->
+          <td class="mother_0">母</td>
+          <td class="father_0">父</td>
+          <td colspan="2" class="horse_all Broodmare">
+            <v-select v-bind:options="factor"
+                v-model="selected[7 + 16]" @input="onChange(1,7,selected[7 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[7 + 16][0]" width="20">{{factorName[7 + 16][0]}}</td>
+          <td :class="styleFactorClass[7 + 16][1]" width="20">{{factorName[7 + 16][1]}}</td>
+          <td :class="styleFactorClass[7 + 16][2]" width="20">{{factorName[7 + 16][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="14"> -->
+          <td class="mother_1" rowspan="2">
+          <td class="father_1" rowspan="1">
+          <td class="father">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[14 + 16]" @input="onChange(1,14,selected[14 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[14 + 16][0]" width="20">{{factorName[14 + 16][0]}}</td>
+          <td :class="styleFactorClass[14 + 16][1]" width="20">{{factorName[14 + 16][1]}}</td>
+          <td :class="styleFactorClass[14 + 16][2]" width="20">{{factorName[14 + 16][2]}}</td>
+        </tr>
+
+        <tr>
+          <!-- <div :index="15"> -->
+          <td class="mother">母</td>
+          <td class="father">父</td>
+          <td class="horse_0">
+            <v-select v-bind:options="factor"
+                v-model="selected[15 + 16]" @input="onChange(1,15,selected[15 + 16].horseData,$event)" :clearable="false">
+                <span slot="no-options">検索候補がありません</span>
+            </v-select>
+          </td>       
+          <td :class="styleFactorClass[15 + 16][0]" width="20">{{factorName[15 + 16][0]}}</td>
+          <td :class="styleFactorClass[15 + 16][1]" width="20">{{factorName[15 + 16][1]}}</td>
+          <td :class="styleFactorClass[15 + 16][2]" width="20">{{factorName[15 + 16][2]}}</td>
+        </tr>
+      </table>
+    </main>
+
+    <footer>
+      <table width="100%" class="table_footer_main">
+        <tbody>
+          <tr>
+            <td class="table_footer_FO">父面白</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer_MO">母面白</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+          </tr>
+          <tr>
+            <td class="table_footer_FM">父見事</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer_TH_theory">理論</td>
+            <td class="boundary_bold mating7 " colspan="2">開発中</td>
+
+            <td class="table_footer_TH_Compatibility">相</td>
+            <td>99</td>
+          </tr>
+        </tbody>
+      </table>
+    </footer>
 
   </div>
 </body>
