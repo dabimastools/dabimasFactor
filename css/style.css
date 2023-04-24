@@ -10,6 +10,67 @@ body {
     sans-serif;
 }
 
+header {
+  background-color: #FFFFFF;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+footer {
+  background-color: #FFFFFF;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+.table_footer_main {
+  border-collapse: collapse;
+  border:1px solid;
+}
+
+.table_footer {
+  border-collapse: collapse;
+  border:1px solid;
+  width: 8%;
+}
+
+/* 父面白 */
+.table_footer_FO {
+  background: linear-gradient(135deg, #cfe7f5 00%, #cfe7f5 50%, #b6ffbd 50%, #b6ffbd 100%);
+  border:1px solid;
+  width: 18%;
+}
+
+/* 父見事 */
+.table_footer_FM {
+  background: linear-gradient(135deg, #cfe7f5 00%, #cfe7f5 50%, #fffcaa 50%, #fffcaa 100%);
+  border:1px solid;
+  width: 18%;
+}
+
+/* 母面白 */
+.table_footer_MO {
+  background: linear-gradient(135deg, #f3a68c 00%, #f3a68c 50%, #b6ffbd 50%, #b6ffbd 100%);
+  border:1px solid;
+}
+
+/* 理論ヘッダ */
+.table_footer_TH_theory {
+  background: #bbb;
+  border:1px solid;
+}
+
+/* 相性ヘッダ */
+.table_footer_TH_Compatibility {
+  background: #bbb;
+  border:1px solid;
+}
+
+
+
 .table_main {
   border-collapse: collapse;
 }
@@ -416,7 +477,7 @@ div.horse_spec {
     0px -1px 0px #ffffff;
 }
 
-/*��*/
+/*丈*/
 .f06 {
   color: #000000;
   /* �����̐F */
@@ -433,7 +494,7 @@ div.horse_spec {
   /* �����̉e */
 }
 
-/*��*/
+/*早*/
 .f07 {
   color: #000000;
   /* �����̐F */
@@ -450,7 +511,7 @@ div.horse_spec {
   /* �����̉e */
 }
 
-/*��*/
+/*晩*/
 .f08 {
   color: #000000;
   /* �����̐F */
@@ -467,7 +528,7 @@ div.horse_spec {
   /* �����̉e */
 }
 
-/*��*/
+/*堅*/
 .f09 {
   color: #000000;
   /* �����̐F */
@@ -484,7 +545,7 @@ div.horse_spec {
   /* �����̉e */
 }
 
-/*��*/
+/*難*/
 .f10 {
   color: #000000;
   /* �����̐F */
@@ -499,4 +560,369 @@ div.horse_spec {
     -1px 0px 0px #ffffff,
     0px -1px 0px #ffffff;
   /* �����̉e */
+}
+
+.Ec{
+  background-color: white;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Ph{
+  background-color: lightsteelblue;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Ns{
+  background-color: mediumaquamarine;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Ro{
+  background-color: lightpink;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Ne{
+  background-color: yellow;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Na{
+  background-color: lightskyblue;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Fa{
+  background-color: khaki;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.To{
+  background-color: orange;
+  border-color: black;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Te{
+  background-color: purple;
+  border-color: black;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Sw{
+  background-color: peachpuff;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Ha{
+  background-color: chartreuse;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Hi{
+  background-color: mediumblue;
+  text-align: center;
+  color: white;
+  border-color: black;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.St{
+  background-color: slateblue;
+  text-align: center;
+  color: white;
+  border-color:  black;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.Ma{
+  background-color: darkorchid;
+  text-align: center;
+  border-color:  black;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.He{
+  background-color: aqua;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+  font-size: 20px;
+  font-size: clamp(15px, 1vw, 15px);
+}
+.UndefinedGr{
+  background-color: white;
+  text-align: center;
+  border-color:  black;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+}
+.inbleed{
+  color: red;
+  font-weight: bolder;
+  border: solid black !important;
+}
+.outbleed{
+  color: black;
+  font-weight: normal;
+  text-shadow: 0px 0px 0px;
+  border: solid;
+}
+
+/*理論なし*/
+.mating0{
+  color: black;
+  background-color: white;
+  font-weight: bold;
+}
+/*面白*/
+.mating1{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-radial-gradient(
+      dimgray,
+      gray
+      ); 
+  background: 
+    -webkit-radial-gradient(
+      dimgray,
+      gray
+    ); 
+  background: 
+    radial-gradient(
+      dimgray,
+      gray
+    ); 
+}
+/*よくでき*/
+.mating2{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      coral,
+      coral
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      coral,
+      coral
+    ); 
+  background: 
+    linear-gradient(
+      to right top,
+      coral,
+      coral
+    ); 
+}
+/*面白よくでき*/
+.mating3{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      gray,
+      coral
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      gray,
+      coral
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      gray,
+      coral
+      ); 
+}
+/*見事*/
+.mating4{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      #E2D06E,
+      #E2D06E
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      #E2D06E,
+      #E2D06E
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      #E2D06E,
+      #E2D06E
+      ); 
+}
+/*完璧*/
+.mating5{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      #8DC799,
+      #C3E19C 7%,
+      #FFF39B 17%,
+      #F09C75 32%,
+      #EC9EBD 56%,
+      #8F82BA 72%,
+      #7DCCF2
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      #8DC799,
+      #C3E19C 7%,
+      #FFF39B 17%,
+      #F09C75 32%,
+      #EC9EBD 56%,
+      #8F82BA 72%,
+      #7DCCF2
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      #8DC799,
+      #C3E19C 7%,
+      #FFF39B 17%,
+      #F09C75 32%,
+      #EC9EBD 56%,
+      #8F82BA 72%,
+      #7DCCF2
+      ); 
+}
+/*危険*/
+.mating6{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      red,
+      red
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      red,
+      red
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      red,
+      red
+      ); 
+}
+/*超完璧*/
+.mating7{
+  color: Black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      #807597,
+      #0D0D2C 13%,
+      #4D5084 22%,
+      #A59CAE 30%,
+      #FFFFFF 40%,
+      #A59CAE 60%,
+      #4D5084 78%,
+      #0D0D2C 87%,
+      #807597
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      #807597,
+      #0D0D2C 13%,
+      #4D5084 22%,
+      #A59CAE 30%,
+      #FFFFFF 40%,
+      #A59CAE 60%,
+      #4D5084 78%,
+      #0D0D2C 87%,
+      #807597
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      #807597,
+      #0D0D2C 13%,
+      #4D5084 22%,
+      #A59CAE 30%,
+      #FFFFFF 40%,
+      #A59CAE 60%,
+      #4D5084 78%,
+      #0D0D2C 87%,
+      #807597
+      ); 
+}
+.boundary_bold{
+  text-shadow:
+  white 1px 1px 1px,
+  white 1px -1px 1px,
+  white -1px 1px 1px,
+  white -1px -1px 1px;
+}
+.boundary_bold_black{
+  text-shadow:
+  dimgray 1px 1px 1px,
+  dimgray 1px -1px 1px,
+  dimgray -1px 1px 1px,
+  dimgray -1px -1px 1px;
 }
