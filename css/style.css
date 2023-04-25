@@ -69,10 +69,12 @@ footer {
   border:1px solid;
 }
 
-
-
 .table_main {
   border-collapse: collapse;
+  border: 1px solid #bbb;
+  width:98%;
+  margin-left: auto;
+  margin-right: auto;  
 }
 
 .horse_all {
