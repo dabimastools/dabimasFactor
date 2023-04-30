@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ダビふぁく</title>
+  <link rel="manifest" href="./manifest.json">
+  <link href="./css/style.css" type="text/css" rel="stylesheet" />
+  <link href="./css/vue-select.css" type="text/css" rel="stylesheet" />
+  <link href="./css/vuetify.min.css" type="text/css" rel="stylesheet" />
+
+  <link rel="icon" href="./favicon.ico" sizes="any"><!-- 32×32 -->
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png"><!-- 180×180 -->
+
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <table width="100%">
+        <tbody>
+          <tr>
+            <th class="f01">短</th>
+            <th class="f02">速</th>
+            <th class="f03">底</th>
+            <th class="f04">長</th>
+            <th class="f05">ダ</th>
+            <th class="f06">丈</th>
+            <th class="f07">早</th>
+            <th class="f08">晩</th>
+            <th class="f09">堅</th>
+            <th class="f10">難</th>
+            <th rowspan="2" ><img src="img/reset.png" alt="" align="center" width="40px" height="40px" onclick="location.reload();"></th>
+          </tr>
+          <tr>
+            <td>{{factorNumtoString[0]}}</td>
+            <td>{{factorNumtoString[1]}}</td>
+            <td>{{factorNumtoString[2]}}</td>
+            <td>{{factorNumtoString[3]}}</td>
+            <td>{{factorNumtoString[4]}}</td>
+            <td>{{factorNumtoString[5]}}</td>
+            <td>{{factorNumtoString[6]}}</td>
+            <td>{{factorNumtoString[7]}}</td>
+            <td>{{factorNumtoString[8]}}</td>
+            <td>{{factorNumtoString[9]}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </header>
+
+      <template>
+        <v-container>
+            <v-row class="mx-1" align-content="center">
+              <v-spacer class="my-1 px-0 mx-0 my-0" />
+              <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+                <v-card style="width:99%" elevation=3 align-content="center">
+                  <v-card-title style="font-size:16px;font-weight:bolder;" class="px-0" outlined>
+                    種牡馬検索
+                  </v-card-title>
+                  <table class="table_main">
+                    <tr>
+                      <!-- <div :index="0"> -->
+                      <td colspan="5" class="horse_all AliceBlue" width="15">
+                        <v-select v-bind:options="factor" placeholder="種牡馬を選んでください"
+                          v-model="selected[0]" @input=" onChange(0,0,selected[0].horseData,$event)" :clearable="false">
+                          <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="horse_all AliceBlue" width="15"></td>
+                      <td :class="styleFactorClass[0][0]" width="20">{{factorName[0][0]}}</td>
+                      <td :class="styleFactorClass[0][1]" width="20">{{factorName[0][1]}}</td>
+                      <td :class="styleFactorClass[0][2]" width="20">{{factorName[0][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="1"> -->
+                      <td align="center" class="father_0" width="15">父</td>
+                      <td colspan="4" class="omoshiro_0" width="15">
+                        <v-select v-bind:options="factor" 
+                            v-model="selected[1]" @input=" onChange(0,1,selected[1].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine omoshiro_0" width="10"><span class="styleParentLineText">Te</span></td>
+                      <td :class="styleFactorClass[1][0]" width="20">{{factorName[1][0]}}</td>
+                      <td :class="styleFactorClass[1][1]" width="20">{{factorName[1][1]}}</td>
+                      <td :class="styleFactorClass[1][2]" width="20">{{factorName[1][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="2"> -->
+                        <td align="center" class="father_1" rowspan="7" width="15">
+                        <td class="father_0" width="15">父</td>
+                        <td colspan="3" class="horse_0">
+                          <v-select v-bind:options="factor"
+                              v-model="selected[2]" @input=" onChange(0,2,selected[2].horseData,$event)" :clearable="false">
+                              <span slot="no-options">検索候補がありません</span>
+                          </v-select>
+                        </td>       
+                        <td :class="styleFactorClass[2][0]" width="20">{{factorName[2][0]}}</td>
+                        <td :class="styleFactorClass[2][1]" width="20">{{factorName[2][1]}}</td>
+                        <td :class="styleFactorClass[2][2]" width="20">{{factorName[2][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="4"> -->
+                      <td align="center" class="father_1" rowspan="3" width="15">
+                      <td class="father_0" width="15">父</td>
+                      <td colspan="2" class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[4]" @input=" onChange(0,4,selected[4].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[4][0]" width="20">{{factorName[4][0]}}</td>
+                      <td :class="styleFactorClass[4][1]" width="20">{{factorName[4][1]}}</td>
+                      <td :class="styleFactorClass[4][2]" width="20">{{factorName[4][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="8"> -->
+                      <td align="center" class="father_1" width="15">
+                      <td class="father" width="15">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[8]" @input=" onChange(0,8,selected[8].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[8][0]" width="20">{{factorName[8][0]}}</td>
+                      <td :class="styleFactorClass[8][1]" width="20">{{factorName[8][1]}}</td>
+                      <td :class="styleFactorClass[8][2]" width="20">{{factorName[8][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="9"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="migoto_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[9]" @input=" onChange(0,9,selected[9].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine migoto_0" width="15">Te</td>
+                      <td :class="styleFactorClass[9][0]" width="20">{{factorName[9][0]}}</td>
+                      <td :class="styleFactorClass[9][1]" width="20">{{factorName[9][1]}}</td>
+                      <td :class="styleFactorClass[9][2]" width="20">{{factorName[9][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="5"> -->
+                      <td class="mother_0">母</td>
+                      <td class="father_0" rowspan="1">父</td>
+                      <td colspan="2" class="omoshiro_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[5]" @input=" onChange(0,5,selected[5].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine omoshiro_0" width="15">Te</td>
+                      <td :class="styleFactorClass[5][0]" width="20">{{factorName[5][0]}}</td>
+                      <td :class="styleFactorClass[5][1]" width="20">{{factorName[5][1]}}</td>
+                      <td :class="styleFactorClass[5][2]" width="20">{{factorName[5][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="10"> -->
+                      <td class="mother_1" rowspan="2">
+                      <td class="father_1">
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[10]" @input=" onChange(0,10,selected[10].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[10][0]" width="20">{{factorName[10][0]}}</td>
+                      <td :class="styleFactorClass[10][1]" width="20">{{factorName[10][1]}}</td>
+                      <td :class="styleFactorClass[10][2]" width="20">{{factorName[10][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="11"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="migoto_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[11]" @input=" onChange(0,11,selected[11].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine migoto_0" width="15">Te</td>
+                      <td :class="styleFactorClass[11][0]" width="20">{{factorName[11][0]}}</td>
+                      <td :class="styleFactorClass[11][1]" width="20">{{factorName[11][1]}}</td>
+                      <td :class="styleFactorClass[11][2]" width="20">{{factorName[11][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="3"> -->
+                      <td class="mother_0">母</td>
+                      <td class="father_0">父</td>
+                      <td colspan="3" class="omoshiro_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[3]" @input=" onChange(0,3,selected[3].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine omoshiro_0" width="15">Te</td>
+                      <td :class="styleFactorClass[3][0]" width="20">{{factorName[3][0]}}</td>
+                      <td :class="styleFactorClass[3][1]" width="20">{{factorName[3][1]}}</td>
+                      <td :class="styleFactorClass[3][2]" width="20">{{factorName[3][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="6"> -->
+                      <td class="mother_1" rowspan="6">
+                      <td class="father_1" rowspan="3">
+                      <td class="father_0">父</td>
+                      <td colspan="2" class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[6]" @input=" onChange(0,6,selected[6].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[6][0]" width="20">{{factorName[6][0]}}</td>
+                      <td :class="styleFactorClass[6][1]" width="20">{{factorName[6][1]}}</td>
+                      <td :class="styleFactorClass[6][2]" width="20">{{factorName[6][2]}}</td>
+                    </tr>
+                      
+                    <tr>
+                      <!-- <div :index="12"> -->
+                        <td class="father_1">
+                        <td class="father">父</td>
+                        <td class="horse_0">
+                          <v-select v-bind:options="factor"
+                              v-model="selected[12]" @input=" onChange(0,12,selected[12].horseData,$event)" :clearable="false">
+                              <span slot="no-options">検索候補がありません</span>
+                          </v-select>
+                        </td>       
+                        <td :class="styleFactorClass[12][0]" width="20">{{factorName[12][0]}}</td>
+                        <td :class="styleFactorClass[12][1]" width="20">{{factorName[12][1]}}</td>
+                        <td :class="styleFactorClass[12][2]" width="20">{{factorName[12][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="13"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="migoto_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[13]" @input=" onChange(0,13,selected[13].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine migoto_0" width="15">Te</td>
+                      <td :class="styleFactorClass[13][0]" width="20">{{factorName[13][0]}}</td>
+                      <td :class="styleFactorClass[13][1]" width="20">{{factorName[13][1]}}</td>
+                      <td :class="styleFactorClass[13][2]" width="20">{{factorName[13][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="7"> -->
+                      <td class="mother_0">母</td>
+                      <td class="father_0">父</td>
+                      <td colspan="2" class="omoshiro_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[7]" @input=" onChange(0,7,selected[7].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td class="styleParentLine omoshiro_0" width="15">Te</td>
+                      <td :class="styleFactorClass[7][0]" width="20">{{factorName[7][0]}}</td>
+                      <td :class="styleFactorClass[7][1]" width="20">{{factorName[7][1]}}</td>
+                      <td :class="styleFactorClass[7][2]" width="20">{{factorName[7][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="14"> -->
+                      <td class="mother_1" rowspan="2">
+                      <td class="father_1" rowspan="1">
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[14]" @input=" onChange(0,14,selected[14].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[14][0]" width="20">{{factorName[14][0]}}</td>
+                      <td :class="styleFactorClass[14][1]" width="20">{{factorName[14][1]}}</td>
+                      <td :class="styleFactorClass[14][2]" width="20">{{factorName[14][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="15"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="migoto_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[15]" @input=" onChange(0,15,selected[15].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td class="styleParentLine migoto_0" width="15">Te</td>
+                      <td :class="styleFactorClass[15][0]" width="20">{{factorName[15][0]}}</td>
+                      <td :class="styleFactorClass[15][1]" width="20">{{factorName[15][1]}}</td>
+                      <td :class="styleFactorClass[15][2]" width="20">{{factorName[15][2]}}</td>
+                    </tr>
+                  </table>
+                  <v-spacer class="my-1 px-0 mx-0 my-0" />
+                </v-card>
+              </v-col>
+              <v-spacer class="my-4 px-0 mx-0 my-0" />
+              <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+                <v-card style="width:99%" elevation=3 align-content="center" class="custom-card">
+                  <v-card-title style="font-size:16px;font-weight:bolder;" class="px-0" outlined>
+                    繫殖牝馬検索
+                  </v-card-title>
+
+                  <!-- 繫殖牝馬側 -->
+                  <table class="table_main">
+                    <tr>
+                      <!-- <div :index="0"> -->
+                      <td colspan="5" class="horse_all SalmonPink" width="15">
+                        <v-select v-bind:options="broodmare" placeholder="繫殖牝馬を選んでください"
+                          v-model="selected[0 + 16]" @input="onChange(1,0,selected[0 + 16].horseData,$event)" :clearable="false">
+                          <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[0 + 16][0]" width="20">{{factorName[0 + 16][0]}}</td>
+                      <td :class="styleFactorClass[0 + 16][1]" width="20">{{factorName[0 + 16][1]}}</td>
+                      <td :class="styleFactorClass[0 + 16][2]" width="20">{{factorName[0 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="1"> -->
+                      <td align="center" class="father_0" width="15">父</td>
+                      <td colspan="4" class="horse_all Broodmare" width="15">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[1 + 16]" @input="onChange(1,1,selected[1 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[1 + 16][0]" width="20">{{factorName[1 + 16][0]}}</td>
+                      <td :class="styleFactorClass[1 + 16][1]" width="20">{{factorName[1 + 16][1]}}</td>
+                      <td :class="styleFactorClass[1 + 16][2]" width="20">{{factorName[1 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="2"> -->
+                        <td align="center" class="father_1" rowspan="7" width="15">
+                        <td class="father_0" width="15">父</td>
+                        <td colspan="3" class="horse_0">
+                          <v-select v-bind:options="factor"
+                              v-model="selected[2 + 16]" @input="onChange(1,2,selected[2 + 16].horseData,$event)" :clearable="false">
+                              <span slot="no-options">検索候補がありません</span>
+                          </v-select>
+                        </td>       
+                        <td :class="styleFactorClass[2 + 16][0]" width="20">{{factorName[2 + 16][0]}}</td>
+                        <td :class="styleFactorClass[2 + 16][1]" width="20">{{factorName[2 + 16][1]}}</td>
+                        <td :class="styleFactorClass[2 + 16][2]" width="20">{{factorName[2 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="4"> -->
+                      <td align="center" class="father_1" rowspan="3" width="15">
+                      <td class="father_0" width="15">父</td>
+                      <td colspan="2" class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[4 + 16]" @input="onChange(1,4,selected[4 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[4 + 16][0]" width="20">{{factorName[4 + 16][0]}}</td>
+                      <td :class="styleFactorClass[4 + 16][1]" width="20">{{factorName[4 + 16][1]}}</td>
+                      <td :class="styleFactorClass[4 + 16][2]" width="20">{{factorName[4 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="8"> -->
+                      <td align="center" class="father_1" width="15">
+                      <td class="father" width="15">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[8 + 16]" @input="onChange(1,8,selected[8 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[8 + 16][0]" width="20">{{factorName[8 + 16][0]}}</td>
+                      <td :class="styleFactorClass[8 + 16][1]" width="20">{{factorName[8 + 16][1]}}</td>
+                      <td :class="styleFactorClass[8 + 16][2]" width="20">{{factorName[8 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="9"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[9 + 16]" @input="onChange(1,9,selected[9 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[9 + 16][0]" width="20">{{factorName[9 + 16][0]}}</td>
+                      <td :class="styleFactorClass[9 + 16][1]" width="20">{{factorName[9 + 16][1]}}</td>
+                      <td :class="styleFactorClass[9 + 16][2]" width="20">{{factorName[9 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="5"> -->
+                      <td class="mother_0">母</td>
+                      <td class="father_0" rowspan="1">父</td>
+                      <td colspan="2" class="horse_all Broodmare">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[5 + 16]" @input="onChange(1,5,selected[5 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[5 + 16][0]" width="20">{{factorName[5 + 16][0]}}</td>
+                      <td :class="styleFactorClass[5 + 16][1]" width="20">{{factorName[5 + 16][1]}}</td>
+                      <td :class="styleFactorClass[5 + 16][2]" width="20">{{factorName[5 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="10"> -->
+                      <td class="mother_1" rowspan="2">
+                      <td class="father_1">
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[10 + 16]" @input="onChange(1,10,selected[10 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[10 + 16][0]" width="20">{{factorName[10 + 16][0]}}</td>
+                      <td :class="styleFactorClass[10 + 16][1]" width="20">{{factorName[10 + 16][1]}}</td>
+                      <td :class="styleFactorClass[10 + 16][2]" width="20">{{factorName[10 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="11"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[11 + 16]" @input="onChange(1,11,selected[11 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[11 + 16][0]" width="20">{{factorName[11 + 16][0]}}</td>
+                      <td :class="styleFactorClass[11 + 16][1]" width="20">{{factorName[11 + 16][1]}}</td>
+                      <td :class="styleFactorClass[11 + 16][2]" width="20">{{factorName[11 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="3"> -->
+                      <td class="mother_0">母</td>
+                      <td class="father_0">父</td>
+                      <td colspan="3" class="horse_all Broodmare">
+                        <v-select v-bind:options="factor" 
+                            v-model="selected[3 + 16]" @open="handleDropdownOpen()" @input="onChange(1,3,selected[3 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                            <template #list-header>
+                              <li style="text-align: center">Top of the list!</li>
+                            </template>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[3 + 16][0]" width="20">{{factorName[3 + 16][0]}}</td>
+                      <td :class="styleFactorClass[3 + 16][1]" width="20">{{factorName[3 + 16][1]}}</td>
+                      <td :class="styleFactorClass[3 + 16][2]" width="20">{{factorName[3 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="6"> -->
+                      <td class="mother_1" rowspan="6">
+                      <td class="father_1" rowspan="3">
+                      <td class="father_0">父</td>
+                      <td colspan="2" class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[6 + 16]" @input="onChange(1,6,selected[6 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[6 + 16][0]" width="20">{{factorName[6 + 16][0]}}</td>
+                      <td :class="styleFactorClass[6 + 16][1]" width="20">{{factorName[6 + 16][1]}}</td>
+                      <td :class="styleFactorClass[6 + 16][2]" width="20">{{factorName[6 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="12"> -->
+                        <td class="father_1">
+                        <td class="father">父</td>
+                        <td class="horse_0">
+                          <v-select v-bind:options="factor"
+                              v-model="selected[12 + 16]" @input="onChange(1,12,selected[12 + 16].horseData,$event)" :clearable="false">
+                              <span slot="no-options">検索候補がありません</span>
+                          </v-select>
+                        </td>       
+                        <td :class="styleFactorClass[12 + 16][0]" width="20">{{factorName[12 + 16][0]}}</td>
+                        <td :class="styleFactorClass[12 + 16][1]" width="20">{{factorName[12 + 16][1]}}</td>
+                        <td :class="styleFactorClass[12 + 16][2]" width="20">{{factorName[12 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="13"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[13 + 16]" @input="onChange(1,13,selected[13 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[13 + 16][0]" width="20">{{factorName[13 + 16][0]}}</td>
+                      <td :class="styleFactorClass[13 + 16][1]" width="20">{{factorName[13 + 16][1]}}</td>
+                      <td :class="styleFactorClass[13 + 16][2]" width="20">{{factorName[13 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="7"> -->
+                      <td class="mother_0">母</td>
+                      <td class="father_0">父</td>
+                      <td colspan="2" class="horse_all Broodmare">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[7 + 16]" @input="onChange(1,7,selected[7 + 16].horseData,$event)" :clearable="false">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[7 + 16][0]" width="20">{{factorName[7 + 16][0]}}</td>
+                      <td :class="styleFactorClass[7 + 16][1]" width="20">{{factorName[7 + 16][1]}}</td>
+                      <td :class="styleFactorClass[7 + 16][2]" width="20">{{factorName[7 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="14"> -->
+                      <td class="mother_1" rowspan="2">
+                      <td class="father_1" rowspan="1">
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[14 + 16]" @input="onChange(1,14,selected[14 + 16].horseData,$event)" :clearable="false" :appendToBody="true">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>       
+                      <td :class="styleFactorClass[14 + 16][0]" width="20">{{factorName[14 + 16][0]}}</td>
+                      <td :class="styleFactorClass[14 + 16][1]" width="20">{{factorName[14 + 16][1]}}</td>
+                      <td :class="styleFactorClass[14 + 16][2]" width="20">{{factorName[14 + 16][2]}}</td>
+                    </tr>
+
+                    <tr>
+                      <!-- <div :index="15"> -->
+                      <td class="mother">母</td>
+                      <td class="father">父</td>
+                      <td class="horse_0">
+                        <v-select v-bind:options="factor"
+                            v-model="selected[15 + 16]" @input="onChange(1,15,selected[15 + 16].horseData,$event)" :clearable="false" class="custom-select">
+                            <span slot="no-options">検索候補がありません</span>
+                        </v-select>
+                      </td>
+                      <td :class="styleFactorClass[15 + 16][0]" width="20">{{factorName[15 + 16][0]}}</td>
+                      <td :class="styleFactorClass[15 + 16][1]" width="20">{{factorName[15 + 16][1]}}</td>
+                      <td :class="styleFactorClass[15 + 16][2]" width="20">{{factorName[15 + 16][2]}}</td>
+                    </tr>
+                  </table>
+                  <v-spacer class="my-1 px-0 mx-0 my-0" />
+                </v-card>
+              </v-col>
+            </v-row>
+        </v-container>
+      </template>
+    
+
+    <footer>
+      <table width="100%" class="table_footer_main">
+        <tbody>
+          <tr>
+            <td class="table_footer_FO">父面白</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer_MO">母面白</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+          </tr>
+          <tr>
+            <td class="table_footer_FM">父見事</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer">Te</td>
+            <td class="table_footer_TH_theory">理論</td>
+            <td class="boundary_bold mating7 " colspan="2">開発中</td>
+
+            <td class="table_footer_TH_Compatibility">相</td>
+            <td>99</td>
+          </tr>
+        </tbody>
+      </table>
+    </footer>
+
+  </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.14/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-select/3.20.2/vue-select.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+<script>
+// service workerの登録関係
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js').then(function(registration) {
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+    
+  const VueSelect = window.VueSelect;
+
+  Vue.component('v-select', VueSelect.VueSelect)
+
+  new Vue({
+    el: '#app',
+    vuetify: new Vuetify(),
+
+    data() {
+      return {
+        factorCd: Array.from(new Array(32), () => new Array(3).fill('00')),
+        selected: Array.from(new Array(32).fill(undefined)),
+        factor: [],
+        broodmare: [],
+        factorNum: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        theoryOmoshiro: [1,3,5,7],
+        theoryMigoto: [9,11,13,15],
+
+        // 種牡馬↓
+        // styleFactorClassを二次元配列で定義
+        styleFactorClass: Array.from(new Array(32), () => new Array(3).fill('00')),
+        // factorNameを二次元配列で定義
+        factorName: Array.from(new Array(32), () => new Array(3).fill('')),
+        // 種牡馬↑
+
+        // 繫殖牝馬↓
+        // styleFactorClassMareを二次元配列で定義
+        styleFactorClassMare: Array.from(new Array(16), () => new Array(3).fill('00')),
+        // factorNameMareを二次元配列で定義
+        factorNameMare: Array.from(new Array(16), () => new Array(3).fill('')),
+        // 繫殖牝馬↑
+
+        //factorNumtoString:['00','00','00','00','00','00','00','00','00','00'],
+        factorNumtoString: Array.from(new Array(10).fill('00')),
+        //styleFactorClass[0][0] = 'factor_omoshiro',
+
+      }
+    },
+
+    created: function () {
+    },
+    
+    mounted: function () {
+      console.log(this.$vuetify.breakpoint.name);
+
+      // jsonファイル読み込み
+      this.dbinitializer();
+
+      // 因子部分のCSS設定
+      for (var i = 0; i < this.styleFactorClass.length; i++){
+        let css = '';
+        css = this.getCss(i);
+        this.styleFactorClass[i][0] = `${css} styleFactorClassMain`;
+        this.styleFactorClass[i][1] = `${css} styleFactorClassMain`;
+        this.styleFactorClass[i][2] = `${css} styleFactorClassMain`;
+      };
+    },
+
+    methods: {
+      handleDropdownOpen() {
+        setTimeout(() => {
+          this.selected[16 + 3] = null
+        })
+      },
+
+      getCss: function (i) {
+        let css = '';
+        switch (i) {
+          case 0: 
+            css = 'factor_AliceBlue';
+            break;
+          // （+ 16）は牝馬のほう
+          case 0 + 16: 
+            css = 'factor_SalmonPink';
+            break;
+          // （+ 16）は牝馬のほう
+          case 1: case 3: case 5: case 7: case 1 + 16: case 3 + 16: case 5 + 16: case 7 + 16:
+            css = 'factor_omoshiro';
+            break;
+          case 9: case 11: case 13: case 15: 
+            css = 'factor_migoto';
+            break;
+          default:
+            css = 'factor_horse';
+            break;
+        }
+        return css;
+      },
+
+      initializer() {
+        this.factor = [];
+        this.broodmare = [];
+      },
+      dbinitializer() {
+        this.initializer();
+        fetch('./json/factor.json')
+          .then(response => {
+            return response.json();
+          })
+          .then(json => {
+            this.factor = json.factor;
+            this.broodmare = json.broodmare;
+            console.log(this.broodmare[0].label);
+          })
+      },
+      // ドロップダウンリスト選択時
+      onChange: function (sex, id, horseData, event) {
+        //console.log(selected.label);
+        console.log(horseData[0].factorId1);
+        console.log(event);
+
+        // 血統表にデータをセットする
+        this.setPedigree(sex, id,horseData);
+
+
+        // 配列の中にある因子数をカウントする
+        var count = {};
+        for (var i = 0; i < this.factorCd.length; i++) {
+          for (var j = 0; j < this.factorCd[i].length; j++) {
+            var elm = this.factorCd[i][j];
+            count[elm] = (count[elm] || 0) + 1;
+          }
+        }
+
+        //ソートされたものを
+        for (var i = 0; i < this.factorNumtoString.length; i++) {
+          var ret = ('00' + (i + 1)).slice(-2);
+          if (count[ret]) {
+            this.factorNumtoString[i] = ('00' + count[ret]).slice(-2);
+          }
+          else {
+            this.factorNumtoString[i] = '00';
+          }
+        }
+
+        console.log(this.factorNumtoString);
+      },
+
+      //偶数であることを確認する
+      //0は例外でFalseを返す
+      //1は例外でTrueを返す
+      isEven: function (cellNumber) {
+        switch (cellNumber) {
+          case 0:
+            return false;
+          case 1:
+            return true;
+          default:
+            return cellNumber % 2 === 0;
+        }
+      },
+
+      // 半角→全角(英数字)
+      replaceHalfToFull: function (str) {
+        return str.replace(/[!-~]/g, function(s){
+          return String.fromCharCode(s.charCodeAt(0) + 0xFEE0);
+        });
+      },
+
+      // セルに因子を詰める
+      fillInFactorCells: function(str,cell_id) {
+        if (str == null || str=== '') {
+          // nullのときはデフォルトのCSSを返す
+          return `${this.getCss(cell_id)} styleFactorClassMain`;
+        } 
+        else {
+          return `f${str} styleFactorClassMain`;
+        }
+      },
+
+      // 選択したセルを起点に血統データを入れる関数
+      setPedigree: function (sex,cellNo,horseDataList) {
+
+        // 設定するセルの最大値を決める
+        var max_cell_id = cellNo;
+        while(true) {
+          if (max_cell_id * 2 >= 16) {
+            max_cell_id = max_cell_id + 1;
+            break;
+          }
+
+          max_cell_id = max_cell_id * 2 + 1;
+          if (max_cell_id * 2 > 16) {
+            break;
+          }
+
+          max_cell_id = max_cell_id * 2
+          if (max_cell_id * 2 > 16) {
+            break;
+          }
+
+          max_cell_id = max_cell_id * 2
+          if (max_cell_id * 2 > 16) {
+            break;
+          }
+
+          max_cell_id = max_cell_id * 2
+          if (max_cell_id * 2 > 16) {
+            break;
+          }
+
+          max_cell_id = max_cell_id * 2
+          if (max_cell_id * 2 > 16) {
+            break;
+          }
+
+          max_cell_id = max_cell_id * 2
+          if (max_cell_id * 2 > 16) {
+            break;
+          }
+        }
+        
+        //格納するドロップダウンリストの配列作成
+        var cell_id_que = [cellNo];
+        var is_checked = [false];
+
+        var i = 1;
+        while(is_checked.indexOf(false)+1){
+          // falseが最初に来るindexを取得
+          var index = is_checked.indexOf(false);
+          is_checked[index] = true;
+          
+          if(2*cell_id_que[index] < max_cell_id){
+            if (i === 1) {
+              // 0のときだけ例外
+              if (cellNo === 0) {
+                cell_id_que.push(1);
+              } 
+              else {
+                cell_id_que.push(2*cell_id_que[index]);
+              }       
+              is_checked.push(false);
+            } 
+            else {
+              cell_id_que.push(2*cell_id_que[index]);
+              cell_id_que.push(2*cell_id_que[index]+1);
+              is_checked.push(false);
+              is_checked.push(false);         
+            }
+            i++;
+          }
+        }
+
+        // 先祖に向かって血統表をセットする
+        for(const cell_id of cell_id_que){
+          // 名前をセットする
+          this.selected[cell_id + (sex * 16)] = horseDataList[cell_id_que.indexOf(cell_id)].name.trim();
+          // 配列に因子名を詰め込む
+          this.factorName[cell_id + (sex * 16)][0] = horseDataList[cell_id_que.indexOf(cell_id)].factorName1;
+          this.factorName[cell_id + (sex * 16)][1] = horseDataList[cell_id_que.indexOf(cell_id)].factorName2;
+          this.factorName[cell_id + (sex * 16)][2] = horseDataList[cell_id_que.indexOf(cell_id)].factorName3;
+          // 配列に因子情報を詰め込む
+          this.factorCd[cell_id + (sex * 16)][0] = horseDataList[cell_id_que.indexOf(cell_id)].factorId1;
+          this.factorCd[cell_id + (sex * 16)][1] = horseDataList[cell_id_que.indexOf(cell_id)].factorId2;
+          this.factorCd[cell_id + (sex * 16)][2] = horseDataList[cell_id_que.indexOf(cell_id)].factorId3;
+          // 因子css
+          this.styleFactorClass[cell_id + (sex * 16)][0] = this.fillInFactorCells(horseDataList[cell_id_que.indexOf(cell_id)].factorId1,cell_id + (sex * 16));
+          this.styleFactorClass[cell_id + (sex * 16)][1] = this.fillInFactorCells(horseDataList[cell_id_que.indexOf(cell_id)].factorId2,cell_id + (sex * 16));
+          this.styleFactorClass[cell_id + (sex * 16)][2] = this.fillInFactorCells(horseDataList[cell_id_que.indexOf(cell_id)].factorId3,cell_id + (sex * 16));
+        }
+
+        // 子孫に選択した種牡馬のＮ薄めを血統データに入れる
+        var reverseNum = cellNo;
+        var reverseCnt = 0;
+        const name = horseDataList[0].name;
+        while(this.isEven(reverseNum)) {
+          // 2で割る
+          reverseCnt++;
+          reverseNum = Math.floor(reverseNum / 2);
+          if (reverseNum === 0 && sex === 1) {
+            this.selected[reverseNum + (sex * 16)] = 'ワタシノヒンバ';
+          }
+          else {
+            this.selected[reverseNum + (sex * 16)] = `★${this.replaceHalfToFull(reverseCnt.toString(10))}薄め${name.trim()}`;
+          }
+        }
+      },
+
+    }
+  })
+</script>
+
+
+
+
+
+</html>
