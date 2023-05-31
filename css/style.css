@@ -1,0 +1,992 @@
+@import url(./notosansjapanese.css);
+
+body {
+  font-family: "Noto Sans Japanese", "SF Pro Text", "SF Pro Icons",
+    "Helvetica Neue",
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    Meiryo,
+    sans-serif;
+}
+
+header {
+  border: 1px solid #AA0000;
+  box-sizing: border-box;
+  
+  background-color: #FFFFFF;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow:rgb(0 0 0 / 20%) 0px 2px 4px -1px,
+             rgb(0 0 0 / 14%) 0px 4px 5px 0px,
+             rgb(0 0 0 / 12%) 0px 1px 10px 0px;  
+}
+
+main {
+  border: 1px solid #AA0000;
+  box-sizing: border-box;
+}
+
+footer {
+  background-color: #FFFFFF;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+.custom-card{
+  overflow: hidden !important;
+}
+
+.custom-select{
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.table_footer_main {
+  border-collapse: collapse;
+  border:1px solid;  
+}
+
+table.table_footer_main td span{
+  height: 25px;
+  max-height:25px;
+  overflow: auto;
+  display: block;
+}
+
+.table_footer {
+  border-collapse: collapse;
+  border:1px solid;
+  width: 9%;
+}
+
+/* 父面白 */
+.table_footer_FO {
+  background: linear-gradient(135deg, #cfe7f5 00%, #cfe7f5 50%, #b6ffbd 50%, #b6ffbd 100%);
+  border:1px solid;
+  width: 14%;
+}
+
+/* 父見事 */
+.table_footer_FM {
+  background: linear-gradient(135deg, #cfe7f5 00%, #cfe7f5 50%, #fffcaa 50%, #fffcaa 100%);
+  border:1px solid;
+  width: 14%;
+}
+
+/* 母面白 */
+.table_footer_MO {
+  background: linear-gradient(135deg, #f3a68c 00%, #f3a68c 50%, #b6ffbd 50%, #b6ffbd 100%);
+  border:1px solid;
+}
+
+/* 理論ヘッダ */
+.table_footer_TH_theory {
+  background: #bbb;
+  /* border:1px solid; */
+}
+
+/* 相性ヘッダ */
+.table_footer_TH_Compatibility {
+  background: #bbb;
+  border:1px solid;
+}
+
+.table_main {
+  border-collapse: collapse;
+  border: 1px solid #bbb;
+  width:98%;
+  margin-left: auto;
+  margin-right: auto;  
+}
+
+.horse_all {
+  border-bottom: 1px solid #DDDDDD;
+}
+
+
+.father_0 {
+  background-color: #3e499c;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0px #000000,
+    -1px 1px 0px #000000,
+    1px -1px 0px #000000,
+    -1px -1px 0px #000000,
+    1px 0px 0px #000000,
+    0px 1px 0px #000000,
+    -1px 0px 0px #000000,
+    0px -1px 0px #000000;
+  /* 文字の影 */
+  border-bottom: 0px solid #3e499c;
+  border-top: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  vertical-align: middle;
+  font-size: small;
+  text-align: center;
+  font-weight: bold;
+}
+
+.father {
+  background-color: #3e499c;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0px #000000,
+    -1px 1px 0px #000000,
+    1px -1px 0px #000000,
+    -1px -1px 0px #000000,
+    1px 0px 0px #000000,
+    0px 1px 0px #000000,
+    -1px 0px 0px #000000,
+    0px -1px 0px #000000;
+  /* 文字の影 */
+  border-bottom: none;
+  border-top: 1px solid #FFFFFF;
+  vertical-align: middle;
+  font-size: small;
+  text-align: center;
+  font-weight: bold;
+}
+
+.father_1 {
+  background-color: #3e499c;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0px #000000,
+    -1px 1px 0px #000000,
+    1px -1px 0px #000000,
+    -1px -1px 0px #000000,
+    1px 0px 0px #000000,
+    0px 1px 0px #000000,
+    -1px 0px 0px #000000,
+    0px -1px 0px #000000;
+  /* 文字の影 */
+  border-top: none;
+  border-right: 1px solid #FFFFFF;
+  vertical-align: middle;
+  font-size: small;
+  text-align: center;
+  font-weight: bold;
+}
+
+.mother_0 {
+  background-color: #b34e5f;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0px #000000,
+    -1px 1px 0px #000000,
+    1px -1px 0px #000000,
+    -1px -1px 0px #000000,
+    1px 0px 0px #000000,
+    0px 1px 0px #000000,
+    -1px 0px 0px #000000,
+    0px -1px 0px #000000;
+  /* 文字の影 */
+  border-bottom: 0px solid #b34e5f;
+  border-top: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  vertical-align: middle;
+  font-size: small;
+  text-align: center;
+  font-weight: bold;
+}
+
+.mother {
+  background-color: #b34e5f;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0px #000000,
+    -1px 1px 0px #000000,
+    1px -1px 0px #000000,
+    -1px -1px 0px #000000,
+    1px 0px 0px #000000,
+    0px 1px 0px #000000,
+    -1px 0px 0px #000000,
+    0px -1px 0px #000000;
+  /* 文字の影 */
+  border-bottom: none;
+  border-top: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  vertical-align: middle;
+  font-size: small;
+  text-align: center;
+  font-weight: bold;
+}
+
+.mother_1 {
+  background-color: #b34e5f;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0px #000000,
+    -1px 1px 0px #000000,
+    1px -1px 0px #000000,
+    -1px -1px 0px #000000,
+    1px 0px 0px #000000,
+    0px 1px 0px #000000,
+    -1px 0px 0px #000000,
+    0px -1px 0px #000000;
+  /* 文字の影 */
+  border-top: none;
+  border-right: 1px solid #FFFFFF;
+  vertical-align: middle;
+  font-size: small;
+  text-align: center;
+  font-weight: bold;
+}
+
+.factor {
+  border: none;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+.factor_horse {
+  border: none;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+.factor_AliceBlue {
+  background: #cfe7f5;
+  border: none;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+.factor_SalmonPink {
+  background: #f3a68c;
+  border: none;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+
+.factor_omoshiro {
+  background: #b6ffbd;
+  border: none;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+.factor_migoto {
+  background: #fffcaa;
+  border: none;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+/* ���� */
+.horse {
+  border-right: none;
+  font-weight: bold;
+}
+
+.horse_0 {
+  border-left: none;
+  border-right: none;
+  font-size: 10px;
+}
+
+.horse_1 {
+  border-left: none;
+  border-right: none;
+  font-weight: bold;
+}
+
+/* �Y��������q������Ƃ� */
+.horse_R0 {
+  border-left: none;
+  border-right: none;
+  font-weight: bold;
+  color: #e2041b;
+}
+
+
+/* 背景 */
+.AliceBlue {
+  background: #cfe7f5;
+  border-right: none;
+  font-size: 10px;
+}
+
+.SalmonPink {
+  background: #f3a68c;
+  border-right: none;
+  font-size: 10px;
+}
+
+.Broodmare {
+  background: linear-gradient(135deg, #fffcaa 00%, #fffcaa 70%, #b6ffbd 50%, #b6ffbd 100%);
+  border-right: none;
+  font-size: 10px;
+}
+
+.omoshiro {
+  background: #b6ffbd;
+  border-right: none;
+  font-weight: bold;
+}
+
+.omoshiro_0 {
+  background: #b6ffbd;
+  border-right: none;
+  font-size: 10px !important;
+  color: #000000;
+  text-align: left;
+}
+
+.omoshiro_1 {
+  background: #b6ffbd;
+  border-right: none;
+  border-left: none;
+  text-align: left;
+  font-weight: bold;
+}
+
+.omoshiro_2 {
+  background: #b6ffbd;
+  border-right: none;
+  border-left: none;
+  text-align: center;
+  font-weight: bold;
+}
+
+.omoshiro_R0 {
+  background: #b6ffbd;
+  border-right: none;
+  font-weight: bold;
+  color: #e2041b;
+}
+
+.omoshiro_R2 {
+  background: #b6ffbd;
+  border-right: none;
+  border-left: none;
+  text-align: center;
+  font-weight: bold;
+  color: #e2041b;
+}
+
+
+.migoto {
+  background: #fffcaa;
+  border-right: none;
+  font-weight: bold;
+}
+
+.migoto_0 {
+  background: #fffcaa;
+  border-right: none;
+  font-size: 10px;
+}
+
+.migoto_1 {
+  background: #fffcaa;
+  border-left: none;
+  border-right: none;
+  text-align: right;
+  font-weight: bold;
+}
+
+.migoto_R0 {
+  background: #fffcaa;
+  border-right: none;
+  font-weight: bold;
+  color: #e2041b;
+}
+
+.migoto_R1 {
+  background: #fffcaa;
+  border-left: none;
+  border-right: none;
+  text-align: right;
+  font-weight: bold;
+  color: #e2041b;
+}
+
+.factor_icn {
+
+  padding: 3px;
+  text-align: right;
+}
+
+.factor_value {
+  text-align: right;
+}
+
+table.pedigree,
+table.horse_spec,
+div.horse_spec {
+  border: #DDDDDD 1px solid;
+  background-color: #FFFFFF;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 20px;
+}
+
+.styleParentLineText {
+  display: inline-block;    /* 変形するためのブロック化 */
+  transform: scale(0.8, 2.0);
+}
+
+.styleParentLine {
+  border-bottom: 1px solid #DDDDDD;
+  text-align: center;
+  font-weight: bold;
+  font-size: 10px;
+}
+
+.styleFactorClassMain {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+/*短*/
+.f01 {
+  color: #000000;
+  /* 文字の影 */
+  background: #fdfd00;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+}
+
+/*速*/
+.f02 {
+  color: #000000;
+  /* 文字の影 */
+  background: #fdfda2;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+}
+
+/*底*/
+.f03 {
+  color: #000000;
+  /* 文字の影 */
+  background: #fc6e00;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+}
+
+/*長*/
+.f04 {
+  color: #000000;
+  /* 文字の影 */
+  background: #03fdfd;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+}
+
+/*砂*/
+.f05 {
+  color: #000000;
+  /* 文字の影 */
+  background: #fddba5;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+}
+
+/*丈*/
+.f06 {
+  color: #000000;
+  /* �����̐F */
+  background: #feabdd;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+  /* �����̉e */
+}
+
+/*早*/
+.f07 {
+  color: #000000;
+  /* �����̐F */
+  background: #02fe02;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+  /* �����̉e */
+}
+
+/*晩*/
+.f08 {
+  color: #000000;
+  /* �����̐F */
+  background: #a7de0d;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+  /* �����̉e */
+}
+
+/*堅*/
+.f09 {
+  color: #000000;
+  /* �����̐F */
+  background: #a1a1a3;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+  /* �����̉e */
+}
+
+/*難*/
+.f10 {
+  color: #000000;
+  /* �����̐F */
+  background: #fc00fc;
+  text-shadow:
+    1px 1px 0px #ffffff,
+    -1px 1px 0px #ffffff,
+    1px -1px 0px #ffffff,
+    -1px -1px 0px #ffffff,
+    1px 0px 0px #ffffff,
+    0px 1px 0px #ffffff,
+    -1px 0px 0px #ffffff,
+    0px -1px 0px #ffffff;
+  /* �����̉e */
+}
+
+.factorNumCell{
+  text-align: center;
+  width: 12%;
+}
+
+/* 因子数のセル（偶数列） */
+.factorNumCell:nth-child(2n){
+  text-align: center;
+  background: #eee;
+}
+
+/* 因子数のセル（奇数列） */
+.factorNumCell:nth-child(2n-1){
+  text-align: center;
+  background: #fff;
+}
+
+
+.Ec{
+  background-color: white;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Ph{
+  background-color: lightsteelblue;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Ns{
+  background-color: mediumaquamarine;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Ro{
+  background-color: lightpink;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Ne{
+  background-color: yellow;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Na{
+  background-color: lightskyblue;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Fa{
+  background-color: khaki;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.To{
+  background-color: orange;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Te{
+  background-color: purple;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Sw{
+  background-color: peachpuff;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Ha{
+  background-color: chartreuse;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Hi{
+  background-color: mediumblue;
+  text-align: center;
+  color: white;
+  border-color: black;
+  padding: 0px;
+  padding-left: 0px;
+}
+.St{
+  background-color: slateblue;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+}
+.Ma{
+  background-color: darkorchid;
+  text-align: center;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+}
+.He{
+  background-color: aqua;
+  text-align: center;
+  padding: 0px;
+  padding-left: 0px;
+}
+.UndefinedGr{
+  background-color: white;
+  text-align: center;
+  border-color:  black;
+  color: white;
+  padding: 0px;
+  padding-left: 0px;
+}
+.inbleed{
+  color: red;
+  font-weight: bolder;
+  border: solid black !important;
+}
+.outbleed{
+  color: black;
+  font-weight: normal;
+  text-shadow: 0px 0px 0px;
+  border: solid;
+}
+
+/*理論なし*/
+.mating0{
+  color: black;
+  background-color: white;
+  font-weight: bold;
+}
+/*面白*/
+.mating1{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-radial-gradient(
+      dimgray,
+      gray
+      ); 
+  background: 
+    -webkit-radial-gradient(
+      dimgray,
+      gray
+    ); 
+  background: 
+    radial-gradient(
+      dimgray,
+      gray
+    ); 
+}
+/*よくでき*/
+.mating2{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      coral,
+      coral
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      coral,
+      coral
+    ); 
+  background: 
+    linear-gradient(
+      to right top,
+      coral,
+      coral
+    ); 
+}
+/*面白よくでき*/
+.mating3{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      gray,
+      coral
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      gray,
+      coral
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      gray,
+      coral
+      ); 
+}
+/*見事*/
+.mating4{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      #E2D06E,
+      #E2D06E
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      #E2D06E,
+      #E2D06E
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      #E2D06E,
+      #E2D06E
+      ); 
+}
+/*完璧*/
+.mating5{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      #8DC799,
+      #C3E19C 7%,
+      #FFF39B 17%,
+      #F09C75 32%,
+      #EC9EBD 56%,
+      #8F82BA 72%,
+      #7DCCF2
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      #8DC799,
+      #C3E19C 7%,
+      #FFF39B 17%,
+      #F09C75 32%,
+      #EC9EBD 56%,
+      #8F82BA 72%,
+      #7DCCF2
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      #8DC799,
+      #C3E19C 7%,
+      #FFF39B 17%,
+      #F09C75 32%,
+      #EC9EBD 56%,
+      #8F82BA 72%,
+      #7DCCF2
+      ); 
+}
+/*危険*/
+.mating6{
+  color: black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      red,
+      red
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      red,
+      red
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      red,
+      red
+      ); 
+}
+/*超完璧*/
+.mating7{
+  color: Black;
+  font-weight: bold;
+  background: 
+    -moz-linear-gradient(
+      to right top,
+      #807597,
+      #0D0D2C 13%,
+      #4D5084 22%,
+      #A59CAE 30%,
+      #FFFFFF 40%,
+      #A59CAE 60%,
+      #4D5084 78%,
+      #0D0D2C 87%,
+      #807597
+      ); 
+  background: 
+    -webkit-linear-gradient(
+      to right top,
+      #807597,
+      #0D0D2C 13%,
+      #4D5084 22%,
+      #A59CAE 30%,
+      #FFFFFF 40%,
+      #A59CAE 60%,
+      #4D5084 78%,
+      #0D0D2C 87%,
+      #807597
+      ); 
+  background: 
+    linear-gradient(
+      to right top,
+      #807597,
+      #0D0D2C 13%,
+      #4D5084 22%,
+      #A59CAE 30%,
+      #FFFFFF 40%,
+      #A59CAE 60%,
+      #4D5084 78%,
+      #0D0D2C 87%,
+      #807597
+      ); 
+}
+.boundary_bold{
+  text-shadow:
+  white 1px 1px 1px,
+  white 1px -1px 1px,
+  white -1px 1px 1px,
+  white -1px -1px 1px;
+}
+.boundary_bold_black{
+  text-shadow:
+  dimgray 1px 1px 1px,
+  dimgray 1px -1px 1px,
+  dimgray -1px 1px 1px,
+  dimgray -1px -1px 1px;
+}
+
+/* 面白 */
+.theory_01{
+  background-size: cover;
+  background-image: url("data:image/jpeg;base64,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");
+}
+
+/* 見事 */
+.theory_02{
+  background-size: cover;
+  background-image: url("data:image/jpeg;base64,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");
+}
+
+/* よくでき */
+.theory_03{
+  background-size: cover;
+  background-image: url("data:image/jpeg;base64,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");
+}
+
+/* 完璧 */
+.theory_04{
+  background-size: cover;
+  background-image: url("data:image/jpeg;base64,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");
+}
+
+/* 超完璧 */
+.theory_05{
+  background-size: cover;
+  background-image: url("data:image/jpeg;base64,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");
+}
+
+/* 奇跡 */
+.theory_06{
+  background-size: cover;
+  background-image: url("data:image/jpeg;base64,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");
+}
