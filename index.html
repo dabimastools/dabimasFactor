@@ -834,10 +834,10 @@
         else {
           switch (newValue.index % 16) {
             case 3: case 5: case 7: case 9: case 11: case 13: case 15: 
-              return '種牡馬 or 繫殖牝馬を選んでください。';
+              return '種牡馬 or 繫殖牝馬を選んでください';
               break;
             default: 
-              return '種牡馬を選んでください。';
+              return '種牡馬を選んでください';
               break;
           }
         }
@@ -954,9 +954,6 @@
         theoryOmoshiro: [1,3,5,7],
         theoryMigoto: [9,11,13,15],
         
-        horses: ['サンデーサイレンス','ディープインパクト','スペシャルウィーク','ハーツクライ','ステイゴールド'],
-        horsesBase:['サンデーサイレンス','ディープインパクト','スペシャルウィーク','ハーツクライ','ステイゴールド'],
-
         // styleFactorClassesを二次元配列で定義
         styleFactorClasses: Array.from(new Array(32), () => new Array(3).fill('00')),
         // factorNameを二次元配列で定義
@@ -1055,6 +1052,8 @@
 
         // 合計因子数表示
         this.factorNumtoString = Array.from(new Array(10).fill('00'));
+        // 合計因子数内部変数
+        this.factorNum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         // 親系統表示
         this.parentLines = Array.from(new Array(32).fill(''));
