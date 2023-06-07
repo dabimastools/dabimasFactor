@@ -8,7 +8,8 @@
   <link href="./css/loading.css" type="text/css" rel="stylesheet" />
   <link href="./css/style.css" type="text/css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-  <link href="./css/vuetify.min.css" type="text/css" rel="stylesheet" />
+  <link href="./css/vuetify_compact.min.css" type="text/css" rel="stylesheet" media="(max-height: 730px)"/>
+  <link href="./css/vuetify.min.css" type="text/css" rel="stylesheet" media="(min-height: 731px)"/>
 
   <!-- <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">   -->
   <link rel="icon" href="./favicon.ico" sizes="any"><!-- 32×32 -->
@@ -91,7 +92,7 @@
             <v-spacer class="my-1 px-0 mx-0 my-0" />
             <v-col cols="12" sm="12" md="6" lg="6" xl="6">
               <v-card elevation=3 align-content="center" class="custom-card">
-                <v-card-title style="font-size:16px;font-weight:bolder;" class="px-0" outlined>
+                <v-card-title v-if="this.windowSize >= 770" style="font-size:16px;font-weight:bolder;" class="px-0" outlined>
                   種牡馬検索
                 </v-card-title>
 
@@ -407,7 +408,7 @@
             <!-- <v-spacer class="my-4 px-0 mx-0 my-0" /> -->
             <v-col cols="12" sm="12" md="6" lg="6" xl="6">
               <v-card elevation=3 align-content="center" class="custom-card">
-                <v-card-title style="font-size:16px;font-weight:bolder;" class="px-0" outlined>
+                <v-card-title v-if="this.windowSize >= 770" style="font-size:16px;font-weight:bolder;" class="px-0" outlined>
                   繫殖牝馬検索
                 </v-card-title>
 
@@ -940,6 +941,7 @@
 
     data() {
       return {
+        windowSize: 0,
         horseDataLists:[[],[],[]],
         factorCd: Array.from(new Array(32), () => new Array(3).fill('00')),
         selected: Array.from(new Array(32).fill(null)),
@@ -982,6 +984,10 @@
         })
 
         console.log(this.$vuetify.breakpoint.name);
+        
+        // 画面サイズを取得
+        this.windowSize = window.innerHeight
+        console.log(this.windowSize);
 
         // 因子を数字に変換するmapオブジェクト
         //this.factorMap = new map();

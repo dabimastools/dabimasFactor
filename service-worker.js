@@ -2,10 +2,10 @@
 var CACHE_NAME = 'dabimas-factor-v1';
 var urlsToCache = [
     '/yanaifarm.github.io/dabimasFactor/index.html',
-    '/yanaifarm.github.io/dabimasFactor/json/factor.json',
+    '/yanaifarm.github.io/dabimasFactor/json/dabimasFactor.json',
     '/yanaifarm.github.io/dabimasFactor/css/style.css',
-    '/yanaifarm.github.io/dabimasFactor/css/vue-select.css',
-    '/yanaifarm.github.io/dabimasFactor/css/vue-select.css.map',
+    '/yanaifarm.github.io/dabimasFactor/css/vuetify.min.css',
+    '/yanaifarm.github.io/dabimasFactor/css/vuetify_compact.min.css',
 ];
 
 // install cache
