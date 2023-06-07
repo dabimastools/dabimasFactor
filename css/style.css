@@ -303,24 +303,28 @@ table.table_footer_main td span{
 /* 背景 */
 .AliceBlue {
   background: #cfe7f5;
+  border-left: none;
   border-right: none;
   font-size: 10px;
 }
 
 .SalmonPink {
   background: #f3a68c;
+  border-left: none;
   border-right: none;
   font-size: 10px;
 }
 
 .Broodmare {
   background: linear-gradient(135deg, #fffcaa 00%, #fffcaa 70%, #b6ffbd 50%, #b6ffbd 100%);
+  border-left: none;
   border-right: none;
   font-size: 10px;
 }
 
 .omoshiro {
   background: #b6ffbd;
+  border-left: none;
   border-right: none;
   font-weight: bold;
 }
@@ -374,6 +378,7 @@ table.table_footer_main td span{
 
 .migoto_0 {
   background: #fffcaa;
+  border-left: none;
   border-right: none;
   font-size: 10px;
 }
