@@ -1219,7 +1219,14 @@
             const mother3 = this.selected[3 + 16].name;
             // 牡馬の4代目
             const father4 = [this.selected[4].name,this.selected[5].name,this.selected[6].name,this.selected[7].name];
-            if (father4.includes(mother3)) {
+             
+            let includesNum = father4.filter( function( value ) {
+              // 牝馬の3代目に合致する種牡馬を配列で取得
+              return value === mother3;
+            });
+            
+            // 4×3のみ奇跡になる。4×4×3は奇跡にならない。
+            if (includesNum.length === 1) {
               // 奇跡
               result="theory_06";
             } 
