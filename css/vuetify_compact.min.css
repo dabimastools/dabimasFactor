@@ -3334,7 +3334,7 @@
   
   .v-application {
     font-family: Roboto, sans-serif;
-    line-height: 1.38
+    line-height: 1
   }
   
   .v-application ::-ms-clear, .v-application ::-ms-reveal {
@@ -17359,7 +17359,8 @@
   .v-input__control {
     display: flex;
     flex-direction: column;
-    height: 15px;
+    /* height: 15px; */
+    height:calc( ( 100vh - 32px - 20px - 20px ) / 32 );
     flex-grow: 1;
     flex-wrap: wrap;
     min-width: 0;
