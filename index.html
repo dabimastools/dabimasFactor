@@ -948,8 +948,6 @@
         parentLines: Array.from(new Array(32).fill('')),
         stallions:[],
         stallionsBase:[],
-        //horses:[],
-        //horsesBase:[],
         broodmares: [],
         broodmaresBase:[],
         theoryOmoshiro: [1,3,5,7],
@@ -967,6 +965,10 @@
 
         // 配合理論
         styleThoeryClass:'',
+
+        // リストで選択された性別
+        selectedSex:null,
+
       }
     },
 
@@ -1035,6 +1037,7 @@
         this.stallions = [...this.stallionsBase];
         this.broodmares = [...this.broodmaresBase];
         this.horses = [...this.horsesBase];
+        this.horseDataLists = [this.horses,this.stallions,this.broodmares];
 
         // 因子部分のCSS初期設定
         for (var i = 0; i < this.styleFactorClasses.length; i++){
@@ -1122,17 +1125,13 @@
       // ドロップダウンリスト選択時
       // onChange: function (sex, id, horseData, event) {
       onChange: function (sex, id, horseData) {
-        this.onChangeMain(sex, id, horseData);
-        
-        // (テスト)リストに追加する
-        //this.stallions = [...Array.from(this.stallionsBase),{...horseData.descendants[0],subName:'',disabled:true}];
-        //this.selected[0] = {...horseData.descendants[0],subName:'',disabled:true};
+        this.onChangeMain(sex, id, horseData);        
       },
 
       // 選択時のメイン処理
       onChangeMain: function (sex, id, horseData) {
         
-        if (horseData) {
+        // if (horseData) {
           // 血統表データセット用に詰め替える
           const dataForPedigree = this.setDataForPedigree(sex, id, horseData)
 
@@ -1144,7 +1143,7 @@
 
           // 配合理論を求めて画面に表示させる
           this.dispTheory();
-        }
+        // }
         //console.log(this.selected[1]);
       },
 
@@ -1162,6 +1161,9 @@
         if (!flattenedS.includes("") && (!flattenedD.includes(""))) {
           this.styleThoeryClass = this.compatibility(S,D);
           console.log(this.styleThoeryClass);
+        } else {
+          // 理論系統が埋まっていない場合は、空白を設定
+          this.styleThoeryClass = '';
         }
       },
 
@@ -1281,50 +1283,62 @@
 
         const retDataForPedigree = Array.from(new Array(16).fill(null));
 
-        if ((horseData.sex === "0") || (horseData.sex === "1" && id === 0)) {
-          //牡馬を選択した場合 か 牝馬でも赤いところで牝馬を選択した場合
-          // 0番目はデータそのものをセットする
-          retDataForPedigree[0] = horseData;
-          // 0番目以降は祖全データ＋subName''＋使用不可フラグを設定（因子配列も念のためコピー）
-          retDataForPedigree[1] = {...horseData.descendants[0],subName:'',factors:[...horseData.descendants[0].factors],disabled:true};
-          retDataForPedigree[2] = {...horseData.descendants[1],subName:'',factors:[...horseData.descendants[1].factors],disabled:true};
-          retDataForPedigree[3] = {...horseData.descendants[8],subName:'',factors:[...horseData.descendants[8].factors],disabled:true};
-          retDataForPedigree[4] = {...horseData.descendants[2],subName:'',factors:[...horseData.descendants[2].factors],disabled:true};
-          retDataForPedigree[5] = {...horseData.descendants[5],subName:'',factors:[...horseData.descendants[5].factors],disabled:true};
-          retDataForPedigree[6] = {...horseData.descendants[9],subName:'',factors:[...horseData.descendants[9].factors],disabled:true};
-          retDataForPedigree[7] = {...horseData.descendants[12],subName:'',factors:[...horseData.descendants[12].factors],disabled:true};
-          retDataForPedigree[8] = {...horseData.descendants[3],subName:'',factors:[...horseData.descendants[3].factors],disabled:true};
-          retDataForPedigree[9] = {...horseData.descendants[4],subName:'',factors:[...horseData.descendants[4].factors],disabled:true};
-          retDataForPedigree[10] = {...horseData.descendants[6],subName:'',factors:[...horseData.descendants[6].factors],disabled:true};
-          retDataForPedigree[11] = {...horseData.descendants[7],subName:'',factors:[...horseData.descendants[7].factors],disabled:true};
-          retDataForPedigree[12] = {...horseData.descendants[10],subName:'',factors:[...horseData.descendants[10].factors],disabled:true};
-          retDataForPedigree[13] = {...horseData.descendants[11],subName:'',factors:[...horseData.descendants[11].factors],disabled:true};
-          retDataForPedigree[14] = {...horseData.descendants[13],subName:'',factors:[...horseData.descendants[13].factors],disabled:true};
-          retDataForPedigree[15] = {...horseData.descendants[14],subName:'',factors:[...horseData.descendants[14].factors],disabled:true};
+        if (horseData) {
+          // リストで選択した性別（種牡馬 or 繁殖牝馬）をセット
+          this.selectedSex = horseData.sex;
+          // 空以外を選択した場合
+          if ((horseData.sex === "0") || (horseData.sex === "1" && id === 0)) {
+            //牡馬を選択した場合 か 牝馬でも赤いところで牝馬を選択した場合
+            // 0番目はデータそのものをセットする
+            retDataForPedigree[0] = horseData;
+            // 0番目以降は祖全データ＋subName''＋使用不可フラグを設定（因子配列も念のためコピー）
+            retDataForPedigree[1] = {...horseData.descendants[0],subName:'',factors:[...horseData.descendants[0].factors],disabled:true};
+            retDataForPedigree[2] = {...horseData.descendants[1],subName:'',factors:[...horseData.descendants[1].factors],disabled:true};
+            retDataForPedigree[3] = {...horseData.descendants[8],subName:'',factors:[...horseData.descendants[8].factors],disabled:true};
+            retDataForPedigree[4] = {...horseData.descendants[2],subName:'',factors:[...horseData.descendants[2].factors],disabled:true};
+            retDataForPedigree[5] = {...horseData.descendants[5],subName:'',factors:[...horseData.descendants[5].factors],disabled:true};
+            retDataForPedigree[6] = {...horseData.descendants[9],subName:'',factors:[...horseData.descendants[9].factors],disabled:true};
+            retDataForPedigree[7] = {...horseData.descendants[12],subName:'',factors:[...horseData.descendants[12].factors],disabled:true};
+            retDataForPedigree[8] = {...horseData.descendants[3],subName:'',factors:[...horseData.descendants[3].factors],disabled:true};
+            retDataForPedigree[9] = {...horseData.descendants[4],subName:'',factors:[...horseData.descendants[4].factors],disabled:true};
+            retDataForPedigree[10] = {...horseData.descendants[6],subName:'',factors:[...horseData.descendants[6].factors],disabled:true};
+            retDataForPedigree[11] = {...horseData.descendants[7],subName:'',factors:[...horseData.descendants[7].factors],disabled:true};
+            retDataForPedigree[12] = {...horseData.descendants[10],subName:'',factors:[...horseData.descendants[10].factors],disabled:true};
+            retDataForPedigree[13] = {...horseData.descendants[11],subName:'',factors:[...horseData.descendants[11].factors],disabled:true};
+            retDataForPedigree[14] = {...horseData.descendants[13],subName:'',factors:[...horseData.descendants[13].factors],disabled:true};
+            retDataForPedigree[15] = {...horseData.descendants[14],subName:'',factors:[...horseData.descendants[14].factors],disabled:true};
+          } 
+          else {
+            //牝馬を選択した場合
+            // 0番目はデータそのものをセットする
+            retDataForPedigree[0]  = {...horseData.descendants[0]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[0].factors],disabled:true};
+            retDataForPedigree[1]  = {...horseData.descendants[1]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[1].factors],disabled:true};
+            retDataForPedigree[2]  = {...horseData.descendants[8]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[8].factors],disabled:true};
+            retDataForPedigree[3]  = {...horseData.descendants[2]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[2].factors],disabled:true};
+            retDataForPedigree[4]  = {...horseData.descendants[5]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[5].factors],disabled:true};
+            retDataForPedigree[5]  = {...horseData.descendants[9]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[9].factors],disabled:true};
+            retDataForPedigree[6]  = {...horseData.descendants[12]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[12].factors],disabled:true};
+            retDataForPedigree[7]  = {...horseData.descendants[3]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[3].factors],disabled:true};
+            retDataForPedigree[8]  = {...horseData.descendants[4]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[4].factors],disabled:true};
+            retDataForPedigree[9]  = {...horseData.descendants[6]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[6].factors],disabled:true};
+            retDataForPedigree[10] = {...horseData.descendants[7]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[7].factors],disabled:true};
+            retDataForPedigree[11] = {...horseData.descendants[10]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[10].factors],disabled:true};
+            retDataForPedigree[12] = {...horseData.descendants[11]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[11].factors],disabled:true};
+            retDataForPedigree[13] = {...horseData.descendants[13]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[13].factors],disabled:true};
+            retDataForPedigree[14] = {...horseData.descendants[14]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[14].factors],disabled:true};
+            retDataForPedigree[15] = 'broodmares';
+          }
         } 
         else {
-          //牝馬を選択した場合
-          // 0番目はデータそのものをセットする
-          retDataForPedigree[0]  = {...horseData.descendants[0]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[0].factors],disabled:true};
-          retDataForPedigree[1]  = {...horseData.descendants[1]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[1].factors],disabled:true};
-          retDataForPedigree[2]  = {...horseData.descendants[8]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[8].factors],disabled:true};
-          retDataForPedigree[3]  = {...horseData.descendants[2]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[2].factors],disabled:true};
-          retDataForPedigree[4]  = {...horseData.descendants[5]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[5].factors],disabled:true};
-          retDataForPedigree[5]  = {...horseData.descendants[9]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[9].factors],disabled:true};
-          retDataForPedigree[6]  = {...horseData.descendants[12]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[12].factors],disabled:true};
-          retDataForPedigree[7]  = {...horseData.descendants[3]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[3].factors],disabled:true};
-          retDataForPedigree[8]  = {...horseData.descendants[4]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[4].factors],disabled:true};
-          retDataForPedigree[9]  = {...horseData.descendants[6]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[6].factors],disabled:true};
-          retDataForPedigree[10] = {...horseData.descendants[7]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[7].factors],disabled:true};
-          retDataForPedigree[11] = {...horseData.descendants[10]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[10].factors],disabled:true};
-          retDataForPedigree[12] = {...horseData.descendants[11]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[11].factors],disabled:true};
-          retDataForPedigree[13] = {...horseData.descendants[13]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[13].factors],disabled:true};
-          retDataForPedigree[14] = {...horseData.descendants[14]  ,subName:`(${horseData.name})`,factors:[...horseData.descendants[14].factors],disabled:true};
-          retDataForPedigree[15] = {};
+          // 空を選択した場合かつ繁殖牝馬を選択した場合
+          if (!((this.selectedSex === "0") || (this.selectedSex === "1" && id === 0))) {
+            // 繫殖牝馬マークをセット
+            retDataForPedigree[15] = 'broodmares';
+          }
         }
-
         return retDataForPedigree;
       },
+
       //偶数であることを確認する
       //0は例外でFalseを返す
       //1は例外でTrueを返す
@@ -1352,11 +1366,11 @@
         switch (cell_id) {
           // （+ 16）は牝馬のほう（面白系統）
           case 1: case 3: case 5: case 7: case 1 + 16: case 3 + 16: case 5 + 16: case 7 + 16:
-            ParentLine = str;
+            ParentLine = str ?? '';
             break;
           // 見事系統
           case 9: case 11: case 13: case 15: 
-            ParentLine = str;
+            ParentLine = str ?? '';
             break;
           default:
             break;
@@ -1403,8 +1417,9 @@
             break;
           }
           
-          if (Object.keys(horseDataList[15]).length === 0) {
-            // 選択したのが繫殖牝馬だった（赤色のところはのぞく場合）はこっちのルートに入る
+          // if (Object.keys(horseDataList[15]).length === 0) {
+          if (horseDataList[15] === 'broodmares') {
+            // 選択したのが繫殖牝馬だった（赤色のところはのぞく場合）はこっちのルートに入る broodmares
             // 繫殖牝馬だった（赤色のところはのぞく場合）は16番目にNULLを設定しているので
             max_cell_id = (max_cell_id + 1) * 2;
           }
@@ -1415,25 +1430,13 @@
             break;
           }
 
-          max_cell_id = max_cell_id * 2
-          if (max_cell_id * 2 > 16) {
-            break;
+          while(true) {
+            max_cell_id = max_cell_id * 2
+            if (max_cell_id * 2 > 16) {
+              break;
+            }
           }
-
-          max_cell_id = max_cell_id * 2
-          if (max_cell_id * 2 > 16) {
-            break;
-          }
-
-          max_cell_id = max_cell_id * 2
-          if (max_cell_id * 2 > 16) {
-            break;
-          }
-
-          max_cell_id = max_cell_id * 2
-          if (max_cell_id * 2 > 16) {
-            break;
-          }
+          break;
         }
         
         //格納するドロップダウンリストの配列作成（初期値は選択したセル）
@@ -1448,7 +1451,8 @@
           
           if(2*cell_id_que[index] < max_cell_id){
             
-            if (i === 1 && (Object.keys(horseDataList[15]).length != 0)) {
+            // if (i === 1 && (Object.keys(horseDataList[15]).length != 0)) {
+            if (i === 1 && (horseDataList[15] != 'broodmares')) {
               // 初回でかつ 繫殖牝馬だった（赤色のところはのぞく場合）はこちらのルートに
               if (cellNo === 0) {
                 // 0のときだけ例外
@@ -1472,56 +1476,108 @@
         // 先祖に向かって血統表をセットする
         for(const cell_id of cell_id_que){
           // 名前をセットする
-          if (!(sex === 1 && cell_id === 0)) {
+          if (!(sex === 1 && cell_id === 0) && horseDataList[cell_id_que.indexOf(cell_id)]) {
+            // 繁殖牝馬直のリスト選択したときはここに入ってこない
             this.stallions = [...Array.from(this.stallions),{...horseDataList[cell_id_que.indexOf(cell_id)]}];
             this.horses = [...Array.from(this.horses),{...horseDataList[cell_id_que.indexOf(cell_id)]}];
           }
+          else if (!(horseDataList[cell_id_que.indexOf(cell_id)])) {
+            // 空の場合はリストから削除する
+            // 自家製種牡馬を削除する
+            // 削除したい名前をセット
+            const deleteName = this.selected[cell_id + (sex * 16)].name;
+            const deleteSubName = this.selected[cell_id + (sex * 16)].subName;
+            const deleteDisabled = this.selected[cell_id + (sex * 16)].disabled;
+
+            // 削除したい名前が配列のどこにあるのか取得
+            const deleteHorsesIndex = this.horses.findIndex(object => object.name === deleteName && object.subName === deleteSubName && object.disabled === deleteDisabled);
+            const deleteStallionsIndex = this.stallions.findIndex(object => object.name === deleteName && object.subName === deleteSubName && object.disabled === deleteDisabled);
+            // 取得した配列の位置のものを削除する
+            this.horses.splice(deleteHorsesIndex, 1);
+            this.stallions.splice(deleteStallionsIndex, 1);
+          }
 
           this.selected[cell_id + (sex * 16)] = horseDataList[cell_id_que.indexOf(cell_id)];
-          // 配列に因子名を詰め込む
-          this.factorName[cell_id + (sex * 16)][0] = horseDataList[cell_id_que.indexOf(cell_id)].factors[0];
-          this.factorName[cell_id + (sex * 16)][1] = horseDataList[cell_id_que.indexOf(cell_id)].factors[1];
-          this.factorName[cell_id + (sex * 16)][2] = horseDataList[cell_id_que.indexOf(cell_id)].factors[2];
 
+          // 配列に因子名を詰め込む
+          // horseDataList[i]がnullの場合、horseDataList[cell_id_que.indexOf(cell_id)]?.factors[0]がundefinedとなるので、''を返却する
+          this.factorName[cell_id + (sex * 16)][0] = horseDataList[cell_id_que.indexOf(cell_id)]?.factors[0] ?? '';
+          this.factorName[cell_id + (sex * 16)][1] = horseDataList[cell_id_que.indexOf(cell_id)]?.factors[1] ?? '';
+          this.factorName[cell_id + (sex * 16)][2] = horseDataList[cell_id_que.indexOf(cell_id)]?.factors[2] ?? '';
 
           // 配列に因子情報を詰め込む
-          this.factorCd[cell_id + (sex * 16)][0] = factorMap.get(horseDataList[cell_id_que.indexOf(cell_id)].factors[0]);
-          this.factorCd[cell_id + (sex * 16)][1] = factorMap.get(horseDataList[cell_id_que.indexOf(cell_id)].factors[1]);
-          this.factorCd[cell_id + (sex * 16)][2] = factorMap.get(horseDataList[cell_id_que.indexOf(cell_id)].factors[2]);
+          // horseDataList[i]がnullの場合、horseDataList[cell_id_que.indexOf(cell_id)]?.factors[0]がundefinedとなるので、'00'を返却する
+          this.factorCd[cell_id + (sex * 16)][0] = factorMap.get(horseDataList[cell_id_que.indexOf(cell_id)]?.factors[0]) ?? '00';
+          this.factorCd[cell_id + (sex * 16)][1] = factorMap.get(horseDataList[cell_id_que.indexOf(cell_id)]?.factors[1]) ?? '00';
+          this.factorCd[cell_id + (sex * 16)][2] = factorMap.get(horseDataList[cell_id_que.indexOf(cell_id)]?.factors[2]) ?? '00';
+
           // 因子css
           this.styleFactorClasses[cell_id + (sex * 16)][0] = this.fillInFactorCells(this.factorCd[cell_id + (sex * 16)][0],cell_id + (sex * 16));
           this.styleFactorClasses[cell_id + (sex * 16)][1] = this.fillInFactorCells(this.factorCd[cell_id + (sex * 16)][1],cell_id + (sex * 16));
           this.styleFactorClasses[cell_id + (sex * 16)][2] = this.fillInFactorCells(this.factorCd[cell_id + (sex * 16)][2],cell_id + (sex * 16));
+
           // 親系統
-          this.parentLines[cell_id + (sex * 16)] = this.judgeSetParentLine(horseDataList[cell_id_que.indexOf(cell_id)].parentLine,cell_id + (sex * 16));
+          this.parentLines[cell_id + (sex * 16)] = this.judgeSetParentLine(horseDataList[cell_id_que.indexOf(cell_id)]?.parentLine,cell_id + (sex * 16));
           this.styleParentLineClasses[cell_id + (sex * 16)] = this.fillInParentLineCells(this.parentLines[cell_id + (sex * 16)],cell_id + (sex * 16));
         }
 
         // 子孫に選択した種牡馬のＮ薄めを血統データに入れる
         let reverseNum = cellNo;
         let reverseCnt = 0;
-        const name = horseDataList[0].name;
-        const subName = horseDataList[0].subName
-        const parentLine = horseDataList[0].parentLine;
+        const name = horseDataList[0]?.name;
+        const subName = horseDataList[0]?.subName
+        const parentLine = horseDataList[0]?.parentLine;
         while(this.isEven(reverseNum)) {
           // 2で割る
-          reverseCnt++;
-          // 自家製種牡馬名
-          const handMadeName = `★${this.replaceHalfToFull(reverseCnt.toString(10))}薄め${name.trim()}${subName.trim()}`;
           reverseNum = Math.floor(reverseNum / 2);
-          if (reverseNum === 0 && sex === 1) {
-            // 自家製牝馬をセット
-            this.broodmares = [...Array.from(this.broodmares),{name:'ワタシノヒンバ',subName:'',disabled:true}];
-            this.selected[reverseNum + (sex * 16)] = {name:'ワタシノヒンバ',subName:'',disabled:true};
+          
+          if (name) {
+            reverseCnt++;
+            // 自家製種牡馬名
+            const handMadeName = `★${this.replaceHalfToFull(reverseCnt.toString(10))}薄め${name.trim()}${subName.trim()}`;
+            if (reverseNum === 0 && sex === 1) {
+              // 自家製牝馬をセット
+              this.broodmares = [...Array.from(this.broodmares),{name:'ワタシノヒンバ',subName:'',disabled:true}];
+              this.selected[reverseNum + (sex * 16)] = {name:'ワタシノヒンバ',subName:'',disabled:true};
+            }
+            else {
+              // 名前をセット
+              this.horses = [...Array.from(this.horses),{name:handMadeName,subName:'',disabled:true}];
+              this.stallions = [...Array.from(this.horses),{name:handMadeName,subName:'',disabled:true}];
+              this.selected[reverseNum + (sex * 16)] = {name:handMadeName,subName:'',disabled:true};
+              // 親系統を設定する
+              this.parentLines[reverseNum + (sex * 16)] = this.judgeSetParentLine(parentLine,reverseNum + (sex * 16));
+              this.styleParentLineClasses[reverseNum + (sex * 16)] = this.fillInParentLineCells(this.parentLines[reverseNum + (sex * 16)],reverseNum + (sex * 16));
+            }
           }
           else {
-            // 名前をセット
-            this.horses = [...Array.from(this.horses),{name:handMadeName,subName:'',disabled:true}];
-            this.stallions = [...Array.from(this.horses),{name:handMadeName,subName:'',disabled:true}];
-            this.selected[reverseNum + (sex * 16)] = {name:handMadeName,subName:'',disabled:true};
-            // 親系統を設定する
-            this.parentLines[reverseNum + (sex * 16)] = this.judgeSetParentLine(parentLine,reverseNum + (sex * 16));
-            this.styleParentLineClasses[reverseNum + (sex * 16)] = this.fillInParentLineCells(this.parentLines[reverseNum + (sex * 16)],reverseNum + (sex * 16));
+            if (reverseNum === 0 && sex === 1) {
+              // 自家製牝馬を削除する
+              // 削除したい名前をセット
+              const deleteName = this.selected[reverseNum + (sex * 16)].name
+              // 名前はNULLをセット
+              this.selected[reverseNum + (sex * 16)] = null;
+              // 削除したい名前が配列のどこにあるのか取得
+              const deleteBroodmaresIndex = this.broodmares.findIndex(object => object.name === deleteName);
+              // 取得した配列の位置のものを削除する
+              this.broodmares.splice(deleteBroodmaresIndex, 1);
+            }
+            else {
+              // 自家製種牡馬を削除する
+              // 削除したい名前をセット
+              const deleteName = this.selected[reverseNum + (sex * 16)].name
+              // 名前はNULLをセット
+              this.selected[reverseNum + (sex * 16)] = null;
+              // 削除したい名前が配列のどこにあるのか取得
+              const deleteHorsesIndex = this.horses.findIndex(object => object.name === deleteName);
+              const deleteStallionsIndex = this.stallions.findIndex(object => object.name === deleteName);
+              // 取得した配列の位置のものを削除する
+              this.horses.splice(deleteHorsesIndex, 1);
+              this.stallions.splice(deleteStallionsIndex, 1);
+              // 親系統を設定する
+              this.parentLines[reverseNum + (sex * 16)] = this.judgeSetParentLine(parentLine,reverseNum + (sex * 16));
+              this.styleParentLineClasses[reverseNum + (sex * 16)] = this.fillInParentLineCells(this.parentLines[reverseNum + (sex * 16)],reverseNum + (sex * 16));
+            }
           }
 
           // 配列に因子名を詰め込む
