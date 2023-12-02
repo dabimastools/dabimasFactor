@@ -17408,7 +17408,7 @@
     .v-input__control {
       display: flex;
       flex-direction: column;
-      height:calc( ( 100vh - 50px - 60px - 30px - 30px ) / 16 );
+      height:calc( ( 100vh - 50px - 60px - 10px - 10px ) / 16 );
       flex-grow: 1;
       flex-wrap: wrap;
       min-width: 0;
