@@ -3327,7 +3327,19 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
   }
-  
+  @media screen and (min-width: 960px) {
+    /* 960px以上に適用されるCSS（PC用） */
+    html {
+      font-size: 25px;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+    }
+  }
+
+
   html.overflow-y-hidden {
     overflow-y: hidden!important
   }
@@ -15825,7 +15837,7 @@
   }
   
   .v-btn--fab.v-size--x-small .v-icon, .v-btn--icon.v-size--x-small .v-icon {
-    height: 18px;
+    height: 0px;
     font-size: 18px;
     width: 18px
   }
@@ -15849,7 +15861,7 @@
   }
   
   .v-btn--icon.v-size--x-small {
-    height: 20px;
+    /* height: 20px; */
     width: 20px
   }
   
@@ -17045,7 +17057,14 @@
   .v-text-field.v-text-field--solo.v-input--dense>.v-input__control {
     min-height: 15px
   }
-  
+  @media screen and (min-width: 960px) {
+    /* 960px以上に適用されるCSS（PC用） */
+    .v-text-field.v-text-field--solo.v-input--dense>.v-input__control {
+      min-height: 50px
+    }
+  }
+
+
   .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)>.v-input__control>.v-input__slot {
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12)
   }
@@ -17261,6 +17280,11 @@
     color: rgba(0, 0, 0, .87)
   }
   
+  /* インブリードチェック */
+  .theme--light.v-input.inbreed input {
+    color: #ff1744
+  }
+
   .theme--light.v-input input::-moz-placeholder, .theme--light.v-input textarea::-moz-placeholder {
     color: rgba(0, 0, 0, .38)
   }
@@ -17359,12 +17383,38 @@
   .v-input__control {
     display: flex;
     flex-direction: column;
-    /* height: 15px; */
     height:calc( ( 100vh - 32px - 20px - 20px ) / 32 );
     flex-grow: 1;
     flex-wrap: wrap;
     min-width: 0;
     width: 100%
+  }
+  @media screen and (min-height: 770px) {
+    /* ヘッダに種牡馬検索とか出てくる端末用 */
+    .v-input__control {
+      display: flex;
+      flex-direction: column;
+      /* height: 20px; */
+      height:calc( ( 100vh - 35px - 20px - 20px - 25px - 25px ) / 32 );
+      flex-grow: 1;
+      flex-wrap: wrap;
+      min-width: 0;
+      width: 100%;
+      font-size: 13px;
+    }  
+  }
+  @media screen and (min-width: 960px) {
+    /* 960px以上に適用されるCSS（PC用） */
+    .v-input__control {
+      display: flex;
+      flex-direction: column;
+      height:calc( ( 100vh - 50px - 60px - 30px - 30px ) / 16 );
+      flex-grow: 1;
+      flex-wrap: wrap;
+      min-width: 0;
+      width: 100%;
+      font-size: 20px;
+    }  
   }
   
   .v-input__icon {
