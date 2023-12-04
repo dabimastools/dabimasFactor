@@ -1083,7 +1083,7 @@
         <template v-slot:item="data">
           <template >
             <v-list-item-content>
-              <v-list-item-title v-html="data.item.name + data.item.subName + getFactor(data.item.factors)"></v-list-item-title>
+              <v-list-item-title v-html="getHorse(data.item)"></v-list-item-title>
             </v-list-item-content>
           </template>
 		    </template>
@@ -1109,6 +1109,11 @@
 
     },
     methods: {
+      getHorse(horse) {
+        if (!horse?.disabled) {
+          return horse.name + horse.subName + this.getFactor(horse.factors);
+        }
+      },
       getFactor(factors) {
         let retFactor = '';
         if (factors[2] != '') {
