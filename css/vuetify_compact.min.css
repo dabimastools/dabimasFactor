@@ -3327,6 +3327,18 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
   }
+  @media screen and (min-height: 770px) {
+    /* ヘッダに種牡馬検索とか出てくる端末用 */
+    html {
+      font-size: 20px;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+    }
+    }
+
   @media screen and (min-width: 960px) {
     /* 960px以上に適用されるCSS（PC用） */
     html {
