@@ -15674,18 +15674,27 @@
     white-space: nowrap
   }
   
-  .v-btn.v-size--x-small {
+  /* change */
+  /* .v-btn.v-size--x-small {
     font-size: .625rem
+  } */
+  .v-btn.v-size--x-small {
+    font-size: .525rem
   }
-  
+
   .v-btn.v-size--small {
     font-size: .75rem
   }
-  
-  .v-btn.v-size--default, .v-btn.v-size--large {
+
+    /* change */
+  /* .v-btn.v-size--default, .v-btn.v-size--large {
     font-size: .875rem
+  } */
+  .v-btn.v-size--default,
+  .v-btn.v-size--large {
+    font-size: .75rem
   }
-  
+
   .v-btn.v-size--x-large {
     font-size: 1rem
   }
@@ -15704,13 +15713,18 @@
     top: 0;
     transition: opacity .2s cubic-bezier(.4, 0, .6, 1)
   }
-  
-  .v-btn:not(.v-btn--round).v-size--x-small {
+
+  /* change */
+  /* .v-btn:not(.v-btn--round).v-size--x-small {
     height: 20px;
     min-width: 36px;
     padding: 0 8.8888888889px
+  } */
+  .v-btn:not(.v-btn--round).v-size--x-small {
+    height: 18px;
+    min-width: 1px;
+    padding: 0 3px
   }
-  
   .v-btn:not(.v-btn--round).v-size--small {
     height: 28px;
     min-width: 50px;
@@ -17057,11 +17071,19 @@
     top: calc(50% - 9px)
   }
   
+  /* change↓ */
   .v-text-field.v-text-field--solo .v-input__control {
-    min-height: 48px;
+    min-height: 15px;
     padding: 0
   }
-  
+  @media screen and (min-width: 960px) {
+    /* 960px以上に適用されるCSS（PC用） */
+    .v-text-field.v-text-field--solo .v-input__control {
+      min-height: 50px;
+      padding: 0
+    }
+  }
+  /* change↑ */
   .v-text-field.v-text-field--solo .v-input__control input {
     caret-color: auto
   }
@@ -17446,11 +17468,13 @@
   .v-input__icon--clear .v-icon--disabled {
     visibility: hidden
   }
+
   
   .v-input__slot {
     align-items: center;
     display: flex;
-    margin-bottom: 8px;
+    /* delete */
+    /* margin-bottom: 8px; */
     min-height: inherit;
     position: relative;
     transition: .3s cubic-bezier(.25, .8, .5, 1);
