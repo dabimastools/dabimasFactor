@@ -433,8 +433,8 @@ div.horse_spec {
   font-size: 20px;
 }
 
-/* @media screen and (400px > width) { */
-@media (max-width: 399px) {
+@media screen and (400px > width) {
+/* @media (max-width: 399px) { */
   .styleParentLineText {
     display: inline-block;    /* 変形するためのブロック化 */
     transform: scale(0.8, 2.0);
@@ -473,8 +473,8 @@ div.horse_spec {
     width: 10px;
   }
 }
-/* @media (400px <= width < 960px) { */
-@media (min-width: 400px) and (max-width: 959px) {
+@media (400px <= width < 960px) {
+/* @media (min-width: 400px) and (max-width: 959px) { */
   /* 770px～959pxに適用されるCSS（スマホ大きい用） */
   .styleParentLineText {
     display: inline-block;    /* 変形するためのブロック化 */
