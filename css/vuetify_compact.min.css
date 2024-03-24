@@ -17483,7 +17483,22 @@
       width: 100%
     }
   }
-  
+
+  @media screen and (min-height: 770px) {
+    /* ヘッダに種牡馬検索とか出てくる端末用 */
+    .v-input__slot {
+      align-items: center;
+      display: flex;
+      /* delete */
+      /* margin-bottom: 8px; */
+      height: calc((100vh - 35px - 20px - 20px - 25px - 25px) / 32);
+      position: relative;
+      transition: .3s cubic-bezier(.25, .8, .5, 1);
+      transition-property: height, min-height;
+      width: 100%
+    }
+  }
+
   .v-input__slot {
     align-items: center;
     display: flex;
