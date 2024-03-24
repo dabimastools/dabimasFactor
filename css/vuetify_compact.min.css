@@ -17447,7 +17447,7 @@
       flex-wrap: wrap;
       min-width: 0;
       width: 100%;
-      font-size: 20px;
+      font-size: 24px;
     }  
   }
   
@@ -17469,6 +17469,20 @@
     visibility: hidden
   }
 
+  @media screen and (min-width: 960px) {
+    /* 960px以上に適用されるCSS（PC用） */
+    .v-input__slot {
+      align-items: center;
+      display: flex;
+      /* delete */
+      /* margin-bottom: 8px; */
+      height: calc((100vh - 50px - 60px - 10px - 10px) / 16);
+      position: relative;
+      transition: .3s cubic-bezier(.25, .8, .5, 1);
+      transition-property: height, min-height;
+      width: 100%
+    }
+  }
   
   .v-input__slot {
     align-items: center;
