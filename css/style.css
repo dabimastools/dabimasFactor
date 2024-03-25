@@ -114,7 +114,7 @@ table.table_footer_main td span{
   border-bottom: 1px solid #DDDDDD;
 }
 
-
+/* 小さいケータイ */
 .father_0 {
   background-color: #3e499c;
   color: #FFFFFF;
@@ -132,7 +132,8 @@ table.table_footer_main td span{
   border-top: 1px solid #FFFFFF;
   border-right: 1px solid #FFFFFF;
   vertical-align: middle;
-  font-size: small;
+  font-size: 10px;
+  width: 12px;
   text-align: center;
   font-weight: bold;
 }
@@ -153,7 +154,8 @@ table.table_footer_main td span{
   border-bottom: none;
   border-top: 1px solid #FFFFFF;
   vertical-align: middle;
-  font-size: small;
+  font-size: 10px;
+  width: 12px;
   text-align: center;
   font-weight: bold;
 }
@@ -174,7 +176,8 @@ table.table_footer_main td span{
   border-top: none;
   border-right: 1px solid #FFFFFF;
   vertical-align: middle;
-  font-size: small;
+  font-size: 10px;
+  width: 12px;
   text-align: center;
   font-weight: bold;
 }
@@ -196,7 +199,8 @@ table.table_footer_main td span{
   border-top: 1px solid #FFFFFF;
   border-right: 1px solid #FFFFFF;
   vertical-align: middle;
-  font-size: small;
+  font-size: 10px;
+  width: 12px;
   text-align: center;
   font-weight: bold;
 }
@@ -218,7 +222,8 @@ table.table_footer_main td span{
   border-top: 1px solid #FFFFFF;
   border-right: 1px solid #FFFFFF;
   vertical-align: middle;
-  font-size: small;
+  font-size: 10px;
+  width: 12px;
   text-align: center;
   font-weight: bold;
 }
@@ -239,10 +244,152 @@ table.table_footer_main td span{
   border-top: none;
   border-right: 1px solid #FFFFFF;
   vertical-align: middle;
-  font-size: small;
+  font-size: 10px;
+  width: 12px;
   text-align: center;
   font-weight: bold;
 }
+
+@media screen and (min-height: 960px) {
+  /* 小さいケータイ以外 */
+  .father_0 {
+    background-color: #3e499c;
+    color: #FFFFFF;
+    text-shadow:
+      1px 1px 0px #000000,
+      -1px 1px 0px #000000,
+      1px -1px 0px #000000,
+      -1px -1px 0px #000000,
+      1px 0px 0px #000000,
+      0px 1px 0px #000000,
+      -1px 0px 0px #000000,
+      0px -1px 0px #000000;
+    /* 文字の影 */
+    border-bottom: 0px solid #3e499c;
+    border-top: 1px solid #FFFFFF;
+    border-right: 1px solid #FFFFFF;
+    vertical-align: middle;
+    font-size: large;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .father {
+    background-color: #3e499c;
+    color: #FFFFFF;
+    text-shadow:
+      1px 1px 0px #000000,
+      -1px 1px 0px #000000,
+      1px -1px 0px #000000,
+      -1px -1px 0px #000000,
+      1px 0px 0px #000000,
+      0px 1px 0px #000000,
+      -1px 0px 0px #000000,
+      0px -1px 0px #000000;
+    /* 文字の影 */
+    border-bottom: none;
+    border-top: 1px solid #FFFFFF;
+    vertical-align: middle;
+    font-size: large;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .father_1 {
+    background-color: #3e499c;
+    color: #FFFFFF;
+    text-shadow:
+      1px 1px 0px #000000,
+      -1px 1px 0px #000000,
+      1px -1px 0px #000000,
+      -1px -1px 0px #000000,
+      1px 0px 0px #000000,
+      0px 1px 0px #000000,
+      -1px 0px 0px #000000,
+      0px -1px 0px #000000;
+    /* 文字の影 */
+    border-top: none;
+    border-right: 1px solid #FFFFFF;
+    vertical-align: middle;
+    font-size: large;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .mother_0 {
+    background-color: #b34e5f;
+    color: #FFFFFF;
+    text-shadow:
+      1px 1px 0px #000000,
+      -1px 1px 0px #000000,
+      1px -1px 0px #000000,
+      -1px -1px 0px #000000,
+      1px 0px 0px #000000,
+      0px 1px 0px #000000,
+      -1px 0px 0px #000000,
+      0px -1px 0px #000000;
+    /* 文字の影 */
+    border-bottom: 0px solid #b34e5f;
+    border-top: 1px solid #FFFFFF;
+    border-right: 1px solid #FFFFFF;
+    vertical-align: middle;
+    font-size: large;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .mother {
+    background-color: #b34e5f;
+    color: #FFFFFF;
+    text-shadow:
+      1px 1px 0px #000000,
+      -1px 1px 0px #000000,
+      1px -1px 0px #000000,
+      -1px -1px 0px #000000,
+      1px 0px 0px #000000,
+      0px 1px 0px #000000,
+      -1px 0px 0px #000000,
+      0px -1px 0px #000000;
+    /* 文字の影 */
+    border-bottom: none;
+    border-top: 1px solid #FFFFFF;
+    border-right: 1px solid #FFFFFF;
+    vertical-align: middle;
+    font-size: large;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .mother_1 {
+    background-color: #b34e5f;
+    color: #FFFFFF;
+    text-shadow:
+      1px 1px 0px #000000,
+      -1px 1px 0px #000000,
+      1px -1px 0px #000000,
+      -1px -1px 0px #000000,
+      1px 0px 0px #000000,
+      0px 1px 0px #000000,
+      -1px 0px 0px #000000,
+      0px -1px 0px #000000;
+    /* 文字の影 */
+    border-top: none;
+    border-right: 1px solid #FFFFFF;
+    vertical-align: middle;
+    font-size: large;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+}
+
+
+
 
 .factor {
   border: none;
