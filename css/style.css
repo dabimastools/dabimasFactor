@@ -269,7 +269,7 @@ table.table_footer_main td span{
     border-top: 1px solid #FFFFFF;
     border-right: 1px solid #FFFFFF;
     vertical-align: middle;
-    font-size: large;
+    font-size: x-large;
     width: 20px;
     text-align: center;
     font-weight: bold;
@@ -291,7 +291,7 @@ table.table_footer_main td span{
     border-bottom: none;
     border-top: 1px solid #FFFFFF;
     vertical-align: middle;
-    font-size: large;
+    font-size: x-large;
     width: 20px;
     text-align: center;
     font-weight: bold;
@@ -313,7 +313,7 @@ table.table_footer_main td span{
     border-top: none;
     border-right: 1px solid #FFFFFF;
     vertical-align: middle;
-    font-size: large;
+    font-size: x-large;
     width: 20px;
     text-align: center;
     font-weight: bold;
@@ -336,7 +336,7 @@ table.table_footer_main td span{
     border-top: 1px solid #FFFFFF;
     border-right: 1px solid #FFFFFF;
     vertical-align: middle;
-    font-size: large;
+    font-size: x-large;
     width: 20px;
     text-align: center;
     font-weight: bold;
@@ -359,7 +359,7 @@ table.table_footer_main td span{
     border-top: 1px solid #FFFFFF;
     border-right: 1px solid #FFFFFF;
     vertical-align: middle;
-    font-size: large;
+    font-size: x-large;
     width: 20px;
     text-align: center;
     font-weight: bold;
@@ -381,15 +381,12 @@ table.table_footer_main td span{
     border-top: none;
     border-right: 1px solid #FFFFFF;
     vertical-align: middle;
-    font-size: large;
+    font-size: x-large;
     width: 20px;
     text-align: center;
     font-weight: bold;
   }
 }
-
-
-
 
 .factor {
   border: none;
