@@ -17469,23 +17469,20 @@
     visibility: hidden
   }
 
-  @media screen and (min-width: 960px) {
-    /* 960px以上に適用されるCSS（PC用） */
-    .v-input__slot {
-      align-items: center;
-      display: flex;
-      /* delete */
-      /* margin-bottom: 8px; */
-      height: calc((100vh - 50px - 60px - 10px - 10px) / 16);
-      position: relative;
-      transition: .3s cubic-bezier(.25, .8, .5, 1);
-      transition-property: height, min-height;
-      width: 100%
-    }
+  .v-input__slot {
+    align-items: center;
+    display: flex;
+    /* delete */
+    /* margin-bottom: 8px; */
+    min-height: inherit;
+    position: relative;
+    transition: .3s cubic-bezier(.25, .8, .5, 1);
+    transition-property: height, min-height;
+    width: 100%
   }
 
   @media screen and (min-height: 770px) {
-    /* ヘッダに種牡馬検索とか出てくる端末用 */
+      /* ヘッダに種牡馬検索とか出てくる端末用 */
     .v-input__slot {
       align-items: center;
       display: flex;
@@ -17499,16 +17496,19 @@
     }
   }
 
-  .v-input__slot {
-    align-items: center;
-    display: flex;
-    /* delete */
-    /* margin-bottom: 8px; */
-    min-height: inherit;
-    position: relative;
-    transition: .3s cubic-bezier(.25, .8, .5, 1);
-    transition-property: height, min-height;
-    width: 100%
+  @media screen and (min-width: 960px) {
+    /* 960px以上に適用されるCSS（PC用） */
+    .v-input__slot {
+      align-items: center;
+      display: flex;
+      /* delete */
+      /* margin-bottom: 8px; */
+      height: calc((100vh - 50px - 60px - 10px - 10px) / 16);
+      position: relative;
+      transition: .3s cubic-bezier(.25, .8, .5, 1);
+      transition-property: height, min-height;
+      width: 100%
+    }
   }
   
   .v-input--dense>.v-input__control>.v-input__slot {
