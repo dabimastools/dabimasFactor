@@ -250,6 +250,7 @@ table.table_footer_main td span{
   font-weight: bold;
 }
 
+
 @media screen and (min-height: 960px) {
   /* 小さいケータイ以外 */
   .father_0 {
@@ -577,49 +578,49 @@ div.horse_spec {
   font-size: 20px;
 }
 
-@media screen and (400px > width) {
-/* @media (max-width: 399px) { */
-  .styleParentLineText {
-    display: inline-block;    /* 変形するためのブロック化 */
-    transform: scale(0.8, 2.0);
-  }
-
-  .styleParentLine {
-    border-left: 0px solid;
-    border-right: 0px solid;
-    border-bottom: 1px solid #DDDDDD;
-    text-align: center;
-    font-weight: bold;
-    font-size: 10px;
-    border-collapse: collapse;
-    width: 16px;
-  }
-
-  .styleFactorClassMain {
-    text-align: center;
-    font-size: 11px;
-    font-weight: bold;
-    border-left: 0px solid;
-    border-right: 0px solid;
-    border-bottom: 1px solid #DDDDDD;
-    border-collapse: collapse;
-    width: 12px;
-  }
-
-  .styleInbreedButton {
-    border-left: 0px solid;
-    border-right: 0px solid;
-    border-bottom: 1px solid #DDDDDD;
-    text-align: center;
-    font-weight: bold;
-    font-size: 10px;
-    border-collapse: collapse;
-    width: 10px;
-  }
+/* ～400pxに適用されるCSS（スマホ小さい用） */
+.styleParentLineText {
+  display: inline-block;    /* 変形するためのブロック化 */
+  transform: scale(0.8, 2.0);
 }
-@media (400px <= width < 960px) {
-/* @media (min-width: 400px) and (max-width: 959px) { */
-  /* 770px～959pxに適用されるCSS（スマホ大きい用） */
+
+.styleParentLine {
+  border-left: 0px solid;
+  border-right: 0px solid;
+  border-bottom: 1px solid #DDDDDD;
+  text-align: center;
+  font-weight: bold;
+  font-size: 10px;
+  border-collapse: collapse;
+  width: 16px;
+}
+
+.styleFactorClassMain {
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  border-left: 0px solid;
+  border-right: 0px solid;
+  border-bottom: 1px solid #DDDDDD;
+  border-collapse: collapse;
+  width: 12px;
+}
+
+.styleInbreedButton {
+  border-left: 0px solid;
+  border-right: 0px solid;
+  border-bottom: 1px solid #DDDDDD;
+  text-align: center;
+  font-weight: bold;
+  font-size: 10px;
+  border-collapse: collapse;
+  width: 10px;
+}
+
+
+/* @media (400px <= width < 960px) { */
+@media screen and (min-width:400px) and (max-width: 960px) {
+  /* 400px～959pxに適用されるCSS（スマホ大きい用） */
   .styleParentLineText {
     display: inline-block;    /* 変形するためのブロック化 */
     transform: scale(1.0, 1.0);
@@ -660,8 +661,8 @@ div.horse_spec {
 }
 
 
-/* @media screen and (min-width: 960px) { */
-@media screen and (960px <= width) {
+/* @media screen and (960px <=width) { */
+@media screen and (min-width: 960px) {
   /* 960px以上に適用されるCSS（PC用） */
   .styleParentLineText {
     display: inline-block;    /* 変形するためのブロック化 */
@@ -770,6 +771,7 @@ div.horse_spec {
 .f00 { 
   font-size: 12px;
 }
+
 @media screen and (min-width: 960px) {
   /* 960px以上に適用されるCSS（PC用） */
   .f00 { 
