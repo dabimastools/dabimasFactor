@@ -43,19 +43,19 @@
           <tbody v-if="$vuetify.breakpoint.mdAndUp">
             <tr>
               <th rowspan="3" class="f00_nitro_space"></th>
-              <th rowspan="3" class="f00_nitro">
+              <th width="1%" rowspan="3" class="f00_nitro">
                 <span>ニトロ</span>
               </th>
-              <th colspan="10" class="f00_nitro_header"></th>
+              <th colspan="12" class="f00_nitro_header"></th>
               <th rowspan="3" class="f00_inbreed_space"></th>
-              <th rowspan="3" class="f00_inbreed" @click="handleClick()">
+              <th width="1%" rowspan="3" class="f00_inbreed" @click="handleClick()">
                 <span>クロス</span>
               </th>
-              <th colspan="10" class="f00_inbreed_header"></th>
+              <th colspan="12" class="f00_inbreed_header"></th>
               <th rowspan="2" class="table_footer_TH_theory">理論</th>
               <th
                 rowspan="3"
-                width="5%"
+                width="3%"
                 @click="initializer()"
                 style="background-color: #aa0000"
               >
@@ -63,6 +63,18 @@
               </th>
             </tr>
             <tr class="f00">
+              <th width="1%" class="f01">短</th>
+              <th class="f02">速</th>
+              <th class="f03">底</th>
+              <th class="f04">長</th>
+              <th class="f05">砂</th>
+              <th class="f06">丈</th>
+              <th class="f07">早</th>
+              <th class="f08">晩</th>
+              <th class="f09">堅</th>
+              <th class="f10">難</th>
+              <th class="f11">走</th>
+              <th class="f12">中</th>
               <th class="f01">短</th>
               <th class="f02">速</th>
               <th class="f03">底</th>
@@ -73,16 +85,8 @@
               <th class="f08">晩</th>
               <th class="f09">堅</th>
               <th class="f10">難</th>
-              <th class="f01">短</th>
-              <th class="f02">速</th>
-              <th class="f03">底</th>
-              <th class="f04">長</th>
-              <th class="f05">砂</th>
-              <th class="f06">丈</th>
-              <th class="f07">早</th>
-              <th class="f08">晩</th>
-              <th class="f09">堅</th>
-              <th class="f10">難</th>
+              <th class="f11">走</th>
+              <th class="f12">中</th>
             </tr>
             <tr>
               <th class="factorNumCell">{{factorNumtoString[0]}}</th>
@@ -95,6 +99,8 @@
               <th class="factorNumCell">{{factorNumtoString[7]}}</th>
               <th class="factorNumCell">{{factorNumtoString[8]}}</th>
               <th class="factorNumCell">{{factorNumtoString[9]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[10]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[11]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[0]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[1]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[2]}}</th>
@@ -105,12 +111,14 @@
               <th class="factorNumCell">{{inbreedFactorNumtoString[7]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[8]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[9]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[10]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[11]}}</th>
               <th :class="styleThoeryClass"></th>
             </tr>
           </tbody>
 
           <tbody v-if="$vuetify.breakpoint.smAndDown">
-            <tr>
+            <!-- <tr>
               <th rowspan="3" class="f00_nitro_space"></th>
               <th rowspan="3" class="f00_nitro">
                 <span>ニトロ</span>
@@ -122,10 +130,6 @@
               </th>
               <th colspan="7" class="f00_inbreed_header"></th>
 
-              <!-- <th v-if="dispCategory%2 === 0" rowspan="2" class="table_footer_TH_theory">
-                理論
-              </th>
-              <th v-else rowspan="2" class="table_footer_TH_theory">子系統</th> -->
               <th rowspan="2" class="table_footer_TH_theory">理論</th>
 
               <th
@@ -168,10 +172,120 @@
               <th class="factorNumCell">{{inbreedFactorNumtoString[7]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[8]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[9]}}</th>
-              <!-- <th v-if="dispCategory%2 === 0" :class="styleThoeryClass"></th>
-              <th v-else>{{categoryNumtoString}}</th> -->
               <th :class="styleThoeryClass"></th>
+            </tr> -->
+            <tr>
+              <td width="1%"></td>
+              <td width="13%"></td>
+              <td class="f01">短</td>
+              <td class="f02">速</td>
+              <td class="f03">底</td>
+              <td class="f04">長</td>
+              <td class="f05">ダ</td>
+              <td class="f06">丈</td>
+              <td class="f07">早</td>
+              <td class="f08">晩</td>
+              <td class="f09">堅</td>
+              <td class="f10">難</td>
+              <td class="f11">走</td>
+              <td class="f12">中</td>
+              <td class="f00_theory">理論</td>
             </tr>
+            <tr>
+              <td colspan="14" class="f00_nitro_header"></td>
+              <td rowspan="2" :class="styleThoeryClass" align="center"></td>
+            </tr>
+		        <tr>
+			        <td class="f00_nitro" colspan="2">ニトロ</td>
+              <td class="factorNumCell">{{factorNumtoString[0]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[1]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[2]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[3]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[4]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[5]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[6]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[7]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[8]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[9]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[10]}}</td>
+              <td class="factorNumCell">{{factorNumtoString[11]}}</td>
+		        </tr>
+            <tr>
+              <td colspan="14" class="f00_inbreed_header"></td>
+              <td rowspan="2" @click="initializer()" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
+            </tr>
+		        <tr>
+      			  <td colspan="2" class="f00_inbreed">クロス</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[0]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[1]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[2]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[3]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[4]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[5]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[6]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[7]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[8]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[9]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[10]}}</td>
+              <td class="factorNumCell">{{inbreedFactorNumtoString[11]}}</td>
+            </tr>            <!-- ここから下がいらない -->
+            <!-- <tr>
+              
+              <th rowspan="3" class="f00_nitro_space"></th>
+              <th rowspan="3" class="f00_nitro">
+                <span>ニトロ</span>
+              </th>
+              <th colspan="7" class="f00_nitro_header"></th>
+              <th rowspan="3" class="f00_inbreed_space"></th>
+              <th rowspan="3" class="f00_inbreed" @click="handleClick()">
+                <span>クロス</span>
+              </th>
+              <th colspan="7" class="f00_inbreed_header"></th>
+
+              <th rowspan="2" class="table_footer_TH_theory">理論</th>
+
+              <th
+                rowspan="3"
+                width="9%"
+                @click="initializer()"
+                style="background-color: #aa0000"
+              >
+                <v-icon size="x-large" color="white">mdi-reload</v-icon>
+              </th>
+            </tr>
+            <tr class="f00">
+              <th class="f01">短</th>
+              <th class="f02">速</th>
+              <th class="f03">底</th>
+              <th class="f04">長</th>
+              <th class="f07">晩</th>
+              <th class="f09">堅</th>
+              <th class="f10">難</th>
+              <th class="f01">短</th>
+              <th class="f02">速</th>
+              <th class="f03">底</th>
+              <th class="f04">長</th>
+              <th class="f07">晩</th>
+              <th class="f09">堅</th>
+              <th class="f10">難</th>
+            </tr>
+            <tr>
+              <th class="factorNumCell">{{factorNumtoString[0]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[1]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[2]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[3]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[7]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[8]}}</th>
+              <th class="factorNumCell">{{factorNumtoString[9]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[0]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[1]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[2]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[3]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[7]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[8]}}</th>
+              <th class="factorNumCell">{{inbreedFactorNumtoString[9]}}</th>
+              <th :class="styleThoeryClass"></th>
+            </tr> -->
           </tbody>
         </table>
       </header>
@@ -2518,10 +2632,12 @@
 
           // styleParentLineClassesを一次元配列で定義
           styleParentLineClasses: Array.from(new Array(32).fill("")),
-          // 合計因子数表示
-          factorNumtoString: Array.from(new Array(10).fill("00")),
-          // インブリードされた因子数表示
-          inbreedFactorNumtoString: Array.from(new Array(10).fill("00")),
+          // 合計因子数表示（走中因子も）
+          //factorNumtoString: Array.from(new Array(10).fill("00")),
+          factorNumtoString: Array.from(new Array(12).fill("00")),
+          // インブリードされた因子数表示（走長因子も）
+          //inbreedFactorNumtoString: Array.from(new Array(10).fill("00")),
+          inbreedFactorNumtoString: Array.from(new Array(12).fill("00")),
           // 子系統数
           categoryNumtoString: "00",
 
@@ -2603,6 +2719,8 @@
             factorMap.set("晩", "08");
             factorMap.set("堅", "09");
             factorMap.set("難", "10");
+            factorMap.set("走", "11");
+            factorMap.set("中", "12");
 
             // 因子部分のCSS設定
             for (var i = 0; i < this.styleFactorClasses.length; i++) {
@@ -2753,9 +2871,13 @@
           );
 
           // 合計因子数表示
-          this.factorNumtoString = Array.from(new Array(10).fill("00"));
+          // this.factorNumtoString = Array.from(new Array(10).fill("00"));
+          this.factorNumtoString = Array.from(new Array(12).fill("00"));
+
           // インブリード因子数表示
-          this.inbreedFactorNumtoString = Array.from(new Array(10).fill("00"));
+          // this.inbreedFactorNumtoString = Array.from(new Array(10).fill("00"));
+          this.inbreedFactorNumtoString = Array.from(new Array(12).fill("00"));
+
           // 子系統数
           this.categoryNumtoString = "00";
 
@@ -2883,10 +3005,7 @@
 
           // 内容をローカルに保存する
           localStorage.setItem("dabimasFactor", JSON.stringify(this.selected));
-          localStorage.setItem(
-            "dabimasFactorCategory",
-            JSON.stringify(this.category)
-          );
+          localStorage.setItem("dabimasFactorCategory",JSON.stringify(this.category));
         },
 
         // リストから削除
@@ -2996,10 +3115,9 @@
             this.reload++;
             // インブリードの色も初期化
             this.dispColor = Array.from(new Array(32).fill(""));
-            // インブリード因子数表示
-            this.inbreedFactorNumtoString = Array.from(
-              new Array(10).fill("00")
-            );
+            // インブリード因子数表示（中長因子も）
+            //this.inbreedFactorNumtoString = Array.from(new Array(10).fill("00"));
+            this.inbreedFactorNumtoString = Array.from(new Array(12).fill("00"));
             // インブリードされているところを格納する変数
             this.inbreedList = Array.from(new Array(32).fill(null));
           }
@@ -3583,7 +3701,7 @@
             }
           }
 
-          let factorNumtoString = Array.from(new Array(10).fill("00"));
+          let factorNumtoString = Array.from(new Array(12).fill("00"));
           //ソートされたものを
           for (var i = 0; i < factorNumtoString.length; i++) {
             var ret = ("00" + (i + 1)).slice(-2);
@@ -4084,7 +4202,8 @@
         setPedigree: function (sex, cellNo, horseDataList) {
           // 詰めるためのキューを取得する
           const cell_id_que = this.getCellIdQue(cellNo, horseDataList);
-
+          // 配列の先頭1件
+          let isFirst = true;
           // 先祖に向かって血統表をセットする
           for (const cell_id of cell_id_que) {
             // 名前をセットする
@@ -4119,9 +4238,12 @@
               this.selected[cell_id + sex * 16] = {
                 ...horseDataList[cell_id_que.indexOf(cell_id)],
                 index: cell_id + sex * 16,
+                selfSelected: isFirst,
               };
               this.category[cell_id + sex * 16] =
                 horseDataList[cell_id_que.indexOf(cell_id)].son;
+              // 配列の先頭フラグを落とす
+              isFirst = false;
             } else {
               this.selected[cell_id + sex * 16] = null;
               this.category[cell_id + sex * 16] = null;
@@ -4247,6 +4369,7 @@
                   fullBrothers: Array.from(new Array(2).fill("")),
                   fullSisters: Array.from(new Array(2).fill("")),
                   uuid: uuid,
+                  selfSelected: false,
                 };
                 // 子系統をセット
                 this.category[reverseNum + sex * 16] = son;
@@ -4288,6 +4411,7 @@
                   disabled: true,
                   index: reverseNum + sex * 16,
                   uuid: uuid,
+                  selfSelected: false,
                 };
                 // 親系統を設定する
                 this.setParentLine(
