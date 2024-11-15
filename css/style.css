@@ -773,22 +773,6 @@ div.horse_spec {
 .f00 { 
   font-size: 12px;
 }
-.f00_theory {
-  text-align: center;
-  width: 60px;
-  color: #000000;
-  /* 文字の影 */
-  background: #bbb;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-}
 
 @media screen and (min-width: 960px) {
   /* 960px以上に適用されるCSS（PC用） */
@@ -825,222 +809,28 @@ div.horse_spec {
    
 }
 
-/*短*/
-.f01 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #fdfd00;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-}
-
-/*速*/
-.f02 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #fdfda2;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-}
-
-/*底*/
-.f03 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #fc6e00;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-}
-
-/*長*/
-.f04 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #03fdfd;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-}
-
-/*砂*/
-.f05 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #fddba5;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-}
-
-/*丈*/
-.f06 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #feabdd;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
-/*早*/
-.f07 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #02fe02;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
-/*晩*/
-.f08 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #a7de0d;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
-/*堅*/
-.f09 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #a1a1a3;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
-/*難*/
-.f10 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #fc00fc;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
-/*走*/
-.f11 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #f1eeea;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
-/*中*/
-.f12 {
-  text-align: center;
-  color: #000000;
-  /* 文字の影 */
-  background: #117e28;
-  text-shadow:
-    1px 1px 0px #ffffff,
-    -1px 1px 0px #ffffff,
-    1px -1px 0px #ffffff,
-    -1px -1px 0px #ffffff,
-    1px 0px 0px #ffffff,
-    0px 1px 0px #ffffff,
-    -1px 0px 0px #ffffff,
-    0px -1px 0px #ffffff;
-  /* 文字の影 */
-}
-
 @media screen and (max-height: 769px) {
   /* ヘッダに種牡馬検索とか出てこない端末用 */
+  .f00_theory {
+    font-size: 12px;
+    text-align: center;
+    width: 60px;
+    color: #000000;
+    /* 文字の影 */
+    background: #bbb;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }  
   /*短*/
   .f01 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1058,7 +848,7 @@ div.horse_spec {
 
   /*速*/
   .f02 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1076,7 +866,7 @@ div.horse_spec {
 
   /*底*/
   .f03 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1094,7 +884,7 @@ div.horse_spec {
 
   /*長*/
   .f04 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1112,7 +902,7 @@ div.horse_spec {
 
   /*砂*/
   .f05 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1130,7 +920,7 @@ div.horse_spec {
 
   /*丈*/
   .f06 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1149,7 +939,7 @@ div.horse_spec {
 
   /*早*/
   .f07 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1168,7 +958,7 @@ div.horse_spec {
 
   /*晩*/
   .f08 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1187,7 +977,7 @@ div.horse_spec {
 
   /*堅*/
   .f09 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1206,7 +996,7 @@ div.horse_spec {
 
   /*難*/
   .f10 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1225,7 +1015,7 @@ div.horse_spec {
 
   /*走*/
   .f11 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1244,7 +1034,7 @@ div.horse_spec {
 
   /*中*/
   .f12 {
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
@@ -1262,6 +1052,493 @@ div.horse_spec {
   }
 }
 
+@media screen and (min-height: 770px) {
+  /* ヘッダに種牡馬検索とか出てくるスマホ用 */
+  .f00_theory {
+    font-size: 13px;
+    text-align: center;
+    width: 60px;
+    color: #000000;
+    /* 文字の影 */
+    background: #bbb;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }  
+
+  /*短*/
+  .f01 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fdfd00;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*速*/
+  .f02 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fdfda2;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*底*/
+  .f03 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fc6e00;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*長*/
+  .f04 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #03fdfd;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*砂*/
+  .f05 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fddba5;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*丈*/
+  .f06 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #feabdd;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*早*/
+  .f07 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #02fe02;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*晩*/
+  .f08 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #a7de0d;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*堅*/
+  .f09 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #a1a1a3;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*難*/
+  .f10 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fc00fc;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*走*/
+  .f11 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #f1eeea;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*中*/
+  .f12 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #117e28;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+}
+
+
+@media screen and (min-width: 960px) {
+  .f00_theory {
+    font-size: 20px;
+    text-align: center;
+    width: 60px;
+    color: #000000;
+    /* 文字の影 */
+    background: #bbb;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }  
+
+  /*短*/
+  .f01 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fdfd00;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*速*/
+  .f02 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fdfda2;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*底*/
+  .f03 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fc6e00;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*長*/
+  .f04 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #03fdfd;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*砂*/
+  .f05 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fddba5;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+  }
+
+  /*丈*/
+  .f06 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #feabdd;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*早*/
+  .f07 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #02fe02;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*晩*/
+  .f08 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #a7de0d;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*堅*/
+  .f09 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #a1a1a3;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*難*/
+  .f10 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #fc00fc;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*走*/
+  .f11 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #f1eeea;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*中*/
+  .f12 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #117e28;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+}
 
 .factorNumCell{
   text-align: center;
@@ -1624,12 +1901,13 @@ div.horse_spec {
 }
 
 /* 理論ヘッダ */
-.table_footer_TH_theory {
-  background: #bbb;
-  font-size: 12px;
-  width: 60px;
+@media screen and (max-height: 769px) {
+  .table_footer_TH_theory {
+    background: #bbb;
+    font-size: 12px;
+    width: 60px;
+  }
 }
-
 /* 面白 */
 .theory_01{
   background-size: cover;
@@ -1672,6 +1950,14 @@ div.horse_spec {
   background-size: cover;
   background-repeat: no-repeat;
   background-image: url("data:image/jpeg;base64,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");
+}
+
+@media screen and (min-height: 770px) {
+  /* 理論ヘッダ */
+  .table_footer_TH_theory {
+    background: #bbb;
+    font-size: 13px;
+  }
 }
 
 @media screen and (min-width: 960px) {
