@@ -57,7 +57,8 @@
                 <span>クロス</span>
               </th>
               <th colspan="12" class="f00_inbreed_header"></th>
-              <th rowspan="2" class="table_footer_TH_theory">理論</th>
+              <th v-if="dispCategory % 2 === 0" rowspan="2" class="table_footer_TH_theory">理論</th>
+              <th v-else rowspan="2" class="table_footer_TH_theory">子系統数</th>
               <th
                 rowspan="3"
                 width="3%"
@@ -118,7 +119,8 @@
               <th class="factorNumCell">{{inbreedFactorNumtoString[9]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[10]}}</th>
               <th class="factorNumCell">{{inbreedFactorNumtoString[11]}}</th>
-              <th :class="styleThoeryClass"></th>
+              <th v-if="dispCategory % 2 === 0" :class="styleThoeryClass"></th>
+              <th v-else >{{categoryNumtoString}}</th>
             </tr>
           </tbody>
 
@@ -138,14 +140,17 @@
               <td class="f10">難</td>
               <td class="f11">走</td>
               <td class="f12">中</td>
-              <td class="f00_theory">理論</td>
+              <th v-if="dispCategory % 2 === 0" class="f00_theory">理論</th>
+              <th v-else class="f00_theory">子系統</th>
             </tr>
             <tr>
               <td colspan="14" class="f00_nitro_header"></td>
-              <td rowspan="2" :class="styleThoeryClass" align="center"></td>
+              <td v-if="dispCategory % 2 === 0" rowspan="2" :class="styleThoeryClass"  align="center"></td>
+              <td v-else rowspan="2" align="center">{{categoryNumtoString}}</td>
+
             </tr>
-		        <tr>
-			        <td class="f00_nitro" colspan="2">ニトロ</td>
+            <tr>
+              <td class="f00_nitro" colspan="2">ニトロ</td>
               <td class="factorNumCell">{{factorNumtoString[0]}}</td>
               <td class="factorNumCell">{{factorNumtoString[1]}}</td>
               <td class="factorNumCell">{{factorNumtoString[2]}}</td>
@@ -158,13 +163,13 @@
               <td class="factorNumCell">{{factorNumtoString[9]}}</td>
               <td class="factorNumCell">{{factorNumtoString[10]}}</td>
               <td class="factorNumCell">{{factorNumtoString[11]}}</td>
-		        </tr>
+            </tr>
             <tr>
               <td colspan="14" class="f00_inbreed_header"></td>
               <td rowspan="2" @click="initializer()" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
             </tr>
-		        <tr>
-      			  <td colspan="2" class="f00_inbreed">クロス</td>
+            <tr>
+              <td colspan="2" class="f00_inbreed">クロス</td>
               <td class="factorNumCell">{{inbreedFactorNumtoString[0]}}</td>
               <td class="factorNumCell">{{inbreedFactorNumtoString[1]}}</td>
               <td class="factorNumCell">{{inbreedFactorNumtoString[2]}}</td>
@@ -2668,7 +2673,6 @@
           theoryMigoto: [9, 11, 13, 15],
           // 全兄弟
           brosData:[],
-
           // インブリードボタン押下フラグを一次元配列で定義（-1：未クリック　1：クリック　0:使用不可）
           isInbreedButtonClicked: Array.from(new Array(32).fill(0)),
           // styleInbreedButtonClasses（インブリードさせるボタン定義）を一次元配列で定義
