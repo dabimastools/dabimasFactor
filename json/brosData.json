@@ -62,6 +62,6 @@
 {"key":"ラブリィカヌレ","bros":{"fullBrothers":["フィナンシェハート",""],"fullSisters":["",""]}},
 {"key":"フィナンシェハート","bros":{"fullBrothers":["ラブリィカヌレ",""],"fullSisters":["",""]}},
 {"key":"ファラモンド","bros":{"fullBrothers":["",""],"fullSisters":["ウマガミノイノリ",""]}},
-{"key":"ウマガミノイノリ","bros":{"fullBrothers":["ファラモンド",""],"fullSisters":["",""]}},
+{"key":"ウマガミノイノリ","bros":{"fullBrothers":["ファラモンド",""],"fullSisters":["",""]}}
 ]
 }
