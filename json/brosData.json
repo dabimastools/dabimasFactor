@@ -61,6 +61,8 @@
 {"key":"チョコドリーム","bros":{"fullBrothers":["ホワイトクリーム",""],"fullSisters":["",""]}},
 {"key":"ラブリィカヌレ","bros":{"fullBrothers":["フィナンシェハート",""],"fullSisters":["",""]}},
 {"key":"フィナンシェハート","bros":{"fullBrothers":["ラブリィカヌレ",""],"fullSisters":["",""]}},
+{"key":"カイフタラ","bros":{"fullBrothers":["オペラハウス",""],"fullSisters":["",""]}},
+{"key":"オペラハウス","bros":{"fullBrothers":["カイフタラ",""],"fullSisters":["",""]}},
 {"key":"ファラモンド","bros":{"fullBrothers":["",""],"fullSisters":["ウマガミノイノリ",""]}},
 {"key":"ウマガミノイノリ","bros":{"fullBrothers":["ファラモンド",""],"fullSisters":["",""]}}
 ]
