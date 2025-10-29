@@ -2413,7 +2413,7 @@
         v-if="dispCategory%2 === 0"
         :value="selected[index]"
         :items="lists"
-        :item-text="horse => horse.name + horse.subName"
+        :item-text="horse => [horse.nature ? '[' + horse.nature.charAt(0) + ']' : '', horse.name, horse.subName].filter(Boolean).join('')"
         solo
         dense
         :placeholder="placeholderText"
@@ -2522,7 +2522,8 @@
         },
         getHorse(horse) {
           if (!horse?.disabled) {
-            return horse.name + horse.subName + this.getFactor(horse.factors);
+            const natureTag = horse.nature ? `[${horse.nature.charAt(0)}]` : '';
+            return natureTag + horse.name + horse.subName + this.getFactor(horse.factors);
           }
         },
         getFactor(factors) {
