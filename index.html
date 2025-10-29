@@ -73,7 +73,7 @@
               <th class="f02">速</th>
               <th class="f03">底</th>
               <th class="f04">長</th>
-              <th class="f05">砂</th>
+              <th class="f05">適</th>
               <th class="f06">丈</th>
               <th class="f07">早</th>
               <th class="f08">晩</th>
@@ -85,7 +85,7 @@
               <th class="f02">速</th>
               <th class="f03">底</th>
               <th class="f04">長</th>
-              <th class="f05">砂</th>
+              <th class="f05">適</th>
               <th class="f06">丈</th>
               <th class="f07">早</th>
               <th class="f08">晩</th>
@@ -132,7 +132,7 @@
               <td class="f02">速</td>
               <td class="f03">底</td>
               <td class="f04">長</td>
-              <td class="f05">ダ</td>
+              <td class="f05">適</td>
               <td class="f06">丈</td>
               <td class="f07">早</td>
               <td class="f08">晩</td>
@@ -2413,7 +2413,7 @@
         v-if="dispCategory%2 === 0"
         :value="selected[index]"
         :items="lists"
-        :item-text="horse => (horse.nature ? '[' + horse.nature[0] + ']' : '') + horse.name + horse.subName"
+        :item-text="horse => horse.name + horse.subName"
         solo
         dense
         :placeholder="placeholderText"
@@ -2522,11 +2522,7 @@
         },
         getHorse(horse) {
           if (!horse?.disabled) {
-            if (horse.nature) {
-              return `[${horse.nature[0]}]${horse.name}${horse.subName}${this.getFactor(horse.factors)}`;
-            } else {
-              return horse.name + horse.subName + this.getFactor(horse.factors);
-            }
+            return horse.name + horse.subName + this.getFactor(horse.factors);
           }
         },
         getFactor(factors) {
@@ -2770,7 +2766,7 @@
             factorMap.set("速", "02");
             factorMap.set("底", "03");
             factorMap.set("長", "04");
-            factorMap.set("ダ", "05");
+            factorMap.set("適", "05");
             factorMap.set("丈", "06");
             factorMap.set("早", "07");
             factorMap.set("晩", "08");
@@ -3350,10 +3346,10 @@
                 // overWriteQueMare = tmpOverWriteQueMare.flat(1);
 
                 // 相手側（種牡馬側）のインブリード配列にセットする（ただし牝馬なので赤くしない）
-                // checkResultInbreed[tmpInbreed.ownIndex] = {
-                //   ...tmpInbreed,
-                //   toRed: false,
-                // };
+                checkResultInbreed[tmpInbreed.ownIndex] = {
+                  ...tmpInbreed,
+                  toRed: false,
+                };
 
                 // 他のところで同じお姉ちゃんを使っている判定をしたいんだけど、いったんコメントアウト
                 // 相手側（種牡馬側）でクロスした先祖が他にもいないのか確認してセットする
@@ -3373,9 +3369,9 @@
               //   // horseArray[overWriteIndex].selectedHorse = horse.name;
               //   broodmaresArray[overWriteIndex].selectedHorse = horse.name;
               // }
-
+  
               // 自分でクロスしたとこのインブリード配列にセットする
-              checkResultInbreed[horse.ownIndex + 16] = {...horse,inbreedPairId:inbreedPairId};
+              checkResultInbreed[horse.ownIndex + 16] = {...horse,inbreedPairIds: [...(checkResultInbreed[horse.ownIndex + 16]?.inbreedPairIds ?? []), inbreedPairId]};
             }
           }
 
@@ -3432,10 +3428,10 @@
                 // overWriteQueMare = tmpOverWriteQueMare.flat(1);
 
                 // 相手側のインブリード配列にセットする（ただし赤くしない）
-                // checkResultInbreed[tmpInbreed.ownIndex + 16] = {
-                //   ...tmpInbreed,
-                //   toRed: false,
-                // };
+                checkResultInbreed[tmpInbreed.ownIndex + 16] = {
+                  ...tmpInbreed,
+                  toRed: false,
+                };
               }
 
               // 判定を行わないための上書きする（種牡馬）
@@ -3456,10 +3452,12 @@
               );
               for (const otherInbreed of otherInbreedArray) {
                 // 自分側でほかのとこのインブリード配列にセットする
-                checkResultInbreed[otherInbreed.ownIndex] = {...tmpInbreed,inbreedPairId:inbreedPairId};
+                // checkResultInbreed[otherInbreed.ownIndex] = {...tmpInbreed,inbreedPairId:inbreedPairId};
+                checkResultInbreed[otherInbreed.ownIndex] = {...tmpInbreed, inbreedPairIds: [...(checkResultInbreed[otherInbreed.ownIndex]?.inbreedPairIds ?? []), inbreedPairId]};
               }
               // 自分でクロスしたとこのインブリード配列にセットする
-              checkResultInbreed[horse.ownIndex] = {...horse,inbreedPairId:inbreedPairId};
+              // checkResultInbreed[horse.ownIndex] = {...horse,inbreedPairId:inbreedPairId};
+              checkResultInbreed[horse.ownIndex] = {...horse,inbreedPairIds: [...(checkResultInbreed[horse.ownIndex]?.inbreedPairIds ?? []), inbreedPairId]};
             }
 
             overWriteQue = [];
@@ -3502,7 +3500,8 @@
                 // 相手側のインブリード配列にセットする
                 // checkResultInbreed[tmpInbreed.ownIndex + 16] = tmpInbreed;
                 if (!checkResultInbreed[tmpInbreed.ownIndex + 16]) {
-                  checkResultInbreed[tmpInbreed.ownIndex + 16] = {...tmpInbreed,inbreedPairId:inbreedPairId};
+                  // checkResultInbreed[tmpInbreed.ownIndex + 16] = {...tmpInbreed,inbreedPairId:inbreedPairId};
+                  checkResultInbreed[tmpInbreed.ownIndex + 16] = {...tmpInbreed, inbreedPairIds: [...(checkResultInbreed[tmpInbreed.ownIndex + 16]?.inbreedPairIds ?? []), inbreedPairId]};
                 };
 
                 // 相手側でクロスした先祖が他にもいないのか確認してセットする
@@ -3513,6 +3512,7 @@
                 );
                 for (const otherInbreed of otherInbreedArray) {
                   if (!checkResultInbreed[tmpInbreed.ownIndex + 16]) {
+                    // checkResultInbreed[otherInbreed.ownIndex + 16] = {...otherInbreed,inbreedPairId:inbreedPairId};
                     checkResultInbreed[otherInbreed.ownIndex + 16] = {...otherInbreed,inbreedPairId:inbreedPairId};
                   };
                 }
