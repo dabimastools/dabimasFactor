@@ -900,13 +900,13 @@ div.horse_spec {
       0px -1px 0px #ffffff;
   }
 
-  /*砂*/
+  /*適応力*/
   .f05 {
     font-size: 10px;
     text-align: center;
     color: #000000;
-    /* 文字の影 */
-    background: #fddba5;
+    /* 文字の影 4682ff */
+    background: #4682ff;
     text-shadow:
       1px 1px 0px #ffffff,
       -1px 1px 0px #ffffff,
@@ -1145,13 +1145,13 @@ div.horse_spec {
       0px -1px 0px #ffffff;
   }
 
-  /*砂*/
+  /*適応力*/
   .f05 {
     font-size: 11px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
-    background: #fddba5;
+    background: #4682ff;
     text-shadow:
       1px 1px 0px #ffffff,
       -1px 1px 0px #ffffff,
@@ -1389,13 +1389,13 @@ div.horse_spec {
       0px -1px 0px #ffffff;
   }
 
-  /*砂*/
+  /*適応力*/
   .f05 {
     font-size: 20px;
     text-align: center;
     color: #000000;
     /* 文字の影 */
-    background: #fddba5;
+    background: #4682ff;
     text-shadow:
       1px 1px 0px #ffffff,
       -1px 1px 0px #ffffff,
