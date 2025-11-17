@@ -3369,6 +3369,8 @@
           if (this.selected.every((e) => e)) {
             // インブリードボタンクリック済フラグを未クリックに設定
             this.isInbreedButtonClicked = Array.from(new Array(32).fill(-1));
+            // インブリードされているところを格納する変数
+            this.inbreedList = Array.from(new Array(32).fill(null));
             // インブリード判定処理のメイン
             retInbreedCount = this.judgeInbreed();
           } else {
@@ -3416,13 +3418,19 @@
           let inbreedArray = [];
           this.sameNameGroups.byIndex.flat().flat().forEach(element => {
             if (element) {
+              this.inbreedList[element.index] = element;
+            }
+          });
+
+          this.inbreedList.map((value, loopIndex) => {
+            if (value) {
               // subNameが(で始まる場合は繫殖牝馬選択時／数字は因名被りなのでそれは削除する
               inbreedArray.push({
-                name: element.name,
-                subName: excludeString.test(element.subName)
+                name: value.name,
+                subName: excludeString.test(value.subName)
                   ? "dummy"
-                  : element.subName,
-                factors: element.factors,
+                  : value.subName,
+                factors: value.factors,
                 selfInbreed: false,
               });
             }
