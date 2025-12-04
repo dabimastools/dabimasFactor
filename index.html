@@ -6,6 +6,9 @@
     <link rel="manifest" href="./manifest.json" />
     <link href="./css/loading.css" type="text/css" rel="stylesheet" />
     <link href="./css/style.css" type="text/css" rel="stylesheet" />
+    <link href="./css/factor-dialog.css" type="text/css" rel="stylesheet" />
+    <link href="./css/combinationDialog.css" type="text/css" rel="stylesheet" />
+
     <!-- <link
       href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css"
       rel="stylesheet"
@@ -62,8 +65,16 @@
               <th
                 rowspan="3"
                 width="3%"
+                :style="combinationCellStyle"
+                @click="handleCombinationCellClick"
+              >
+                <v-icon size="x-large" color="white">mdi-horse-variant</v-icon>
+              </th>
+              <th
+                rowspan="3"
+                width="3%"
                 @click="initializer()"
-                style="background-color: #aa0000"
+                style="background-color: #aa0000; cursor: pointer"
               >
                 <v-icon size="x-large" color="white">mdi-reload</v-icon>
               </th>
@@ -145,7 +156,7 @@
             </tr>
             <tr>
               <td colspan="14" class="f00_nitro_header"></td>
-              <td v-if="dispCategory % 2 === 0" rowspan="2" :class="styleThoeryClass"  align="center"></td>
+              <td v-if="dispCategory % 2 === 0" rowspan="2" :class="styleThoeryClass" align="center"></td>
               <td v-else rowspan="2" align="center">{{categoryNumtoString}}</td>
 
             </tr>
@@ -166,7 +177,14 @@
             </tr>
             <tr>
               <td colspan="14" class="f00_inbreed_header"></td>
-              <td rowspan="2" @click="initializer()" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
+              <td v-if="dispCategory % 2 === 0" rowspan="2" @click="initializer()" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
+              <td
+                v-else
+                rowspan="2"
+                :style="combinationCellStyle"
+                align="center"
+                @click="handleCombinationCellClick"
+              ><v-icon size="large" color="white">mdi-horse-variant</v-icon></td>
             </tr>
             <tr>
               <td colspan="2" class="f00_inbreed">クロス</td>
@@ -187,6 +205,13 @@
         </table>
       </header>
 
+      <!-- 配合保存ダイアログ -->
+      <combination-dialog
+        v-model="combinationDialogVisible"
+        @restore="onCombinationRestore"
+      ></combination-dialog>
+
+
       <main>
         <v-container fluid>
           <v-spacer class="my-1 px-0 mx-0 my-0" />
@@ -195,14 +220,6 @@
             <!-- xsを設定できないので↓のようなカンジで -->
             <v-col sm="12" md="6" lg="6" xl="6" cols="12">
               <v-card elevation="3" align-content="center" class="custom-card">
-                <!-- <v-card-title
-                  v-if="this.windowSize >= 770"
-                  style="font-size: 16px; font-weight: bolder"
-                  class="px-0"
-                  outlined
-                >
-                  種牡馬検索
-                </v-card-title> -->
                 <v-row no-gutters>
                   <v-col cols="3">
                     <v-card-title
@@ -227,1069 +244,37 @@
                   </v-col>
                 </v-row>
                 <table class="table_main">
-                  <tr>
-                    <!-- <div :index="0"> -->
-                    <td colspan="5" class="horse_all AliceBlue" width="15">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[0]"
-                        :index="0"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(0), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[0]}}
-                    </td>
-                    <td :class="styleParentLineClasses[0]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[0]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[0] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(0)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[0] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(0)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[0] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[0][0]">
-                      {{factorName[0][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[0][1]">
-                      {{factorName[0][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[0][2]">
-                      {{factorName[0][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="1"> -->
-                    <td align="center" class="father_0" width="15">父</td>
-                    <td colspan="4" class="omoshiro_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[1]"
-                        :index="1"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(1), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[1]}}
-                    </td>
-                    <td :class="styleParentLineClasses[1]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[1]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[1]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[1] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(1)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[1] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(1)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[1] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[1][0]">
-                      {{factorName[1][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[1][1]">
-                      {{factorName[1][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[1][2]">
-                      {{factorName[1][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="2"> -->
-                    <td
-                      align="center"
-                      class="father_1"
-                      rowspan="7"
-                      width="15"
-                    ></td>
-                    <td class="father_0" width="15">父</td>
-                    <td colspan="3" class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[2]"
-                        :index="2"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(2), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[2]}}
-                    </td>
-                    <td :class="styleParentLineClasses[2]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[2]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[2]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[2] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(2)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[2] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(2)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[2] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[2][0]">
-                      {{factorName[2][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[2][1]">
-                      {{factorName[2][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[2][2]">
-                      {{factorName[2][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="4"> -->
-                    <td
-                      align="center"
-                      class="father_1"
-                      rowspan="3"
-                      width="15"
-                    ></td>
-                    <td class="father_0" width="15">父</td>
-                    <td colspan="2" class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[4]"
-                        :index="4"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(4), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[4]}}
-                    </td>
-                    <td :class="styleParentLineClasses[4]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[4]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[4] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(4)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[4] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(4)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[4] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[4][0]">
-                      {{factorName[4][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[4][1]">
-                      {{factorName[4][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[4][2]">
-                      {{factorName[4][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="8"> -->
-                    <td align="center" class="father_1" width="15"></td>
-                    <td class="father" width="15">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[8]"
-                        :index="8"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(8), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[8]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[8]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[8]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[8] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(8)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[8] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(8)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[8] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[8][0]">
-                      {{factorName[8][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[8][1]">
-                      {{factorName[8][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[8][2]">
-                      {{factorName[8][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="9"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="migoto_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[9]"
-                        :index="9"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(9), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[9]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[9]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[9]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[9]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[9] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(9)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[9] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(9)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[9] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[9][0]">
-                      {{factorName[9][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[9][1]">
-                      {{factorName[9][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[9][2]">
-                      {{factorName[9][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="5"> -->
-                    <td class="mother_0">母</td>
-                    <td class="father_0" rowspan="1">父</td>
-                    <td colspan="2" class="omoshiro_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[5]"
-                        :index="5"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(5), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[5]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[5]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[5]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[5]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[5] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(5)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[5] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(5)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[5] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[5][0]">
-                      {{factorName[5][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[5][1]">
-                      {{factorName[5][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[5][2]">
-                      {{factorName[5][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="10"> -->
-                    <td class="mother_1" rowspan="2"></td>
-                    <td class="father_1"></td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[10]"
-                        :index="10"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(10), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[10]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[10]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[10]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[10] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(10)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[10] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(10)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[10] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[10][0]">
-                      {{factorName[10][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[10][1]">
-                      {{factorName[10][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[10][2]">
-                      {{factorName[10][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="11"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="migoto_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[11]"
-                        :index="11"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(11), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[11]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[11]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[11]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[11]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[11] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(11)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[11] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(11)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[11] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[11][0]">
-                      {{factorName[11][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[11][1]">
-                      {{factorName[11][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[11][2]">
-                      {{factorName[11][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="3"> -->
-                    <td class="mother_0">母</td>
-                    <td class="father_0">父</td>
-                    <td colspan="3" class="omoshiro_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[3]"
-                        :index="3"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(3), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[3]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[3]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[3]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[3]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[3] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(3)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[3] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(3)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[3] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[3][0]">
-                      {{factorName[3][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[3][1]">
-                      {{factorName[3][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[3][2]">
-                      {{factorName[3][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="6"> -->
-                    <td class="mother_1" rowspan="6"></td>
-                    <td class="father_1" rowspan="3"></td>
-                    <td class="father_0">父</td>
-                    <td colspan="2" class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[6]"
-                        :index="6"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(6), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[6]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[6]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[6]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[6] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(6)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[6] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(6)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[6] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[6][0]">
-                      {{factorName[6][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[6][1]">
-                      {{factorName[6][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[6][2]">
-                      {{factorName[6][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="12"> -->
-                    <td class="father_1"></td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[12]"
-                        :index="12"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(12), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[12]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[12]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[12]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[12] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(12)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[12] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(12)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[12] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[12][0]">
-                      {{factorName[12][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[12][1]">
-                      {{factorName[12][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[12][2]">
-                      {{factorName[12][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="13"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="migoto_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[13]"
-                        :index="13"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(13), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[13]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[13]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[13]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[13]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[13] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(13)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[13] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(13)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[13] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[13][0]">
-                      {{factorName[13][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[13][1]">
-                      {{factorName[13][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[13][2]">
-                      {{factorName[13][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="7"> -->
-                    <td class="mother_0">母</td>
-                    <td class="father_0">父</td>
-                    <td colspan="2" class="omoshiro_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[7]"
-                        :index="7"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(7), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[7]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[7]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[7]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[7]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[7] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(7)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[7] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(7)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[7] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[7][0]">
-                      {{factorName[7][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[7][1]">
-                      {{factorName[7][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[7][2]">
-                      {{factorName[7][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="14"> -->
-                    <td class="mother_1" rowspan="2"></td>
-                    <td class="father_1" rowspan="1"></td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[14]"
-                        :index="14"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(14), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[14]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[14]">
-                      <span class="styleParentLineText"></span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[14]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[14] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(14)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[14] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(14)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[14] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[14][0]">
-                      {{factorName[14][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[14][1]">
-                      {{factorName[14][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[14][2]">
-                      {{factorName[14][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="15"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="migoto_0">
-                      <!-- カスタムコンポーネントで定義しています（母もあり） -->
-                      <common-autocomplete
-                        :class="dispColor[15]"
-                        :index="15"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(15), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[15]}}
-                    </td>
-
-                    <td :class="styleParentLineClasses[15]">
-                      <span class="styleParentLineText">
-                        {{parentLines[15]}}
-                      </span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[15]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[15] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(15)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[15] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(15)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[15] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[15][0]">
-                      {{factorName[15][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[15][1]">
-                      {{factorName[15][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[15][2]">
-                      {{factorName[15][2]}}
-                    </td>
-                  </tr>
+                  <tbody>
+                    <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
+                    <tr
+                      is="pedigree-row"
+                      v-for="config in rowConfigs"
+                      :key="config.index"
+                      :config="config"
+                      :disp-color="dispColor"
+                      :selected="selected"
+                      :horse-data-lists="horseDataLists"
+                      :on-change="onChange"
+                      :disp-category="dispCategory"
+                      :category="category"
+                      :inputed="inputed"
+                      :memo-change="memoChange"
+                      :get-css="getCss"
+                      :index-generation-assignments="INDEX_GENERATION_ASSIGNMENTS"
+                      :style-parent-line-classes="styleParentLineClasses"
+                      :parent-lines="parentLines"
+                      :style-inbreed-button-classes="styleInbreedButtonClasses"
+                      :is-inbreed-button-clicked="isInbreedButtonClicked"
+                      :reload="reload"
+                      :handle-inbreed-button-click="handleInbreedButtonClick"
+                      :size="size"
+                      :style-factor-classes="styleFactorClasses"
+                      :factor-name="factorName"
+                      :on-manual-factor-update="applyManualFactors"
+                      :disp-button-name="dispButtonName"
+                      :on-toggle-category="handleClick"
+                    ></tr>
+                  </tbody>
                 </table>
                 <v-spacer class="my-1 px-0 mx-0 my-0" />
               </v-card>
@@ -1297,14 +282,6 @@
             <!-- xsを設定できないので↓のようなカンジで -->
             <v-col sm="12" md="6" lg="6" xl="6" cols="12">
               <v-card elevation="3" align-content="center" class="custom-card">
-                <!-- <v-card-title
-                  v-if="this.windowSize >= 770"
-                  style="font-size: 16px; font-weight: bolder"
-                  class="px-0"
-                  outlined
-                >
-                  繫殖牝馬検索
-                </v-card-title> -->
                 <v-row no-gutters>
                   <v-col cols="4" class="d-flex align-center fill-height">
                     <v-card-title
@@ -1330,1062 +307,37 @@
                 </v-row>
                 <!-- 繫殖牝馬側 -->
                 <table class="table_main">
-                  <tr>
-                    <!-- <div :index="0"> -->
-                    <td colspan="5" class="horse_all SalmonPink" width="15">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[0+16]"
-                        :index="0+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(0 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[0 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[0 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[0 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[0 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[0 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(0 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[0 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(0 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[0 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td colspan="3" :class="styleFactorClasses[0 + 16][0]">
-                      <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" @click="handleClick()">{{dispButtonName}}</v-btn>
-                      <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small @click="handleClick()">{{dispButtonName}}</v-btn>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="1"> -->
-                    <td align="center" class="father_0" width="15">父</td>
-                    <td colspan="4" class="horse_all Broodmare" width="15">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[1+16]"
-                        :index="1+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(1 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[1 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[1 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[1 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[1 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[1 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(1 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[1 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(1 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[1 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[1 + 16][0]">
-                      {{factorName[1 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[1 + 16][1]">
-                      {{factorName[1 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[1 + 16][2]">
-                      {{factorName[1 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="2"> -->
-                    <td
-                      align="center"
-                      class="father_1"
-                      rowspan="7"
-                      width="15"
-                    ></td>
-                    <td class="father_0" width="15">父</td>
-                    <td colspan="3" class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[2+16]"
-                        :index="2+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(2 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[2 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[2 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[2 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[2 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[2 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(2 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[2 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(2 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[2 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[2 + 16][0]">
-                      {{factorName[2 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[2 + 16][1]">
-                      {{factorName[2 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[2 + 16][2]">
-                      {{factorName[2 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="4"> -->
-                    <td
-                      align="center"
-                      class="father_1"
-                      rowspan="3"
-                      width="15"
-                    ></td>
-                    <td class="father_0" width="15">父</td>
-                    <td colspan="2" class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[4+16]"
-                        :index="4+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(4 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[4 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[4 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[4 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[4 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[4 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(4 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[4 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(4 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[4 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[4 + 16][0]">
-                      {{factorName[4 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[4 + 16][1]">
-                      {{factorName[4 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[4 + 16][2]">
-                      {{factorName[4 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="8"> -->
-                    <td align="center" class="father_1" width="15"></td>
-                    <td class="father" width="15">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[8+16]"
-                        :index="8+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(8 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[8 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[8 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[8 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[8 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[8 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(8 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[8 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(8 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[8 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[8 + 16][0]">
-                      {{factorName[8 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[8 + 16][1]">
-                      {{factorName[8 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[8 + 16][2]">
-                      {{factorName[8 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="9"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[9+16]"
-                        :index="9+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(9 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[9 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[9 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[9 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[9 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[9 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(9 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[9 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(9 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[9 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[9 + 16][0]">
-                      {{factorName[9 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[9 + 16][1]">
-                      {{factorName[9 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[9 + 16][2]">
-                      {{factorName[9 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="5"> -->
-                    <td class="mother_0">母</td>
-                    <td class="father_0" rowspan="1">父</td>
-                    <td colspan="2" class="horse_all Broodmare">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[5+16]"
-                        :index="5+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(5 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[5 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[5 + 16]">
-                      <span class="styleParentLineText">{{parentLines[5 + 16]}}</span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[5 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[5 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(5 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[5 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(5 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[5 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[5 + 16][0]">
-                      {{factorName[5 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[5 + 16][1]">
-                      {{factorName[5 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[5 + 16][2]">
-                      {{factorName[5 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="10"> -->
-                    <td class="mother_1" rowspan="2"></td>
-                    <td class="father_1"></td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[10+16]"
-                        :index="10+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(10 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[10 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[10 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[10 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[10 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[10 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(10 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[10 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(10 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[10 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[10 + 16][0]">
-                      {{factorName[10 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[10 + 16][1]">
-                      {{factorName[10 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[10 + 16][2]">
-                      {{factorName[10 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="11"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[11+16]"
-                        :index="11+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(11 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[11 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[11 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[11 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[11 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[11 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(11 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[11 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(11 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[11 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[11 + 16][0]">
-                      {{factorName[11 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[11 + 16][1]">
-                      {{factorName[11 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[11 + 16][2]">
-                      {{factorName[11 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="3"> -->
-                    <td class="mother_0">母</td>
-                    <td class="father_0">父</td>
-                    <td colspan="3" class="horse_all Broodmare">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[3+16]"
-                        :index="3+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(3 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[3 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[3 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[3 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[3 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[3 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(3 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[3 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(3 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[3 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[3 + 16][0]">
-                      {{factorName[3 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[3 + 16][1]">
-                      {{factorName[3 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[3 + 16][2]">
-                      {{factorName[3 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="6"> -->
-                    <td class="mother_1" rowspan="6"></td>
-                    <td class="father_1" rowspan="3"></td>
-                    <td class="father_0">父</td>
-                    <td colspan="2" class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[6+16]"
-                        :index="6+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(6 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[6 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[6 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[6 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[6 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[6 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(6 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[6 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(6 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[6 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[6 + 16][0]">
-                      {{factorName[6 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[6 + 16][1]">
-                      {{factorName[6 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[6 + 16][2]">
-                      {{factorName[6 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="12"> -->
-                    <td class="father_1"></td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[12+16]"
-                        :index="12+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(12 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[12 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[12 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[12 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[12 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[12 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(12 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[12 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(12 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[12 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[12 + 16][0]">
-                      {{factorName[12 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[12 + 16][1]">
-                      {{factorName[12 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[12 + 16][2]">
-                      {{factorName[12 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="13"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[13+16]"
-                        :index="13+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(13 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[13 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[13 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[13 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[13 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[13 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(13 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[13 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(13 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[13 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[13 + 16][0]">
-                      {{factorName[13 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[13 + 16][1]">
-                      {{factorName[13 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[13 + 16][2]">
-                      {{factorName[13 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="7"> -->
-                    <td class="mother_0">母</td>
-                    <td class="father_0">父</td>
-                    <td colspan="2" class="horse_all Broodmare">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[7+16]"
-                        :index="7+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(7 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[7 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[7 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[7 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[7 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[7 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(7 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[7 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(7 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[7 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[7 + 16][0]">
-                      {{factorName[7 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[7 + 16][1]">
-                      {{factorName[7 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[7 + 16][2]">
-                      {{factorName[7 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="14"> -->
-                    <td class="mother_1" rowspan="2"></td>
-                    <td class="father_1" rowspan="1"></td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[14+16]"
-                        :index="14+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(14 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[14 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[14 + 16]">
-                      <span class="styleParentLineText"
-                        >{{parentLines[14 + 16]}}</span
-                      >
-                    </td>
-                    <td :class="styleInbreedButtonClasses[14 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[14 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(14 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[14 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(14 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[14 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[14 + 16][0]">
-                      {{factorName[14 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[14 + 16][1]">
-                      {{factorName[14 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[14 + 16][2]">
-                      {{factorName[14 + 16][2]}}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <!-- <div :index="15"> -->
-                    <td class="mother">母</td>
-                    <td class="father">父</td>
-                    <td class="horse_0">
-                      <!-- カスタムコンポーネントで定義しています -->
-                      <common-autocomplete
-                        :class="dispColor[15+16]"
-                        :index="15+16"
-                        :selected="selected"
-                        :horses="horseDataLists"
-                        :on-change="onChange"
-                        :disp-category="dispCategory"
-                        :category="category"
-                        :inputed="inputed"
-                        :memo-change="memoChange"
-                      ></common-autocomplete>
-                    </td>
-                    <!-- 代め -->
-                    <td :class="[getCss(15 + 16), 'styleFactorClassMain']">
-                      {{INDEX_GENERATION_ASSIGNMENTS[15 + 16]}}
-                    </td>
-                    <td :class="styleParentLineClasses[15 + 16]">
-                      <span class="styleParentLineText">{{parentLines[15 + 16]}}</span>
-                    </td>
-                    <td :class="styleInbreedButtonClasses[15 + 16]">
-                      <v-btn
-                        v-if="this.isInbreedButtonClicked[15 + 16] === -1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(15 + 16)"
-                        icon
-                        v-bind="size"
-                        ><v-icon>mdi-heart-outline</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[15 + 16] === 1"
-                        :key="reload"
-                        @click="handleInbreedButtonClick(15 + 16)"
-                        icon
-                        color="pink"
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                      <v-btn
-                        v-else-if="this.isInbreedButtonClicked[15 + 16] === 0"
-                        :key="reload"
-                        icon
-                        color="pink"
-                        disabled
-                        v-bind="size"
-                        ><v-icon>mdi-heart</v-icon></v-btn
-                      >
-                    </td>
-                    <td :class="styleFactorClasses[15 + 16][0]">
-                      {{factorName[15 + 16][0]}}
-                    </td>
-                    <td :class="styleFactorClasses[15 + 16][1]">
-                      {{factorName[15 + 16][1]}}
-                    </td>
-                    <td :class="styleFactorClasses[15 + 16][2]">
-                      {{factorName[15 + 16][2]}}
-                    </td>
-                  </tr>
+                  <tbody>
+                    <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
+                    <tr
+                      is="pedigree-row"
+                      v-for="config in rowConfigsBloodmare"
+                      :key="config.index"
+                      :config="config"
+                      :disp-color="dispColor"
+                      :selected="selected"
+                      :horse-data-lists="horseDataLists"
+                      :on-change="onChange"
+                      :disp-category="dispCategory"
+                      :category="category"
+                      :inputed="inputed"
+                      :memo-change="memoChange"
+                      :get-css="getCss"
+                      :index-generation-assignments="INDEX_GENERATION_ASSIGNMENTS"
+                      :style-parent-line-classes="styleParentLineClasses"
+                      :parent-lines="parentLines"
+                      :style-inbreed-button-classes="styleInbreedButtonClasses"
+                      :is-inbreed-button-clicked="isInbreedButtonClicked"
+                      :reload="reload"
+                      :handle-inbreed-button-click="handleInbreedButtonClick"
+                      :size="size"
+                      :style-factor-classes="styleFactorClasses"
+                      :factor-name="factorName"
+                      :on-manual-factor-update="applyManualFactors"
+                      :disp-button-name="dispButtonName"
+                      :on-toggle-category="handleClick"
+                    ></tr>
+                  </tbody>
                 </table>
                 <!-- <v-spacer class="my-1 px-0 mx-0 my-0" /> -->
               </v-card>
@@ -2397,7 +349,125 @@
   </body>
 
   <script src="./vue/vue.min.js"></script>
+  <script src="./vue/CombinationDialog.js"></script>
   <script src="./vue/vuetify.js"></script>
+  <script src="./vue/factor-dialog.js"></script>
+
+  <!-- index.html 内、</table> の前あたり etc. -->
+  <script type="text/x-template" id="pedigree-row-template">
+    <tr>
+      <template v-for="cell in config.headCells" :key="cell.key">
+        <td
+          :class="cell.class"
+          :rowspan="cell.rowspan"
+          :colspan="cell.colspan"
+          :width="cell.width"
+          :align="cell.align"
+        >{{ cell.text }}</td>
+      </template>
+
+      <td :class="config.autoClass" :colspan="config.autoColspan">
+        <common-autocomplete
+          :class="rowDispColor"
+          :index="config.index"
+          :selected="selected"
+          :horses="horseDataLists"
+          :on-change="onChange"
+          :disp-category="dispCategory"
+          :category="category"
+          :inputed="inputed"
+          :memo-change="memoChange"
+        />
+      </td>
+
+      <td :class="[getCss(config.index), 'styleFactorClassMain']">
+        {{ generationLabel }}
+      </td>
+
+      <td :class="parentLineClass">
+        <span class="styleParentLineText">
+          {{ config.showParentLine ? parentLineText : '' }}
+        </span>
+      </td>
+
+      <td :class="inbreedButtonClass">
+        <v-btn
+          v-if="btnState === -1"
+          :key="reload"
+          @click="handleInbreedButtonClick(config.index)"
+          icon
+          v-bind="size"
+        ><v-icon>mdi-heart-outline</v-icon></v-btn>
+        <v-btn
+          v-else-if="btnState === 1"
+          :key="reload"
+          @click="handleInbreedButtonClick(config.index)"
+          icon
+          color="pink"
+          v-bind="size"
+        ><v-icon>mdi-heart</v-icon></v-btn>
+        <v-btn
+          v-else
+          :key="reload"
+          icon
+          color="pink"
+          disabled
+          v-bind="size"
+        ><v-icon>mdi-heart</v-icon></v-btn>
+      </td>
+
+      <template v-if="rowIndex === 16">
+        <td
+          colspan="3"
+          :class="(styleFactorClasses[rowIndex] && styleFactorClasses[rowIndex][0]) || factorClasses[0]"
+        >
+          <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+        </td>
+      </template>
+      <template v-else>
+        <td
+          :class="factorClasses[0]"
+          :colspan="shouldCollapseFactors ? 3 : null"
+        >
+          <template v-if="shouldCollapseFactors">
+            <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" block @click.stop.prevent="openFactorDialog">因子</v-btn>
+            <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small block @click.stop.prevent="openFactorDialog">因子</v-btn>
+          </template>
+          <template v-else>
+            <v-btn v-if="shouldShowFirstFactorButton" class="manual-factor-trigger" @click.stop.prevent="openFactorDialog">因</v-btn>
+            <template v-else>
+              {{ factorTexts[0] }}
+            </template>
+          </template>
+
+          <factor-dialog
+            v-if="isStarSelection"
+            :visible.sync="factorDialogVisible"
+            :selected-horse-name="selectedHorseName"
+            :current-factors="extractCurrentManualFactors()"
+            @confirm="handleFactorConfirm"
+          ></factor-dialog>
+        </td>
+        <template v-if="!shouldCollapseFactors">
+          <td 
+            :class="factorClasses[1]"
+            :style="isStarSelection ? 'cursor: pointer' : ''"
+            @click.stop.prevent="isStarSelection ? openFactorDialog() : null"
+          >
+            {{ factorTexts[1] }}
+          </td>
+          <td 
+            :class="factorClasses[2]"
+            :style="isStarSelection ? 'cursor: pointer' : ''"
+            @click.stop.prevent="isStarSelection ? openFactorDialog() : null"
+          >
+            {{ factorTexts[2] }}
+          </td>
+        </template>
+      </template>
+    </tr>
+  </script>
 
   <script>
     //loadingAnimation
@@ -2438,6 +508,7 @@
       '①',' ②',' ③',' ③',' ④',' ④',' ④',' ④',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',
       '①',' ②',' ③',' ③',' ④',' ④',' ④',' ④',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',
     ];
+    Object.freeze(INDEX_GENERATION_ASSIGNMENTS);
 
     // 始祖
     const founder = [
@@ -2496,56 +567,167 @@
       {key:"ワイルドリスク" ,value:"ワイルドリスク系"},
     ]
     const factorMap = new Map();
+    const manualFactorOptions = ["短", "速", "底", "長", "堅", "難"];
+    const MANUAL_INBREED_STORAGE_KEY = "dabimasManualInbreed";
 
-    Vue.component("common-table-component", {
-      template: `
-        <td :class="styleFactorClass1"><span v-text="factorName1"></span></td>
-        <td :class="styleFactorClass2"><span v-text="factorName2"></span></td>
-        <td :class="styleFactorClass3"><span v-text="factorName3"></span></td>
-    `,
+    Vue.component('pedigree-row', {
+      template: '#pedigree-row-template',
+      props: {
+        config: { type: Object, required: true },
+        dispColor: Array,
+        selected: Object,
+        horseDataLists: Array,
+        onChange: Function,
+        dispCategory: Array,
+        category: Array,
+        inputed: Array,
+        memoChange: Function,
+        getCss: Function,
+        indexGenerationAssignments: Array,
+        styleParentLineClasses: Array,
+        parentLines: Array,
+        styleInbreedButtonClasses: Array,
+        isInbreedButtonClicked: Array,
+        reload: Number,
+        handleInbreedButtonClick: Function,
+        size: Object,
+        styleFactorClasses: Array,
+        factorName: Array,
+        onManualFactorUpdate: Function,
+        dispButtonName: String,
+        onToggleCategory: Function,
+      },
+      data() {
+        return {
+          factorDialogVisible: false,
+        };
+      },
       computed: {
-        styleFactorClass1(newValue) {
-          return "factor_omoshiro styleFactorClassMain";
+        rowIndex() {
+          const value =
+            this.config && typeof this.config.index !== "undefined"
+              ? this.config.index
+              : 0;
+          const index = Number(value);
+          return Number.isFinite(index) ? index : 0;
         },
-        styleFactorClass2(newValue) {
-          return "factor_omoshiro styleFactorClassMain";
+        btnState() {
+          const states = this.isInbreedButtonClicked || [];
+          const value = states[this.rowIndex];
+          return typeof value === "number" ? value : 0;
         },
-        styleFactorClass3(newValue) {
-          if (newValue.index === 1) {
-            return "factor_omoshiro styleFactorClassMain";
+        rowDispColor() {
+          const colors = this.dispColor || [];
+          return colors[this.rowIndex] || "";
+        },
+        parentLineClass() {
+          const classes = this.styleParentLineClasses || [];
+          return classes[this.rowIndex] || "";
+        },
+        parentLineText() {
+          const lines = this.parentLines || [];
+          return lines[this.rowIndex] || "";
+        },
+        inbreedButtonClass() {
+          const classes = this.styleInbreedButtonClasses || [];
+          const current = classes[this.rowIndex];
+          if (current && current.trim() !== "") {
+            return current;
+          }
+          return this.defaultInbreedButtonClass;
+        },
+        factorClasses() {
+          const classes =
+            (this.styleFactorClasses && this.styleFactorClasses[this.rowIndex]) ||
+            [];
+          const fallbackClass = this.defaultFactorClass;
+          return [
+            classes[0] && classes[0] !== "00" ? classes[0] : fallbackClass,
+            classes[1] && classes[1] !== "00" ? classes[1] : fallbackClass,
+            classes[2] && classes[2] !== "00" ? classes[2] : fallbackClass,
+          ];
+        },
+        factorTexts() {
+          const names =
+            (this.factorName && this.factorName[this.rowIndex]) || [];
+          return [
+            names[0] || "",
+            names[1] || "",
+            names[2] || "",
+          ];
+        },
+        selectedHorseName() {
+          const selectedList = Array.isArray(this.selected)
+            ? this.selected
+            : [];
+          const item = selectedList[this.rowIndex];
+          const name = typeof item?.name === "string" ? item.name : "";
+          return name.trim();
+        },
+        isStarSelection() {
+          const name = this.selectedHorseName;
+          return !!name && name.startsWith("★");
+        },
+        hasConfiguredFactorClasses() {
+          if (
+            !Array.isArray(this.styleFactorClasses) ||
+            !Array.isArray(this.styleFactorClasses[this.rowIndex])
+          ) {
+            return false;
+          }
+          return this.styleFactorClasses[this.rowIndex].some((value) =>
+            /^f\d{2}/.test((value || "").trim())
+          );
+        },
+        shouldCollapseFactors() {
+          return this.isStarSelection && !this.hasConfiguredFactorClasses;
+        },
+        shouldShowFirstFactorButton() {
+          return this.isStarSelection && this.hasConfiguredFactorClasses;
+        },
+        defaultFactorClass() {
+          if (typeof this.getCss !== "function") {
+            return "styleFactorClassMain";
+          }
+          const baseClass = this.getCss(this.rowIndex) || "";
+          return `${baseClass} styleFactorClassMain`.trim();
+        },
+        defaultInbreedButtonClass() {
+          if (typeof this.getCss !== "function") {
+            return "styleInbreedButton";
+          }
+          const baseClass = this.getCss(this.rowIndex) || "";
+          return `${baseClass} styleInbreedButton`.trim();
+        },
+        generationLabel() {
+          const assignments = this.indexGenerationAssignments || [];
+          return assignments[this.rowIndex] || "";
+        },
+      },
+      methods: {
+        openFactorDialog() {
+          if (!this.isStarSelection) {
+            return;
+          }
+          this.factorDialogVisible = true;
+        },
+        handleFactorConfirm(selectedFactors) {
+          if (typeof this.onManualFactorUpdate === "function") {
+            this.onManualFactorUpdate(
+              this.rowIndex,
+              selectedFactors
+            );
           }
         },
-        styleParentLineClass(newValue) {
-          return "factor_omoshiro styleParentLine";
+        handleToggleCategory() {
+          if (typeof this.onToggleCategory === "function") {
+            this.onToggleCategory();
+          }
         },
-      },
-      watch: {
-        abc: {
-          handler: (v) =>
-            (styleFactorClassA = "factor_omoshiro styleFactorClassMain"),
-          immediate: true,
-        },
-      },
-      props: {
-        index: {
-          type: Number,
-          required: true,
-        },
-        styleParentLineClasses: {
-          type: Array,
-          required: true,
-        },
-        factorName: {
-          type: Array,
-          required: true,
-        },
-        abc: {
-          type: Array,
-          required: true,
-        },
-        parentLines: {
-          type: Array,
-          required: true,
+        extractCurrentManualFactors() {
+          return [this.factorTexts[1], this.factorTexts[2]]
+            .map((value) => (typeof value === "string" ? value.trim() : ""))
+            .filter((value) => value && ['短', '速', '底', '長', '堅', '難'].includes(value));
         },
       },
     });
@@ -2745,47 +927,9 @@
       },
     });
 
-    Vue.component("common-inbreed-component", {
-      template: `
-      <td :class="styleInbreedButtonClasses[index]">
-        <v-btn :key="'btn-' + index" @click="handleInbreedButtonClick(index)" icon :class="{'pink': isInbreedButtonClicked[index] === 1}" :disabled="isInbreedButtonClicked[index] === 0" v-bind="size"><v-icon :class="{'mdi-heart': isInbreedButtonClicked[index] !== -1, 'mdi-heart-outline': isInbreedButtonClicked[index] === -1}"></v-icon></v-btn>
-      </td>
-    `,
-      data: function () {
-        return {
-          size: {},
-        };
-      },
-      props: {
-        index: {
-          type: Number,
-          required: true,
-        },
-        styleInbreedButtonClasses: {
-          type: Array,
-          required: true,
-        },
-        isInbreedButtonClicked: {
-          type: Array,
-          required: true,
-        },
-        handleInbreedButtonClick: {
-          type: Function,
-          required: true,
-        },
-      },
-      created() {
-        const btnSize = {
-          xs: "x-small",
-          md: "small",
-          sm: "small",
-          lg: "small",
-          xl: "small",
-        };
-        const size = btnSize[this.$vuetify.breakpoint.name];
-        this.size = { [size]: true };
-      },
-    });
+    // パフォーマンス最適化設定
+    Vue.config.performance = true;
+    Vue.config.productionTip = false;
 
     new Vue({
       el: "#app",
@@ -2793,6 +937,163 @@
 
       data() {
         return {
+          rowConfigs: [
+            { index: 0, autoClass: 'horse_all AliceBlue', autoColspan: 5, headCells: [], showParentLine: false },
+            { index: 1, autoClass: 'omoshiro_0', autoColspan: 4, showParentLine: true,
+              headCells: [{ key: 'r1c1', text: '父', class: 'father_0', align: 'center', width: 15 }] },
+            { index: 2, autoClass: 'horse_0', autoColspan: 3, showParentLine: true,
+              headCells: [
+                { key: 'r2c1', text: '', class: 'father_1', rowspan: 7, width: 15, align: 'center' },
+                { key: 'r2c2', text: '父', class: 'father_0', width: 15 },
+              ] },
+            { index: 4, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
+              headCells: [
+                { key: 'r4c1', text: '', class: 'father_1', rowspan: 3, width: 15, align: 'center' },
+                { key: 'r4c2', text: '父', class: 'father_0', width: 15 },
+              ] },
+            { index: 8, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r8c1', text: '', class: 'father_1', width: 15, align: 'center' },
+                { key: 'r8c2', text: '父', class: 'father', width: 15 },
+              ] },
+            { index: 9, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r9c1', text: '母', class: 'mother' },
+                { key: 'r9c2', text: '父', class: 'father' },
+              ] },
+            { index: 5, autoClass: 'omoshiro_0', autoColspan: 2, showParentLine: true,
+              headCells: [
+                { key: 'r5c1', text: '母', class: 'mother_0' },
+                { key: 'r5c2', text: '父', class: 'father_0' },
+              ] },
+            { index: 10, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r10c1', text: '', class: 'mother_1', rowspan: 2 },
+                { key: 'r10c2', text: '', class: 'father_1' },
+                { key: 'r10c3', text: '父', class: 'father' },
+              ] },
+            { index: 11, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r11c1', text: '母', class: 'mother' },
+                { key: 'r11c2', text: '父', class: 'father' },
+              ] },
+            { index: 3, autoClass: 'omoshiro_0', autoColspan: 3, showParentLine: true,
+              headCells: [
+                { key: 'r3c1', text: '母', class: 'mother_0' },
+                { key: 'r3c2', text: '父', class: 'father_0' },
+              ] },
+            { index: 6, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
+              headCells: [
+                { key: 'r6c1', text: '', class: 'mother_1', rowspan: 6 },
+                { key: 'r6c2', text: '', class: 'father_1', rowspan: 3 },
+                { key: 'r6c3', text: '父', class: 'father_0' },
+              ] },
+            { index: 12, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r12c1', text: '', class: 'father_1' },
+                { key: 'r12c2', text: '父', class: 'father' },
+              ] },
+            { index: 13, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r13c1', text: '母', class: 'mother' },
+                { key: 'r13c2', text: '父', class: 'father' },
+              ] },
+            { index: 7, autoClass: 'omoshiro_0', autoColspan: 2, showParentLine: true,
+              headCells: [
+                { key: 'r7c1', text: '母', class: 'mother_0' },
+                { key: 'r7c2', text: '父', class: 'father_0' },
+              ] },
+            { index: 14, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r14c1', text: '', class: 'mother_1', rowspan: 2 },
+                { key: 'r14c2', text: '', class: 'father_1' },
+                { key: 'r14c3', text: '父', class: 'father' },
+              ] },
+            { index: 15, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r15c1', text: '母', class: 'mother' },
+                { key: 'r15c2', text: '父', class: 'father' },
+              ] },
+          ],
+          rowConfigsBloodmare: [
+            { index: 0+16, autoClass: 'horse_all SalmonPink', autoColspan: 5, headCells: [], showParentLine: false },
+            { index: 1+16, autoClass: 'horse_all Broodmare', autoColspan: 4, showParentLine: true,
+              headCells: [{ key: 'r1c1', text: '父', class: 'father_0', align: 'center', width: 15 }] },
+            { index: 2+16, autoClass: 'horse_0', autoColspan: 3, showParentLine: true,
+              headCells: [
+                { key: 'r2c1', text: '', class: 'father_1', rowspan: 7, width: 15, align: 'center' },
+                { key: 'r2c2', text: '父', class: 'father_0', width: 15 },
+              ] },
+            { index: 4+16, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
+              headCells: [
+                { key: 'r4c1', text: '', class: 'father_1', rowspan: 3, width: 15, align: 'center' },
+                { key: 'r4c2', text: '父', class: 'father_0', width: 15 },
+              ] },
+            { index: 8+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r8c1', text: '', class: 'father_1', width: 15, align: 'center' },
+                { key: 'r8c2', text: '父', class: 'father', width: 15 },
+              ] },
+            { index: 9+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r9c1', text: '母', class: 'mother' },
+                { key: 'r9c2', text: '父', class: 'father' },
+              ] },
+            { index: 5+16, autoClass: 'horse_all Broodmare', autoColspan: 2, showParentLine: true,
+              headCells: [
+                { key: 'r5c1', text: '母', class: 'mother_0' },
+                { key: 'r5c2', text: '父', class: 'father_0' },
+              ] },
+            { index: 10+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r10c1', text: '', class: 'mother_1', rowspan: 2 },
+                { key: 'r10c2', text: '', class: 'father_1' },
+                { key: 'r10c3', text: '父', class: 'father' },
+              ] },
+            { index: 11+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r11c1', text: '母', class: 'mother' },
+                { key: 'r11c2', text: '父', class: 'father' },
+              ] },
+            { index: 3+16, autoClass: 'horse_all Broodmare', autoColspan: 3, showParentLine: true,
+              headCells: [
+                { key: 'r3c1', text: '母', class: 'mother_0' },
+                { key: 'r3c2', text: '父', class: 'father_0' },
+              ] },
+            { index: 6+16, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
+              headCells: [
+                { key: 'r6c1', text: '', class: 'mother_1', rowspan: 6 },
+                { key: 'r6c2', text: '', class: 'father_1', rowspan: 3 },
+                { key: 'r6c3', text: '父', class: 'father_0' },
+              ] },
+            { index: 12+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r12c1', text: '', class: 'father_1' },
+                { key: 'r12c2', text: '父', class: 'father' },
+              ] },
+            { index: 13+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r13c1', text: '母', class: 'mother' },
+                { key: 'r13c2', text: '父', class: 'father' },
+              ] },
+            { index: 7+16, autoClass: 'horse_all Broodmare', autoColspan: 2, showParentLine: true,
+              headCells: [
+                { key: 'r7c1', text: '母', class: 'mother_0' },
+                { key: 'r7c2', text: '父', class: 'father_0' },
+              ] },
+            { index: 14+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
+              headCells: [
+                { key: 'r14c1', text: '', class: 'mother_1', rowspan: 2 },
+                { key: 'r14c2', text: '', class: 'father_1' },
+                { key: 'r14c3', text: '父', class: 'father' },
+              ] },
+            { index: 15+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
+              headCells: [
+                { key: 'r15c1', text: '母', class: 'mother' },
+                { key: 'r15c2', text: '父', class: 'father' },
+              ] },
+          ],
+          INDEX_GENERATION_ASSIGNMENTS,
           windowSize: 0,
           // メモの
           inputed: Array.from(new Array(32).fill(null)),
@@ -2864,8 +1165,40 @@
           sameNameSpecialChecksByIndex: Array.from(new Array(32).fill(false)),
           reload: 0,
           size: {},
-
+          combinationDialogVisible: false,
+          inbreedLogTimer: null,
+          deferInbreedCount: false,
+          deferredInbreedCountRequested: false,
+          // インブリード例外ルール
+          inbreedExceptions: []
         };
+      },
+      computed: {
+        // 頻繁に使用される計算をキャッシュ
+        rowConfigsOptimized() {
+          // rowConfigsは変更されないのでフリーズ
+          return this.rowConfigs;
+        },
+        // カテゴリー番号の文字列表現（キャッシュ）
+        categoryNumComputed() {
+          const allSet = this.selected.every((e) => e) ? 0 : -1;
+          return (new Set(this.category).size + allSet).toString();
+        },
+        // すべての馬がセットされているか（キャッシュ）
+        allHorsesSet() {
+          return this.selected.every((e) => e);
+        },
+        combinationCellStyle() {
+          return this.allHorsesSet
+            ? {
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                cursor: "pointer",
+              }
+            : {
+                background: "#bdbdbd",
+                cursor: "not-allowed",
+              };
+        }
       },
       watch: {
         dispCategory: function(value) {
@@ -2888,7 +1221,9 @@
 
       mounted: function () {
         try {
-          this.c1()
+          // インブリード例外ルールを読み込む
+          this.loadInbreedExceptions()
+            .then(() => this.c1())
             .then(() => this.c2())
             .then(() => this.c3());
           // .finally(() => this.c4());
@@ -2898,6 +1233,280 @@
       },
 
       methods: {
+        // インブリード例外ルールを読み込む
+        loadInbreedExceptions: function () {
+          return fetch('./json/inbreed-exceptions.json')
+            .then(response => {
+              if (!response.ok) {
+                console.warn('inbreed-exceptions.json not found, using empty rules');
+                return [];
+              }
+              return response.json();
+            })
+            .then(data => {
+              this.inbreedExceptions = data;
+              console.log('Loaded inbreed exceptions:', this.inbreedExceptions);
+            })
+            .catch(error => {
+              console.error('Error loading inbreed-exceptions.json:', error);
+              this.inbreedExceptions = [];
+            });
+        },
+        combinationDialog: function () {
+          console.log('combinationDialog called');
+          this.combinationDialogVisible = true;
+          console.log('combinationDialogVisible set to:', this.combinationDialogVisible);
+        },
+        handleCombinationCellClick: function () {
+          if (!this.allHorsesSet) {
+            return;
+          }
+          this.combinationDialog();
+        },
+        onCombinationRestore: function (configData) {
+          // localStorageには既にコンポーネント内で復元済み
+          // 画面を再読み込み
+          this.restoreInputData();
+          
+          if (configData.dabimasMemo) {
+            const parseArray = JSON.parse(configData.dabimasMemo);
+            this.inputed = parseArray;
+          }
+          if (configData.dabimasMemoStallion) {
+            this.inputedMemoStallion = configData.dabimasMemoStallion;
+          }
+          if (configData.dabimasMemoBroodmare) {
+            this.inputedMemoBroodmare = configData.dabimasMemoBroodmare;
+          }
+        },
+        fetchSavedCombinations: function () {
+          return new Promise((resolve, reject) => {
+            if (!this.combinationDb) {
+              this.savedCombinations = [];
+              resolve([]);
+              return;
+            }
+            const transaction = this.combinationDb.transaction(
+              [COMBINATION_STORE_NAME],
+              "readonly"
+            );
+            transaction.onerror = (event) => {
+              reject(event.target.error);
+            };
+            const store = transaction.objectStore(COMBINATION_STORE_NAME);
+            const request = store.getAll();
+            request.onsuccess = () => {
+              const rows = (request.result || []).sort(
+                (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
+              );
+              this.savedCombinations = rows;
+              resolve(rows);
+            };
+            request.onerror = (event) => {
+              reject(event.target.error);
+            };
+          });
+        },
+        enforceCombinationLimit: function (maxCount = 10) {
+          return new Promise((resolve, reject) => {
+            if (!this.combinationDb) {
+              resolve();
+              return;
+            }
+            const transaction = this.combinationDb.transaction(
+              [COMBINATION_STORE_NAME],
+              "readwrite"
+            );
+            const store = transaction.objectStore(COMBINATION_STORE_NAME);
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = (event) =>
+              reject(event.target.error || new Error("transaction error"));
+            const request = store.getAll();
+            request.onsuccess = () => {
+              const rows = request.result || [];
+              if (rows.length <= maxCount) {
+                return;
+              }
+              const sorted = rows
+                .slice()
+                .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+              const deleteTargets = sorted.slice(0, rows.length - maxCount);
+              deleteTargets.forEach((item) => {
+                if (item?.id !== undefined) {
+                  store.delete(item.id);
+                }
+              });
+            };
+            request.onerror = (event) =>
+              reject(event.target.error || new Error("request error"));
+          });
+        },
+        applySavedCombination: async function (record) {
+          if (!window.localStorage) {
+            return;
+          }
+          const snapshot = record || {};
+          this.setOrRemoveLocalStorage("dabimasFactor", snapshot.factor);
+          this.setOrRemoveLocalStorage(
+            "dabimasFactorCategory",
+            snapshot.factorCategory
+          );
+          this.setOrRemoveLocalStorage("dabimasMemo", snapshot.memo);
+          this.setOrRemoveLocalStorage(
+            "dabimasMemoStallion",
+            snapshot.memoStallion
+          );
+          this.setOrRemoveLocalStorage(
+            "dabimasMemoBroodmare",
+            snapshot.memoBroodmare
+          );
+          this.setOrRemoveLocalStorage(
+            MANUAL_INBREED_STORAGE_KEY,
+            snapshot.manualInbreed
+          );
+          await this.refreshLocalDataFromStorage();
+        },
+        setOrRemoveLocalStorage: function (key, value) {
+          if (value === null || value === undefined) {
+            localStorage.removeItem(key);
+          } else {
+            localStorage.setItem(key, value);
+          }
+        },
+        persistManualInbreedState: function () {
+          if (typeof window === "undefined" || !window.localStorage) {
+            return;
+          }
+          const manualIndexes = this.inbreedList
+            .map((value, index) => (value?.selfInbreed ? index : null))
+            .filter((index) => index !== null);
+          if (manualIndexes.length === 0) {
+            window.localStorage.removeItem(MANUAL_INBREED_STORAGE_KEY);
+            return;
+          }
+          window.localStorage.setItem(
+            MANUAL_INBREED_STORAGE_KEY,
+            JSON.stringify(manualIndexes)
+          );
+        },
+        clearManualInbreedForIndex: function (index) {
+          if (
+            typeof window === "undefined" ||
+            !window.localStorage ||
+            !Number.isInteger(index)
+          ) {
+            return;
+          }
+          const rawIndexes = window.localStorage.getItem(
+            MANUAL_INBREED_STORAGE_KEY
+          );
+          if (!rawIndexes) {
+            return;
+          }
+          let manualIndexes = [];
+          try {
+            manualIndexes = JSON.parse(rawIndexes) || [];
+          } catch (error) {
+            console.error(error);
+            return;
+          }
+          if (!Array.isArray(manualIndexes)) {
+            return;
+          }
+          const filtered = manualIndexes
+            .map((value) => Number(value))
+            .filter(
+              (value) => Number.isInteger(value) && value !== Number(index)
+            );
+          if (filtered.length === 0) {
+            window.localStorage.removeItem(MANUAL_INBREED_STORAGE_KEY);
+          } else {
+            window.localStorage.setItem(
+              MANUAL_INBREED_STORAGE_KEY,
+              JSON.stringify(filtered)
+            );
+          }
+        },
+        restoreManualInbreedState: function () {
+          if (typeof window === "undefined" || !window.localStorage) {
+            return;
+          }
+          const rawIndexes = window.localStorage.getItem(
+            MANUAL_INBREED_STORAGE_KEY
+          );
+          if (!rawIndexes) {
+            return;
+          }
+          let manualIndexes = [];
+          try {
+            manualIndexes = JSON.parse(rawIndexes) || [];
+          } catch (error) {
+            console.error(error);
+            return;
+          }
+          if (!Array.isArray(manualIndexes)) {
+            return;
+          }
+          let hasUpdates = false;
+          manualIndexes.forEach((value) => {
+            const index = Number(value);
+            if (!Number.isInteger(index) || index < 0 || index >= this.inbreedList.length) {
+              return;
+            }
+            const base = this.selected[index];
+            if (!base) {
+              return;
+            }
+            this.$set(this.inbreedList, index, {
+              ...base,
+              selfInbreed: true,
+            });
+            this.$set(this.isInbreedButtonClicked, index, 1);
+            this.$set(this.dispColor, index, "inbreed");
+            hasUpdates = true;
+          });
+          if (hasUpdates) {
+            this.dispInbreedFactorCounts();
+          }
+        },
+        refreshLocalDataFromStorage: async function () {
+          if (!window.localStorage) {
+            return;
+          }
+          this.deferInbreedCount = true;
+          this.deferredInbreedCountRequested = false;
+          try {
+            if (JSON.parse(localStorage.getItem("dabimasFactor"))) {
+              await this.restoreInputData();
+            }
+            if (JSON.parse(localStorage.getItem("dabimasMemo"))) {
+              const parseArray = JSON.parse(localStorage.getItem("dabimasMemo"));
+              this.inputed = parseArray;
+            } else {
+              this.inputed = Array.from(new Array(32).fill(null));
+            }
+            if (localStorage.getItem("dabimasMemoStallion")) {
+              this.inputedMemoStallion = localStorage.getItem(
+                "dabimasMemoStallion"
+              );
+            } else {
+              this.inputedMemoStallion = null;
+            }
+            if (localStorage.getItem("dabimasMemoBroodmare")) {
+              this.inputedMemoBroodmare = localStorage.getItem(
+                "dabimasMemoBroodmare"
+              );
+            } else {
+              this.inputedMemoBroodmare = null;
+            }
+            this.restoreManualInbreedState();
+          } finally {
+            this.deferInbreedCount = false;
+            if (this.deferredInbreedCountRequested) {
+              this.dispInbreedFactorCounts();
+            }
+          }
+        },
         c1: function () {
           return new Promise((resolve, reject) => {
             // jsonファイル読み込みが終わるまで非同期処理を待つ（async/await）
@@ -2955,30 +1564,11 @@
             }
           });
         },
-        c4: function () {
-          return new Promise((resolve, reject) => {
-            if (window.localStorage) {
-              if (JSON.parse(localStorage.getItem("dabimasFactor"))) {
-                // localStorageに入れていたものを復元する
-                this.restoreInputData();
-              };
-              if (JSON.parse(localStorage.getItem("dabimasMemo"))) {
-                // localStorageに入れていたものを復元する
-                const parseArray = JSON.parse(localStorage.getItem("dabimasMemo"));
-                this.inputed = parseArray;
-              };
-              if (localStorage.getItem("dabimasMemoStallion")) {
-                // localStorageに入れていたものを復元する
-                this.inputedMemoStallion = localStorage.getItem("dabimasMemoStallion");
-              };
-              if (localStorage.getItem("dabimasMemoBroodmare")) {
-                // localStorageに入れていたものを復元する
-                const parseArray = localStorage.getItem("dabimasMemoBroodmare");
-                this.inputedMemoBroodmare = parseArray;
-              };
-
-            }
-          });
+        c4: async function () {
+          if (!window.localStorage) {
+            return;
+          }
+          await this.refreshLocalDataFromStorage();
         },
         // ハート（強制インブリード）ボタンクリック時
         handleInbreedButtonClick: function (index) {
@@ -2986,13 +1576,13 @@
           const changedIsButtonClicked =
             this.isInbreedButtonClicked[index] * -1;
           if (changedIsButtonClicked === 1) {
-            this.dispColor[index] = "inbreed";
+            this.$set(this.dispColor, index, "inbreed");
             this.inbreedList[index] = {
               ...this.selected[index],
               selfInbreed: true,
             };
           } else {
-            this.dispColor[index] = "";
+            this.$set(this.dispColor, index, "");
             this.inbreedList[index] = null;
           }
 
@@ -3001,11 +1591,14 @@
             // インブリード本数判定表示
             await this.dispInbreedFactorCounts();
             // フラグを反転結果
-            this.isInbreedButtonClicked[index] = changedIsButtonClicked;
+            this.$set(this.isInbreedButtonClicked, index, changedIsButtonClicked);
             this.reload++;
+            this.persistManualInbreedState();
           };
           // async/await関数を実行
-          dispFunction();
+          dispFunction().catch(() => {
+            this.persistManualInbreedState();
+          });
         },
 
         // 復元処理
@@ -3056,6 +1649,8 @@
           // クロスを判定して表示させる
           await this.dispInbreed();
 
+          this.restoreManualInbreedState();
+
           // 配合理論を求めて画面に表示させる
           this.dispTheory();
         },
@@ -3066,6 +1661,7 @@
           localStorage.removeItem("dabimasMemo");
           localStorage.removeItem("dabimasMemoStallion");
           localStorage.removeItem("dabimasMemoBroodmare");
+          localStorage.removeItem(MANUAL_INBREED_STORAGE_KEY);
 
           this.selected = Array.from(new Array(32).fill(null));
           this.category = Array.from(new Array(32).fill(null));
@@ -3085,16 +1681,16 @@
           for (var i = 0; i < this.styleFactorClasses.length; i++) {
             let css = "";
             css = this.getCss(i);
-            this.styleFactorClasses[i][0] = `${css} styleFactorClassMain`;
-            this.styleFactorClasses[i][1] = `${css} styleFactorClassMain`;
-            this.styleFactorClasses[i][2] = `${css} styleFactorClassMain`;
+            this.$set(this.styleFactorClasses[i], 0, `${css} styleFactorClassMain`);
+            this.$set(this.styleFactorClasses[i], 1, `${css} styleFactorClassMain`);
+            this.$set(this.styleFactorClasses[i], 2, `${css} styleFactorClassMain`);
           }
 
           // 血統理論部分のCSS初期設定
           for (var i = 0; i < this.styleParentLineClasses.length; i++) {
             let css = "";
             css = this.getCss(i);
-            this.styleParentLineClasses[i] = `${css} styleParentLine`;
+            this.$set(this.styleParentLineClasses, i, `${css} styleParentLine`);
           }
 
           // factorNameを二次元配列で定義
@@ -3133,7 +1729,6 @@
                 byIndex: [],
               },
             },
-            flatIndexes: [],
           };
           this.sameNameSpecialChecks = [];
           this.sameNameSpecialChecksByIndex = Array.from(
@@ -3149,7 +1744,6 @@
         },
         handleClick() {
           this.dispCategory++;
-          console.log("dispCategory:" + this.dispCategory);
         },
         getCss: function (i) {
           let css = "";
@@ -3191,23 +1785,26 @@
               return response.json();
             })
             .then((json) => {
-              // jsonから取得
-              this.horsesBase = json.horseLists;
+              // jsonから取得 - Object.freeze()でリアクティブシステムのオーバーヘッドを削減
+              const horsesList = json.horseLists;
+              // 各馬データをフリーズ（変更されないため）
+              horsesList.forEach(horse => Object.freeze(horse));
+              this.horsesBase = Object.freeze(horsesList);
               //this.allHorses = [...this.allHorsesBase];
               this.horses = this.horsesBase.filter(function (horse) {
                 return horse.sex === "0" || horse.sex === "1";
               });
 
               // 牡馬だけを抽出
-              this.stallionsBase = this.horses.filter(function (horse) {
+              this.stallionsBase = Object.freeze(this.horses.filter(function (horse) {
                 return horse.sex === "0";
-              });
+              }));
               this.stallions = [...this.stallionsBase];
 
               // 牝馬だけを抽出
-              this.broodmaresBase = this.horses.filter(function (horse) {
+              this.broodmaresBase = Object.freeze(this.horses.filter(function (horse) {
                 return horse.sex === "1";
-              });
+              }));
               this.broodmares = [...this.broodmaresBase];
 
               this.horseDataLists = [
@@ -3226,8 +1823,10 @@
               return response.json();
             })
             .then((json) => {
-              // jsonから取得
-              this.brosData = json.brosData;
+              // jsonから取得 - フリーズして変更不可にする
+              const brosDataList = json.brosData;
+              brosDataList.forEach(bros => Object.freeze(bros));
+              this.brosData = Object.freeze(brosDataList);
             });
         },
         memoChange: function (index, input) {
@@ -3250,27 +1849,46 @@
 
         // 選択時のメイン処理
         onChangeMain: async function (sex, id, horseData) {
+          const targetIndex = Number(id) + Number(sex) * 16;
+          if (Number.isInteger(targetIndex)) {
+            this.$set(this.isInbreedButtonClicked, targetIndex, -1);
+            this.$set(this.dispColor, targetIndex, "");
+            this.$set(this.inbreedList, targetIndex, null);
+            this.clearManualInbreedForIndex(targetIndex);
+          }
           if (horseData) {
             // リストにセットされた場合
             // 血統表データセット用に詰め替える
+            console.time('setDataForPedigree');
             const dataForPedigree = this.setDataForPedigree(sex, id, horseData);
+            console.timeEnd('setDataForPedigree');
             // 血統表にデータをセットする
+            console.time('setPedigree');
             this.setPedigree(sex, id, dataForPedigree);
+            console.timeEnd('setPedigree');
           } else {
             // リストを空にした場合（削除モード）
             this.deleteHorses(sex, id);
           }
 
+          console.time('画面表示');
           // カウントした画面に表示させる
           this.factorNumtoString = this.dispFactorCounts(this.factorCd);
           // カウントした子系統数を表示させる
           this.categoryNumtoString = this.dispCategoryCount();
+          console.timeEnd('画面表示');
 
+          console.time('クロス');
           // クロスを判定して表示させる
           await this.dispInbreed();
+          console.timeEnd('クロス');
 
+          this.restoreManualInbreedState();
+
+          console.time('理論');
           // 配合理論を求めて画面に表示させる
           this.dispTheory();
+          console.timeEnd('理論');
 
           // 内容をローカルに保存する
           localStorage.setItem("dabimasFactor", JSON.stringify(this.selected));
@@ -3337,26 +1955,29 @@
               }
             }
             // リストから消す
-            this.selected[deleteHorse.index] = null;
-            this.category[deleteHorse.index] = null;
+            this.$set(this.selected, deleteHorse.index, null);
+            this.$set(this.category, deleteHorse.index, null);
 
-            this.factorName[deleteIndex][0] = "";
-            this.factorName[deleteIndex][1] = "";
-            this.factorName[deleteIndex][2] = "";
+            this.$set(this.factorName[deleteIndex], 0, '');
+            this.$set(this.factorName[deleteIndex], 1, '');
+            this.$set(this.factorName[deleteIndex], 2, '');
 
-            this.factorCd[deleteIndex][0] = "";
-            this.factorCd[deleteIndex][1] = "";
-            this.factorCd[deleteIndex][2] = "";
+            this.$set(this.factorCd[deleteIndex], 0, '');
+            this.$set(this.factorCd[deleteIndex], 1, '');
+            this.$set(this.factorCd[deleteIndex], 2, '');
 
-            this.parentLines[deleteIndex] = "";
-
+            this.$set(this.parentLines, deleteIndex, '');
             // CSSを初期化
             let css = "";
             css = this.getCss(deleteIndex);
-            this.styleFactorClasses[deleteIndex][0] = `${css} styleFactorClassMain`;
-            this.styleFactorClasses[deleteIndex][1] = `${css} styleFactorClassMain`;
-            this.styleFactorClasses[deleteIndex][2] = `${css} styleFactorClassMain`;
-            this.styleParentLineClasses[deleteIndex] = `${css} styleParentLine`;
+            this.$set(this.styleFactorClasses[deleteIndex], 0, `${css} styleFactorClassMain`);
+            this.$set(this.styleFactorClasses[deleteIndex], 1, `${css} styleFactorClassMain`);
+            this.$set(this.styleFactorClasses[deleteIndex], 2, `${css} styleFactorClassMain`);
+            this.$set(this.styleParentLineClasses, deleteIndex, `${css} styleParentLine`);
+            this.$set(this.isInbreedButtonClicked, deleteIndex, -1);
+            this.$set(this.dispColor, deleteIndex, "");
+            this.$set(this.inbreedList, deleteIndex, null);
+            this.clearManualInbreedForIndex(deleteIndex);
           }
           this.horseDataLists = [this.horses, this.stallions, this.broodmares];
         },
@@ -3371,8 +1992,12 @@
             this.isInbreedButtonClicked = Array.from(new Array(32).fill(-1));
             // インブリードされているところを格納する変数
             this.inbreedList = Array.from(new Array(32).fill(null));
+            // インブリードの色も初期化
+            this.dispColor = Array.from(new Array(32).fill(""));
             // インブリード判定処理のメイン
+            console.time('インブリード判定');
             retInbreedCount = this.judgeInbreed();
+            console.timeEnd('インブリード判定');
           } else {
             // インブリードボタンクリック済フラグを非活性モードに設定
             this.isInbreedButtonClicked = Array.from(new Array(32).fill(0));
@@ -3392,7 +2017,6 @@
                   byIndex: [],
                 },
               },
-              flatIndexes: [],
             };
             this.sameNameSpecialChecks = [];
             this.sameNameSpecialChecksByIndex = Array.from(
@@ -3400,31 +2024,98 @@
             );
           }
 
+          console.time('インブリード表示');
           // インブリードが発生した場合
           if (retInbreedCount > 0) {
             await this.dispInbreedFactorCounts();
           }
+          console.timeEnd('インブリード表示');
         },
 
         // インブリード本数表示
         dispInbreedFactorCounts: function () {
+          if (this.deferInbreedCount) {
+            this.deferredInbreedCountRequested = true;
+            return;
+          }
+          this.performInbreedFactorCounts();
+        },
+        performInbreedFactorCounts: function () {
+          
+          const indexSet = new Set();
+
+          this.sameNameGroups.forEach(group => {
+            group.forEach(node => {
+              if (node && node.index !== undefined) {
+                indexSet.add(node.index);
+              }
+            });
+          });
+          this.siblingGroups.forEach(group => {
+            group.forEach(node => {
+              if (node && node.index !== undefined) {
+                indexSet.add(node.index);
+              }
+            });
+          });
+          const allIndexes = Array.from(indexSet);
+
           // 自動クロスされたところのボタンを非活性化させる
-          this.sameNameGroups.indexes.forEach(element => {
+          allIndexes.forEach(element => {
             this.isInbreedButtonClicked[element] = 0;
           });
 
-          // 空文字、数字、(で始まる
+          const mergedGroupsByName = new Map();
+
+          // sameNameGroupsを追加
+          this.sameNameGroups.forEach(group => {
+            if (group.length > 0 && group[0]?.name) {
+              const name = group[0].name;
+              if (!mergedGroupsByName.has(name)) {
+                mergedGroupsByName.set(name, []);
+              }
+              const existingIndexes = mergedGroupsByName.get(name).map(n => n.index);
+              group.forEach(node => {
+                if (node && node.index !== undefined && !existingIndexes.includes(node.index)) {
+                  mergedGroupsByName.get(name).push(node);
+                  existingIndexes.push(node.index);
+                }
+              });
+            }
+          });
+
+          // siblingGroupsを追加
+          this.siblingGroups.forEach(group => {
+            if (group.length > 0 && group[0]?.name) {
+              const name = group[0].name;
+              if (!mergedGroupsByName.has(name)) {
+                mergedGroupsByName.set(name, []);
+              }
+              const existingIndexes = mergedGroupsByName.get(name).map(n => n.index);
+              group.forEach(node => {
+                if (node && node.index !== undefined && !existingIndexes.includes(node.index)) {
+                  mergedGroupsByName.get(name).push(node);
+                  existingIndexes.push(node.index);
+                }
+              });
+            }
+          });
+
+          // Map → 配列に変換
+          const mergedGroups = Array.from(mergedGroupsByName.values());
+
+          // 空欄、数字、(で始まるものを除外する
           const excludeString = /^$|^\d*$|^\(.+?\)/;
           let inbreedArray = [];
-          this.sameNameGroups.byIndex.flat().flat().forEach(element => {
+          mergedGroups.flat().flat().forEach(element => {
             if (element) {
               this.inbreedList[element.index] = element;
             }
           });
 
-          this.inbreedList.map((value, loopIndex) => {
+          this.inbreedList.map((value) => {
             if (value) {
-              // subNameが(で始まる場合は繫殖牝馬選択時／数字は因名被りなのでそれは削除する
+              // subNameが(で始まる場合(繫殖牝馬選択時)や数字の因名被りなのでそれは削除する
               inbreedArray.push({
                 name: value.name,
                 subName: excludeString.test(value.subName)
@@ -3448,7 +2139,7 @@
               )
           );
 
-          // 因子をコード変換（ex.速→02）させる
+          // 因子をコード変換する。Ex.速→02にさせる
           if (inbreedArraySimple) {
             inbreedArraySimple.map((element, index) => {
               factorCd[index][0] = factorMap.get(element?.factors[0]) ?? "00";
@@ -3465,80 +2156,635 @@
 
         // インブリード判定
         judgeInbreed: function () {
-          let stallionsArray = [];
-          let broodmaresArray = [];
+          // 世代対応表（indexから世代を取得）
+          const generationMap = [
+            1, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+            1, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+          ];
 
-          this.selected.map((value, loopIndex) => {
+          // 選択済み32枠を牡馬（0-15）・牝馬（16-31）に分割
+          const stallionsArray = [];
+          const broodmaresArray = [];
+          
+          for (let loopIndex = 0; loopIndex < this.selected.length; loopIndex++) {
+            const value = this.selected[loopIndex];
+            if (!value || !value.name) {
+              continue;
+            }
             if (loopIndex < 16) {
-              // 種牡馬の配列を取得
-              stallionsArray.push({ ...value, ownIndex: loopIndex });
+              stallionsArray.push(value);
             } else {
-              // 繁殖牝馬の配列を取得
-              broodmaresArray.push({ ...value, ownIndex: loopIndex - 16 });
+              broodmaresArray.push(value);
+            }
+          }
+
+          // 片側しか埋まっていない場合は何も判定せず終了
+          if (stallionsArray.length === 0 || broodmaresArray.length === 0) {
+            this.sameNameGroups = [];
+            this.siblingGroups = [];
+            this.sameNameSpecialChecks = [];
+            this.sameNameSpecialChecksByIndex = Array.from(new Array(32).fill(false));
+            this.dispColor = Array.from(new Array(32).fill(""));
+            return 0;
+          }
+
+          // 子孫ノード取得関数（特定indexから子孫をすべて取得）
+          const getAncestorIndexes = (startIndex) => {
+            const ancestors = new Set();
+            
+            // 親子関係マッピング（dummy母も含む完全なツリー構造）
+            // 実際のindex: 0-15 (父側), 16-31 (母側)
+            // 仮想母index: 100番台 (父側の母), 200番台 (母側の母)
+            const parentChildMap = {
+              // 父側（0-15）
+              0: [1, 100],        // 本馬 → 父[1], 母[100]
+              100: [3, 107],      // [0]の母 → 父[3], 母[107]
+              107: [7, 115],      // [0]の母の母 → 父[7], 母[115]
+              115: [15],          // [0]の母の母の母 → 父[15]のみ
+              
+              1: [2, 101],        // [1] → 父[2], 母[101]
+              101: [5, 111],      // [1]の母 → 父[5], 母[111]
+              111: [11],          // [1]の母の母 → 父[11]のみ
+              
+              2: [4, 102],        // [2] → 父[4], 母[102]
+              102: [9],           // [2]の母 → 父[9]のみ
+              
+              3: [6, 103],        // [3] → 父[6], 母[103]
+              103: [13],          // [3]の母 → 父[13]のみ
+              
+              4: [8],             // [4] → 父[8]のみ
+              5: [10],            // [5] → 父[10]のみ
+              6: [12],            // [6] → 父[12]のみ
+              7: [14],            // [7] → 父[14]のみ
+              
+              // 母側（16-31）
+              16: [17, 200],      // 本馬 → 父[17], 母[200]
+              200: [19, 207],     // [16]の母 → 父[19], 母[207]
+              207: [23, 215],     // [16]の母の母 → 父[23], 母[215]
+              215: [31],          // [16]の母の母の母 → 父[31]のみ
+              
+              17: [18, 201],      // [17] → 父[18], 母[201]
+              201: [21, 211],     // [17]の母 → 父[21], 母[211]
+              211: [27],          // [17]の母の母 → 父[27]のみ
+              
+              18: [20, 202],      // [18] → 父[20], 母[202]
+              202: [25],          // [18]の母 → 父[25]のみ
+              
+              19: [22, 203],      // [19] → 父[22], 母[203]
+              203: [29],          // [19]の母 → 父[29]のみ
+              
+              20: [24],           // [20] → 父[24]のみ
+              21: [26],           // [21] → 父[26]のみ
+              22: [28],           // [22] → 父[28]のみ
+              23: [30],           // [23] → 父[30]のみ
+            };
+            
+            // 再帰的に祖先を収集（parentChildMapは「自分→親」の関係）
+            const collectAncestors = (idx) => {
+              const parents = parentChildMap[idx];
+              if (parents) {
+                parents.forEach(parentIdx => {
+                  if (!ancestors.has(parentIdx)) {
+                    ancestors.add(parentIdx);
+                    collectAncestors(parentIdx);
+                  }
+                });
+              }
+            };
+            
+            collectAncestors(startIndex);
+            return ancestors;
+          };
+
+          // クロス候補を検出（名前一致 + fullBrothers一致 + 繫殖牝馬×種牡馬全兄妹）
+          const crossCandidates = [];
+          const siblingPairs = new Set(); // 全兄弟で判定済みのペアを記録
+          
+          // ========================================
+          // 1. 繫殖牝馬×種牡馬の全兄妹クロス検出（最優先）
+          // ========================================
+          const broodmareGroups = {}; // subName → [indexes]のマップ
+          
+          // 父側で繫殖牝馬の血統表を検出
+          for (let sIdx = 0; sIdx < stallionsArray.length; sIdx++) {
+            const stallion = stallionsArray[sIdx];
+            if (!stallion || !stallion.subName) continue;
+            
+            // subNameが`(`で始まる → 繫殖牝馬の血統表
+            if (stallion.subName.startsWith('(') && stallion.subName.endsWith(')')) {
+              const broodmareName = stallion.subName.slice(1, -1); // "(ダンスパートナー)" → "ダンスパートナー"
+              
+              if (!broodmareGroups[broodmareName]) {
+                broodmareGroups[broodmareName] = [];
+              }
+              broodmareGroups[broodmareName].push(stallion.index);
+            }
+          }
+          
+          // 各繫殖牝馬について、母側で全兄妹を探す
+          for (const [broodmareName, broodmareIndexes] of Object.entries(broodmareGroups)) {
+            for (let bIdx = 0; bIdx < broodmaresArray.length; bIdx++) {
+              const broodmare = broodmaresArray[bIdx];
+              if (!broodmare || !broodmare.name) continue;
+              
+              let isSibling = false;
+              
+              // broodmareのfullBrothersにbroodmareNameがある
+              if (Array.isArray(broodmare.fullBrothers) && broodmare.fullBrothers.includes(broodmareName)) {
+                isSibling = true;
+              }
+              
+              // broodmareのfullSistersにbroodmareNameがある
+              if (Array.isArray(broodmare.fullSisters) && broodmare.fullSisters.includes(broodmareName)) {
+                isSibling = true;
+              }
+              
+              if (isSibling) {
+                // 種牡馬側のみをsiblingGroupsに追加
+                const broodmareGlobalIdx = broodmare.index;
+                const broodmareGen = generationMap[broodmareGlobalIdx];
+                
+                crossCandidates.push({
+                  name: `${broodmareName}×${broodmare.name}(全兄妹)`,
+                  type: 'broodmare-stallion-sibling',
+                  stallionIndex: null, // 繫殖牝馬側は追加しない
+                  broodmareIndex: broodmareGlobalIdx,
+                  stallionGen: 0,
+                  broodmareGen: broodmareGen,
+                  generationSum: broodmareGen, // 母側のみでソート
+                  stallionNode: null,
+                  broodmareNode: broodmare,
+                  broodmareGroupIndexes: broodmareIndexes, // 繫殖牝馬側の全indexを保持
+                });
+              }
+            }
+          }
+          
+          // ========================================
+          // 2. fullBrothers一致でクロス検出（先に処理）
+          // ========================================
+          for (let sIdx = 0; sIdx < stallionsArray.length; sIdx++) {
+            const stallion = stallionsArray[sIdx];
+            if (!stallion || !stallion.name) continue;
+            
+            for (let bIdx = 0; bIdx < broodmaresArray.length; bIdx++) {
+              const broodmare = broodmaresArray[bIdx];
+              if (!broodmare || !broodmare.name) continue;
+              
+              let isSibling = false;
+              
+              // stallionのfullBrothersにbroodmareの名前がある
+              if (Array.isArray(stallion.fullBrothers) && stallion.fullBrothers.includes(broodmare.name)) {
+                isSibling = true;
+              }
+              
+              // broodmareのfullBrothersにstallionの名前がある
+              if (Array.isArray(broodmare.fullBrothers) && broodmare.fullBrothers.includes(stallion.name)) {
+                isSibling = true;
+              }
+              
+              if (isSibling) {
+                const stallionGlobalIdx = stallion.index;
+                const broodmareGlobalIdx = broodmare.index;
+                const stallionGen = generationMap[stallionGlobalIdx];
+                const broodmareGen = generationMap[broodmareGlobalIdx];
+                
+                // 重複チェック（既に追加されていないか）
+                const exists = crossCandidates.some(c => 
+                  c.stallionIndex === stallionGlobalIdx && 
+                  c.broodmareIndex === broodmareGlobalIdx
+                );
+                
+                if (!exists) {
+                  crossCandidates.push({
+                    name: `${stallion.name}×${broodmare.name}(兄弟)`,
+                    type: 'sibling',
+                    stallionIndex: stallionGlobalIdx,
+                    broodmareIndex: broodmareGlobalIdx,
+                    stallionGen: stallionGen,
+                    broodmareGen: broodmareGen,
+                    generationSum: stallionGen + broodmareGen,
+                    stallionNode: stallion,
+                    broodmareNode: broodmare,
+                  });
+                  
+                  // このペアを記録
+                  siblingPairs.add(`${stallionGlobalIdx}-${broodmareGlobalIdx}`);
+                }
+              }
+            }
+          }
+          
+          // 名前一致でクロス検出
+          for (let sIdx = 0; sIdx < stallionsArray.length; sIdx++) {
+            const stallion = stallionsArray[sIdx];
+            if (!stallion || !stallion.name) continue;
+            
+            for (let bIdx = 0; bIdx < broodmaresArray.length; bIdx++) {
+              const broodmare = broodmaresArray[bIdx];
+              if (!broodmare || !broodmare.name) continue;
+              
+              if (stallion.name === broodmare.name) {
+                const stallionGlobalIdx = stallion.index;
+                const broodmareGlobalIdx = broodmare.index;
+                
+                // 全兄弟で既に判定済みのペアはスキップ
+                if (siblingPairs.has(`${stallionGlobalIdx}-${broodmareGlobalIdx}`)) {
+                  continue;
+                }
+                
+                const stallionGen = generationMap[stallionGlobalIdx];
+                const broodmareGen = generationMap[broodmareGlobalIdx];
+                
+                crossCandidates.push({
+                  name: stallion.name,
+                  type: 'sameName',
+                  stallionIndex: stallionGlobalIdx,
+                  broodmareIndex: broodmareGlobalIdx,
+                  stallionGen: stallionGen,
+                  broodmareGen: broodmareGen,
+                  generationSum: stallionGen + broodmareGen,
+                  stallionNode: stallion,
+                  broodmareNode: broodmare,
+                });
+              }
+            }
+          }
+
+          // 世代合計でソート（繫殖牝馬×種牡馬全兄妹クロスを最優先、その後世代合計順）
+          crossCandidates.sort((a, b) => {
+            // 繫殖牝馬×種牡馬の全兄妹クロスを最優先
+            if (a.type === 'broodmare-stallion-sibling' && b.type !== 'broodmare-stallion-sibling') {
+              return -1;
+            }
+            if (a.type !== 'broodmare-stallion-sibling' && b.type === 'broodmare-stallion-sibling') {
+              return 1;
+            }
+            // それ以外は世代合計順
+            return a.generationSum - b.generationSum;
+          });
+
+          // 祖先除外ロジックを適用
+          const excludedNodes = new Set();
+          const broodmareGroupIndexes = new Set(); // 繫殖牝馬側のindexを記録（filterで使用）
+          const recognizedCrosses = [];
+          
+          for (const cross of crossCandidates) {
+            // 繫殖牝馬×種牡馬の全兄妹クロスの場合
+            if (cross.type === 'broodmare-stallion-sibling') {
+              // 種牡馬側のみをsiblingGroupsに追加
+              recognizedCrosses.push(cross);
+              
+              // 繫殖牝馬側の全ての馬を記録し、その祖先も除外
+              cross.broodmareGroupIndexes.forEach(idx => {
+                broodmareGroupIndexes.add(idx);
+                
+                // この繫殖牝馬の祖先も除外
+                const ancestors = getAncestorIndexes(idx);
+                ancestors.forEach(ancestorIdx => {
+                  excludedNodes.add(ancestorIdx);
+                });
+              });
+              
+              // 種牡馬側の全ての祖先を除外リストに追加
+              const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
+              broodmareAncestors.forEach(idx => {
+                excludedNodes.add(idx);
+              });
+              
+              continue;
+            }
+            
+            // 通常のクロス判定（名前一致・fullBrothers一致）
+            // どちらかのノードが除外リストに含まれているかチェック
+            const stallionExcluded = excludedNodes.has(cross.stallionIndex);
+            const broodmareExcluded = excludedNodes.has(cross.broodmareIndex);
+            
+            // 両方とも除外されている場合のみスキップ
+            if (stallionExcluded && broodmareExcluded) {
+              continue;
+            }
+            
+            // インブリード認定
+            recognizedCrosses.push(cross);
+            
+            // 使用したノードの祖先を除外リストに追加
+            const stallionAncestors = getAncestorIndexes(cross.stallionIndex);
+            const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
+            
+            stallionAncestors.forEach(idx => {
+              excludedNodes.add(idx);
+            });
+            
+            broodmareAncestors.forEach(idx => {
+              excludedNodes.add(idx);
+            });
+          }
+
+          // ===== 例外パターンのクロス判定 =====
+          // ヘルパー関数：indexから世代を計算
+          const getGenerationFromIndex = (index) => {
+            if (index === 0 || index === 16) return 1;
+            if (index === 1 || index === 17) return 2;
+            if ((index >= 2 && index <= 3) || (index >= 18 && index <= 19)) return 3;
+            if ((index >= 4 && index <= 7) || (index >= 20 && index <= 23)) return 4;
+            if ((index >= 8 && index <= 15) || (index >= 24 && index <= 31)) return 5;
+            return 0;
+          };
+          
+          // ヘルパー関数：indexから父側/母側を判定
+          const getSideFromIndex = (index) => {
+            return index < 16 ? 'stallion' : 'broodmare';
+          };
+          
+          // ヘルパー関数：世代条件をチェック
+          const checkGenerationCondition = (gen, targetGen, operator) => {
+            switch (operator) {
+              case '<': return gen < targetGen;
+              case '<=': return gen <= targetGen;
+              case '>': return gen > targetGen;
+              case '>=': return gen >= targetGen;
+              case '==': return gen === targetGen;
+              default: return false;
+            }
+          };
+          
+          // 例外パターンのチェック
+          this.inbreedExceptions.forEach(exception => {
+            // trigger条件のチェック：トリガー馬のindexを検索
+            const triggerHorseIndexes = [];
+            stallionsArray.forEach(horse => {
+              if (horse && horse.name === exception.trigger.horse) {
+                triggerHorseIndexes.push(horse.index);
+              }
+            });
+            broodmaresArray.forEach(horse => {
+              if (horse && horse.name === exception.trigger.horse) {
+                triggerHorseIndexes.push(horse.index);
+              }
+            });
+            
+            // トリガー条件に一致するindexをフィルタ
+            const matchingTriggers = triggerHorseIndexes.filter(idx => {
+              const gen = getGenerationFromIndex(idx);
+              const side = getSideFromIndex(idx);
+              
+              // 世代条件のチェック
+              if (!checkGenerationCondition(gen, exception.trigger.generation, exception.trigger.operator)) {
+                return false;
+              }
+              
+              // side条件のチェック
+              if (exception.trigger.side === 'stallion' && side !== 'stallion') return false;
+              if (exception.trigger.side === 'broodmare' && side !== 'broodmare') return false;
+              // 'either'の場合はどちらでもOK
+              
+              return true;
+            });
+            
+            if (matchingTriggers.length === 0) return;
+            
+            // target馬のチェック
+            matchingTriggers.forEach(triggerIdx => {
+              const triggerSide = getSideFromIndex(triggerIdx);
+              
+              // target側を決定
+              let targetSide;
+              if (exception.target.side === 'opposite') {
+                targetSide = triggerSide === 'stallion' ? 'broodmare' : 'stallion';
+              } else if (exception.target.side === 'same') {
+                targetSide = triggerSide;
+              } else if (exception.target.side === 'either') {
+                targetSide = null; // 両方チェック
+              } else {
+                return;
+              }
+              
+              // target馬のindexを検索
+              const targetIndexes = [];
+              const searchArrays = targetSide === 'stallion' ? [stallionsArray] 
+                                : targetSide === 'broodmare' ? [broodmaresArray]
+                                : [stallionsArray, broodmaresArray];
+              
+              searchArrays.forEach(arr => {
+                arr.forEach(horse => {
+                  if (horse && horse.name === exception.target.horse) {
+                    targetIndexes.push({index: horse.index, node: horse});
+                  }
+                });
+              });
+              
+              // 各target馬についてクロス認定
+              targetIndexes.forEach(target => {
+                const targetIdx = target.index;
+                const targetNode = target.node;
+                const targetActualSide = getSideFromIndex(targetIdx);
+                
+                // 除外リストに含まれているかチェック
+                if (excludedNodes.has(targetIdx)) {
+                  return; // 既に除外されている場合はスキップ
+                }
+                
+                // recognizedCrossesに追加
+                const crossData = {
+                  name: `${exception.target.horse}(例外:${exception.name})`,
+                  type: 'exception',
+                  stallionIndex: targetActualSide === 'stallion' ? targetIdx : null,
+                  broodmareIndex: targetActualSide === 'broodmare' ? targetIdx : null,
+                  stallionNode: targetActualSide === 'stallion' ? targetNode : null,
+                  broodmareNode: targetActualSide === 'broodmare' ? targetNode : null,
+                  exceptionId: exception.id,
+                  displayInSameNameGroups: exception.action.displayInSameNameGroups
+                };
+                
+                recognizedCrosses.push(crossData);
+                
+                // 祖先を除外
+                if (exception.action.excludeAncestors) {
+                  const ancestors = getAncestorIndexes(targetIdx);
+                  ancestors.forEach(idx => excludedNodes.add(idx));
+                }
+              });
+            });
+          });
+
+          // sameNameGroupsとsiblingGroupsに分類
+          const sameNameGroupsFinal = [];
+          const siblingGroupsFinal = [];
+          
+          // 各馬名について、異なるselectedHorseでクロスしているかチェック
+          const namesWithDifferentSelectedHorseCross = new Set();
+          
+          recognizedCrosses.forEach(cross => {
+            if (cross.type === 'sameName') {
+              const stallionSelectedHorse = cross.stallionNode ? cross.stallionNode.selectedHorse : null;
+              const broodmareSelectedHorse = cross.broodmareNode ? cross.broodmareNode.selectedHorse : null;
+              
+              // 異なるselectedHorseのクロスの場合、その馬名を記録
+              if (stallionSelectedHorse !== broodmareSelectedHorse && cross.stallionNode && cross.stallionNode.name) {
+                namesWithDifferentSelectedHorseCross.add(cross.stallionNode.name);
+              }
+            }
+          });
+          
+          recognizedCrosses.forEach(cross => {
+            if (cross.type === 'broodmare-stallion-sibling') {
+              // 繫殖牝馬×種牡馬の全兄妹クロス：種牡馬のみを追加
+              siblingGroupsFinal.push([cross.broodmareNode]);
+            } else {
+              const group = [cross.stallionNode, cross.broodmareNode];
+              
+              if (cross.type === 'sameName') {
+                const horseName = cross.stallionNode ? cross.stallionNode.name : null;
+                const hasbroodmareIndex = broodmareGroupIndexes.has(cross.stallionIndex) || 
+                                          broodmareGroupIndexes.has(cross.broodmareIndex);
+                
+                // 繫殖牝馬側のindexを含む場合
+                if (hasbroodmareIndex) {
+                  // 異なるselectedHorseでもクロスしている場合はsameNameGroupsに含める
+                  if (namesWithDifferentSelectedHorseCross.has(horseName)) {
+                    sameNameGroupsFinal.push(group);
+                  }
+                  // 同じselectedHorseでしかクロスしていない場合はsameNameGroupsから除外
+                } else {
+                  // 繫殖牝馬側のindexを含まない場合は通常通り追加
+                  sameNameGroupsFinal.push(group);
+                }
+              } else if (cross.type === 'exception') {
+                // 例外パターンのクロス
+                const targetNode = cross.stallionNode || cross.broodmareNode;
+                if (cross.displayInSameNameGroups) {
+                  sameNameGroupsFinal.push([targetNode]);
+                } else {
+                  siblingGroupsFinal.push([targetNode]);
+                }
+              } else {
+                siblingGroupsFinal.push(group);
+              }
             }
           });
 
-          const combinedArray = [...stallionsArray, ...broodmaresArray];
-
-          const ensureChildName = (horse) => {
-            if (!horse) {
-              return horse;
-            }
-            const hasChildNameKey = Object.prototype.hasOwnProperty.call(
-              horse,
-              "childName"
-            );
-            // if (
-            //   !hasChildNameKey ||
-            //   horse.childName === null ||
-            //   horse.childName === undefined
-            // ) {
-            //   return { ...horse, childName: crypto.randomUUID() };
-            // }
-            return { ...horse };
-          };
-
-          const startsWithParen = (text) => {
-            if (typeof text !== "string") {
-              return false;
-            }
-            const trimmed = text.trim();
-            return trimmed.startsWith("(") || trimmed.startsWith("（");
-          };
-
-          const filterGroupsByChildAndSelected = (groups) =>
-            groups.filter((group) => {
-              if (!group || group.length <= 1) {
-                return false;
+          // sameNameGroupsFinalとsiblingGroupsFinalを名前でグループ化し、JSONから同名の馬を追加
+          // 1. sameNameGroupsFinalを名前でグループ化
+          const sameNameGroupsByName = new Map(); // name → [nodes]
+          sameNameGroupsFinal.forEach(group => {
+            group.forEach(node => {
+              if (node && node.name) {
+                if (!sameNameGroupsByName.has(node.name)) {
+                  sameNameGroupsByName.set(node.name, []);
+                }
+                // 重複チェック（同じindexが既に含まれていないか）
+                const existingIndexes = sameNameGroupsByName.get(node.name).map(n => n.index);
+                if (!existingIndexes.includes(node.index)) {
+                  sameNameGroupsByName.get(node.name).push(node);
+                }
               }
-
-              const childNames = group.map((item) => item?.childName ?? null);
-              const selectedHorses = group.map(
-                (item) => item?.selectedHorse ?? null
-              );
-
-              const nonNullChildNames = childNames.filter(
-                (name) => name !== null
-              );
-              const allChildNamesEqualButNonNull =
-                nonNullChildNames.length === group.length &&
-                new Set(nonNullChildNames).size === 1;
-
-              if (allChildNamesEqualButNonNull) {
-                return false;
-              }
-
-              const allChildNamesNull = nonNullChildNames.length === 0;
-              const allSelectedHorsesEqual =
-                new Set(selectedHorses).size === 1;
-
-              if (allChildNamesNull && allSelectedHorsesEqual) {
-                return false;
-              }
-
-              return true;
             });
+          });
+          
+          // stallionsArrayとbroodmaresArrayから同名の馬を探して追加
+          sameNameGroupsByName.forEach((nodes, name) => {
+            const existingIndexes = nodes.map(n => n.index);
+            [...stallionsArray, ...broodmaresArray].forEach(horse => {
+              if (horse && horse.name === name && !existingIndexes.includes(horse.index)) {
+                nodes.push(horse);
+                existingIndexes.push(horse.index);
+              }
+            });
+          });
+          
+          // Map → 配列に変換
+          const sameNameGroupsFinalGrouped = Array.from(sameNameGroupsByName.values());
+          
+          // 2. siblingGroupsFinalを名前でグループ化
+          const siblingGroupsByName = new Map(); // name → [nodes]
+          siblingGroupsFinal.forEach(group => {
+            group.forEach(node => {
+              if (node && node.name) {
+                if (!siblingGroupsByName.has(node.name)) {
+                  siblingGroupsByName.set(node.name, []);
+                }
+                // 重複チェック（同じindexが既に含まれていないか）
+                const existingIndexes = siblingGroupsByName.get(node.name).map(n => n.index);
+                if (!existingIndexes.includes(node.index)) {
+                  siblingGroupsByName.get(node.name).push(node);
+                }
+              }
+            });
+          });
+          
+          // stallionsArrayとbroodmaresArrayから同名の馬を探して追加
+          siblingGroupsByName.forEach((nodes, name) => {
+            const existingIndexes = nodes.map(n => n.index);
+            [...stallionsArray, ...broodmaresArray].forEach(horse => {
+              if (horse && horse.name === name && !existingIndexes.includes(horse.index)) {
+                nodes.push(horse);
+                existingIndexes.push(horse.index);
+              }
+            });
+          });
+          
+          // Map → 配列に変換
+          const siblingGroupsFinalGrouped = Array.from(siblingGroupsByName.values());
 
+          // siblingGroupsFinalGroupedと重複する名前をsameNameGroupsFinalGroupedから削除
+          const namesInSiblingGroups = new Set();
+          siblingGroupsFinalGrouped.forEach(group => {
+            if (group.length > 0 && group[0] && group[0].name) {
+              namesInSiblingGroups.add(group[0].name);
+            }
+          });
+          
+          // sameNameGroupsFinalGroupedから重複する名前のグループを削除
+          const sameNameGroupsFinalFiltered = sameNameGroupsFinalGrouped.filter(group => {
+            if (group.length > 0 && group[0] && group[0].name) {
+              return !namesInSiblingGroups.has(group[0].name);
+            }
+            return true;
+          });
+
+          // combinedFlatIndexesとcombinedFlatSeenを再構築
+          const newCombinedFlatIndexes = [];
+          const newCombinedFlatSeen = Array.from(new Array(32).fill(false));
+          
+          // sameNameGroupsFinalFilteredから全てのindexを収集
+          sameNameGroupsFinalFiltered.forEach(group => {
+            group.forEach(node => {
+              if (node && node.index !== undefined) {
+                const horseName = node.name;
+                const hasbroodmareIndex = broodmareGroupIndexes.has(node.index);
+                
+                // 繫殖牝馬側のindexでも、別系統でクロスしている場合は含める
+                if (hasbroodmareIndex) {
+                  // 異なるselectedHorseでクロスしている場合のみ追加
+                  if (namesWithDifferentSelectedHorseCross.has(horseName) && !newCombinedFlatSeen[node.index]) {
+                    newCombinedFlatSeen[node.index] = true;
+                    newCombinedFlatIndexes.push(node.index);
+                  }
+                } else {
+                  // 繫殖牝馬側のindexでない場合は通常通り追加
+                  if (!newCombinedFlatSeen[node.index]) {
+                    newCombinedFlatSeen[node.index] = true;
+                    newCombinedFlatIndexes.push(node.index);
+                  }
+                }
+              }
+            });
+          });
+          
+          // siblingGroupsFinalGroupedから全てのindexを収集
+          siblingGroupsFinalGrouped.forEach(group => {
+            group.forEach(node => {
+              if (node && node.index !== undefined) {
+                if (!newCombinedFlatSeen[node.index]) {
+                  newCombinedFlatSeen[node.index] = true;
+                  newCombinedFlatIndexes.push(node.index);
+                }
+              }
+            });
+          });
+
+          // sameNameGroupsFinalFilteredの特殊チェック
           const indexGroupAssignments = [
             1, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
             1, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -3559,9 +2805,7 @@
                 })
                 .filter((value) => typeof value === "number")
             );
-            const coverageOk = [3, 4, 5].every((label) =>
-              coveredGroups.has(label)
-            );
+            const coverageOk = coveredGroups.has(3) && coveredGroups.has(4) && coveredGroups.has(5);
             if (!coverageOk) {
               return false;
             }
@@ -3580,190 +2824,37 @@
             return factorSet.size >= 6;
           };
 
-          const hasSameName = (stallion, broodmare) =>
-            !!stallion?.name &&
-            !!broodmare?.name &&
-            stallion.name === broodmare.name;
-
-          const hasFullBrotherRelation = (stallion, broodmare) => {
-            if (!stallion || !broodmare) {
-              return false;
-            }
-            const stallionName = stallion?.name ?? "";
-            const broodmareName = broodmare?.name ?? "";
-
-            const broodmareFullBrothers = Array.isArray(broodmare?.fullBrothers)
-              ? broodmare.fullBrothers
-              : [];
-            if (
-              broodmareFullBrothers.some(
-                (value) => value && value === stallionName
-              )
-            ) {
-              return true;
-            }
-
-            const stallionFullBrothers = Array.isArray(stallion?.fullBrothers)
-              ? stallion.fullBrothers
-              : [];
-            if (
-              stallionFullBrothers.some(
-                (value) => value && value === broodmareName
-              )
-            ) {
-              return true;
-            }
-
-            return false;
-          };
-
-          const buildGroupsByMatch = (matchFn) => {
-            const totalMembers = combinedArray.length;
-            const parents = Array.from(
-              { length: totalMembers },
-              (_, index) => index
-            );
-
-            const find = (idx) => {
-              if (parents[idx] === idx) {
-                return idx;
-              }
-              parents[idx] = find(parents[idx]);
-              return parents[idx];
-            };
-
-            const union = (a, b) => {
-              const rootA = find(a);
-              const rootB = find(b);
-              if (rootA === rootB) {
-                return;
-              }
-              parents[rootB] = rootA;
-            };
-
-            const stallionsLength = stallionsArray.length;
-
-            for (
-              let stallionIndex = 0;
-              stallionIndex < stallionsLength;
-              stallionIndex++
-            ) {
-              const stallion = stallionsArray[stallionIndex];
-              if (!stallion) {
-                continue;
-              }
-              for (
-                let broodmareIndex = 0;
-                broodmareIndex < broodmaresArray.length;
-                broodmareIndex++
-              ) {
-                const broodmare = broodmaresArray[broodmareIndex];
-                if (!broodmare) {
-                  continue;
-                }
-                if (matchFn(stallion, broodmare)) {
-                  union(stallionIndex, stallionsLength + broodmareIndex);
-                }
-              }
-            }
-
-            const groupMap = new Map();
-            combinedArray.forEach((horse, index) => {
-              if (!horse) {
-                return;
-              }
-              const rootId = find(index);
-              if (!groupMap.has(rootId)) {
-                groupMap.set(rootId, []);
-              }
-              groupMap.get(rootId).push(ensureChildName(horse));
-            });
-
-            return Array.from(groupMap.values()).filter(
-              (group) => group.length > 1
-            );
-          };
-
-          const sameNameGroupsList = filterGroupsByChildAndSelected(
-            buildGroupsByMatch(hasSameName)
-          );
-          const siblingGroupsList = filterGroupsByChildAndSelected(
-            buildGroupsByMatch(hasFullBrotherRelation)
-          )
-            .map((group) =>
-              group.filter((item) => !startsWithParen(item?.subName ?? ""))
-            );
-
-          const flattenGroupsByIndex = (groups) => {
-            const flattened = Array.from(new Array(32).fill(null));
-            groups.forEach((group) => {
-              group.forEach((item) => {
-                if (item && typeof item.index === "number") {
-                  flattened[item.index] = group;
+          // sameNameGroupsFinalFilteredの各グループをチェック
+          const specialCheckIndexes = [];
+          const specialCheckSeen = Array.from(new Array(32).fill(false));
+          
+          sameNameGroupsFinalFiltered.forEach(group => {
+            if (evaluateSameNameSpecialCheck(group)) {
+              // 条件を満たすグループのindexを収集
+              group.forEach(node => {
+                if (node && node.index !== undefined && !specialCheckSeen[node.index]) {
+                  specialCheckSeen[node.index] = true;
+                  specialCheckIndexes.push(node.index);
                 }
               });
-            });
-            return flattened;
-          };
-
-          const sameNameGroups = flattenGroupsByIndex(sameNameGroupsList);
-          const siblingGroups = flattenGroupsByIndex(siblingGroupsList);
-          const sameNameGroupIndexes = sameNameGroupsList.map((group) =>
-            group
-              .map((item) => item?.index)
-              .filter((index) => typeof index === "number")
-          );
-          const siblingGroupIndexes = siblingGroupsList.map((group) =>
-            group
-              .map((item) => item?.index)
-              .filter((index) => typeof index === "number")
-          );
-          const sameNameSpecialChecks = sameNameGroupsList.map(
-            evaluateSameNameSpecialCheck
-          );
-          const sameNameSpecialByIndex = Array.from(
-            new Array(32).fill(false)
-          );
-          sameNameGroupsList.forEach((group, groupIndex) => {
-            const flag = sameNameSpecialChecks[groupIndex];
-            group.forEach((item) => {
-              if (item && typeof item.index === "number") {
-                sameNameSpecialByIndex[item.index] = flag;
-              }
-            });
+            }
           });
 
-          const combinedFlatIndexes = [
-            ...new Set([
-              ...sameNameGroupIndexes.flat(),
-              ...siblingGroupIndexes.flat(),
-            ]),
-          ];
+          // 結果を保存
+          this.sameNameGroups = sameNameGroupsFinalFiltered;
+          this.siblingGroups = siblingGroupsFinalGrouped;
+          this.sameNameSpecialChecks = specialCheckIndexes;
+          this.sameNameSpecialChecksByIndex = specialCheckSeen;
 
-          this.sameNameGroups = {
-            byIndex: [sameNameGroupsList, siblingGroupsList],
-            indexes: combinedFlatIndexes,
-            special: {
-              sameName: {
-                byGroup: sameNameSpecialChecks,
-                byIndex: sameNameSpecialByIndex,
-              },
-            },
-          };
-          this.sameNameSpecialChecks = sameNameSpecialChecks;
-          this.sameNameSpecialChecksByIndex = sameNameSpecialByIndex;
-
-          // インブリードチェック結果
-          let checkResultInbreed = Array.from(new Array(32).fill(null));
-
-          let i = 0;
-
-          let inbreedArray = 0;
           // クロスが発生した箇所を赤くする
-          this.sameNameGroups.indexes.forEach(element => {
-            this.dispColor[element] = "inbreed";
+          let inbreedArray = 0;
+          newCombinedFlatIndexes.forEach(element => {
+            this.$set(this.dispColor, element, "inbreed");
             inbreedArray++;
           });
+          // specialCheckIndexes.forEach(element => {
+          //   this.$set(this.dispColor, element, "supreme");
+          // });
 
           // インブリード発生数を返す
           return inbreedArray;
@@ -3860,12 +2951,12 @@
           result = "";
 
           // 至高判定
-          const hasSameNameSpecial =
-            Array.isArray(this.sameNameSpecialChecks) &&
-            this.sameNameSpecialChecks.some((flag) => Boolean(flag));
+          // const hasSameNameSpecial =
+          //   Array.isArray(this.sameNameSpecialChecks) &&
+          //   this.sameNameSpecialChecks.some((flag) => Boolean(flag));
 
           // 至高判定OKなら至高
-          if (hasSameNameSpecial) {
+          if (this.sameNameSpecialChecks.length > 0) {
             return "theory_07";
           }
 
@@ -3924,6 +3015,75 @@
         },
 
         // カウントした因子数を画面に表示させる
+        applyManualFactors(rowIndex, factors) {
+          const targetRow = Number(rowIndex);
+          if (
+            !Number.isInteger(targetRow) ||
+            targetRow < 0 ||
+            targetRow >= this.factorCd.length
+          ) {
+            return;
+          }
+
+          const picked = Array.isArray(factors) ? factors : [];
+          const normalized = [];
+          picked.forEach((value) => {
+            const text = typeof value === "string" ? value.trim() : "";
+            if (
+              text &&
+              manualFactorOptions.includes(text) &&
+              !normalized.includes(text)
+            ) {
+              normalized.push(text);
+            }
+          });
+
+          const sanitized = normalized.slice(0, 2);
+          while (sanitized.length < 2) {
+            sanitized.push("");
+          }
+
+          sanitized.forEach((value, index) => {
+            const columnIndex = index + 1;
+            const code = factorMap.get(value) ?? "00";
+            this.setFactorName(targetRow, columnIndex, value);
+            this.setFactorCd(targetRow, columnIndex, code);
+            this.setFactorCss(
+              targetRow,
+              columnIndex,
+              this.fillInFactorCells(code, targetRow)
+            );
+          });
+
+          const selectedEntry = this.selected[targetRow];
+          if (selectedEntry) {
+            const updatedFactors = Array.isArray(selectedEntry.factors)
+              ? [...selectedEntry.factors]
+              : ["", "", ""];
+            updatedFactors[1] = sanitized[0] || "";
+            updatedFactors[2] = sanitized[1] || "";
+            this.$set(this.selected, targetRow, {
+              ...selectedEntry,
+              factors: updatedFactors,
+            });
+
+            if (this.inbreedList[targetRow]?.selfInbreed) {
+              this.$set(this.inbreedList, targetRow, {
+                ...this.inbreedList[targetRow],
+                factors: updatedFactors,
+              });
+              this.dispInbreedFactorCounts();
+            }
+          }
+
+          this.factorNumtoString = this.dispFactorCounts(this.factorCd);
+
+          if (typeof window !== "undefined" && window.localStorage) {
+            window.localStorage.setItem("dabimasFactor", JSON.stringify(this.selected));
+            window.localStorage.setItem("dabimasFactorCategory",JSON.stringify(this.category));
+          }
+        },
+
         dispFactorCounts: function (factorCdArray) {
           // 配列の中にある因子数をカウントする
           let count = {};
@@ -3991,7 +3151,7 @@
                   bros.length != 0
                     ? bros[0].fullSisters
                     : ["",""],
-                childName: myId,
+                childName: null,
               };
 
               // 0番目以降は祖全データ＋subName''＋使用不可フラグを設定（因子配列も念のためコピー）
@@ -4840,25 +4000,51 @@
 
         // 因子名を詰め込む
         setFactorName: function (row, col, factorName) {
-          this.factorName[row][col] = factorName;
+          if (!this.factorName[row]) {
+            this.$set(this.factorName, row, ["", "", ""]);
+          }
+          this.$set(this.factorName[row], col, factorName ?? "");
         },
 
         // 因子情報を詰め込む
         setFactorCd: function (row, col, factorCd) {
-          this.factorCd[row][col] = factorCd;
+          if (!this.factorCd[row]) {
+            this.$set(this.factorCd, row, ["00", "00", "00"]);
+          }
+          this.$set(this.factorCd[row], col, factorCd ?? "00");
         },
 
         // 因子情報を詰め込む
         setFactorCss: function (row, col, styleFactorClass) {
-          this.styleFactorClasses[row][col] = styleFactorClass;
+          if (!this.styleFactorClasses[row]) {
+            const baseCss = typeof this.getCss === "function" ? this.getCss(row) : "";
+            const fallback = baseCss
+              ? `${baseCss} styleFactorClassMain`
+              : "styleFactorClassMain";
+            this.$set(
+              this.styleFactorClasses,
+              row,
+              [fallback, fallback, fallback]
+            );
+          }
+          const baseCss = typeof this.getCss === "function" ? this.getCss(row) : "";
+          const fallback = baseCss
+            ? `${baseCss} styleFactorClassMain`
+            : "styleFactorClassMain";
+          this.$set(
+            this.styleFactorClasses[row],
+            col,
+            styleFactorClass ?? fallback
+          );
         },
 
         // 親系統を詰め込む
         setParentLine: function (row, parentLine) {
-          this.parentLines[row] = parentLine;
-          this.styleParentLineClasses[row] = this.fillInParentLineCells(
-            parentLine,
-            row
+          this.$set(this.parentLines, row, parentLine);
+          this.$set(
+            this.styleParentLineClasses,
+            row,
+            this.fillInParentLineCells(parentLine, row)
           );
         },
 
@@ -4899,18 +4085,21 @@
 
             // セットする＋自分の位置も併せてセットする
             if (horseDataList[cell_id_que.indexOf(cell_id)]) {
-              this.selected[cell_id + sex * 16] = {
+              this.$set(this.selected, cell_id + sex * 16, {
                 ...horseDataList[cell_id_que.indexOf(cell_id)],
                 index: cell_id + sex * 16,
                 selfSelected: isFirst,
-              };
-              this.category[cell_id + sex * 16] =
-                horseDataList[cell_id_que.indexOf(cell_id)].son;
+              });
+              this.$set(
+                this.category,
+                cell_id + sex * 16,
+                horseDataList[cell_id_que.indexOf(cell_id)].son
+              );
               // 配列の先頭フラグを落とす
               isFirst = false;
             } else {
-              this.selected[cell_id + sex * 16] = null;
-              this.category[cell_id + sex * 16] = null;
+              this.$set(this.selected, cell_id + sex * 16, null);
+              this.$set(this.category, cell_id + sex * 16, null);
             }
 
             // 配列に因子名を詰め込む
