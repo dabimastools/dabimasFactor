@@ -21,8 +21,8 @@
   },
   {
     "id": "boysieBoy-thePhoenix",
-    "name": "ボイズィーボーイの母とThe Phoenixが全兄妹",
-    "description": "ボイズィーボーイが5代目より小さい場合、相手側のThe Phoenixをクロス認定",
+    "name": "ボイズィーボーイの母とライジングフレームが全兄妹",
+    "description": "ボイズィーボーイが5代目より小さい場合、相手側のライジングフレームをクロス認定",
     "trigger": {
       "horse": "ボイズィーボーイ",
       "generation": 5,
@@ -30,7 +30,7 @@
       "side": "either"
     },
     "target": {
-      "horse": "The Phoenix",
+      "horse": "ライジングフレーム",
       "side": "opposite"
     },
     "action": {
