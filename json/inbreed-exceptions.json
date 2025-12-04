@@ -1,0 +1,62 @@
+[
+  {
+    "id": "stayGold-soccerBoy",
+    "name": "ステイゴールドの母とサッカーボーイが全兄妹",
+    "description": "ステイゴールドが5代目より小さい場合、相手側のサッカーボーイをクロス認定",
+    "trigger": {
+      "horse": "ステイゴールド",
+      "generation": 5,
+      "operator": "<",
+      "side": "either"
+    },
+    "target": {
+      "horse": "サッカーボーイ",
+      "side": "opposite"
+    },
+    "action": {
+      "recognizeAsCross": true,
+      "excludeAncestors": true,
+      "displayInSameNameGroups": false
+    }
+  },
+  {
+    "id": "boysieBoy-thePhoenix",
+    "name": "ボイズィーボーイの母とThe Phoenixが全兄妹",
+    "description": "ボイズィーボーイが5代目より小さい場合、相手側のThe Phoenixをクロス認定",
+    "trigger": {
+      "horse": "ボイズィーボーイ",
+      "generation": 5,
+      "operator": "<",
+      "side": "either"
+    },
+    "target": {
+      "horse": "The Phoenix",
+      "side": "opposite"
+    },
+    "action": {
+      "recognizeAsCross": true,
+      "excludeAncestors": true,
+      "displayInSameNameGroups": false
+    }
+  },
+  {
+    "id": "realSteal-Kingmambo",
+    "name": "リアルスティールの母母がキングマンボと全兄妹",
+    "description": "リアルスティールが4代目より小さい場合、相手側のキングマンボをクロス認定",
+    "trigger": {
+      "horse": "リアルスティール",
+      "generation": 4,
+      "operator": "<",
+      "side": "either"
+    },
+    "target": {
+      "horse": "キングマンボ",
+      "side": "opposite"
+    },
+    "action": {
+      "recognizeAsCross": true,
+      "excludeAncestors": true,
+      "displayInSameNameGroups": false
+    }
+  }
+]
