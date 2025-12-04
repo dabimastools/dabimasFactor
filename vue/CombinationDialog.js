@@ -5,6 +5,10 @@ Vue.component('combination-dialog', {
     value: {
       type: Boolean,
       default: false
+    },
+    allHorsesSet: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -307,6 +311,17 @@ Vue.component('combination-dialog', {
                   新規保存
                 </h3>
 
+                <v-alert
+                  v-if="!allHorsesSet"
+                  type="warning"
+                  dense
+                  outlined
+                  class="mb-2"
+                  style="font-size: 13px;"
+                >
+                  すべての馬を入力してください
+                </v-alert>
+
                 <v-text-field
                   v-model="newTitle"
                   label="配合タイトル（10文字まで）"
@@ -316,6 +331,7 @@ Vue.component('combination-dialog', {
                   counter="10"
                   maxlength="10"
                   hide-details
+                  :disabled="!allHorsesSet"
                   @keyup.enter="saveConfig"
                   class="combination-title-input"
                 ></v-text-field>
@@ -326,6 +342,7 @@ Vue.component('combination-dialog', {
                   color="primary"
                   block
                   @click="saveConfig"
+                  :disabled="!allHorsesSet"
                   :loading="saving"
                   class="combination-save-btn"
                 >

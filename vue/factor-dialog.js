@@ -24,7 +24,7 @@ Vue.component('factor-dialog', {
         <!-- 洗練されたヘッダー -->
         <div class="dialog-header">
           <div class="horse-name-display">
-            <v-icon color="white" size="32">mdi-horse-variant</v-icon>
+            <v-icon v-if="showIconsMdAndUp" color="white" size="32">mdi-horse-variant</v-icon>
             <div>
               <div class="horse-name">{{ selectedHorseName }}</div>
               <div class="dialog-subtitle">因子を選択してください</div>
@@ -34,7 +34,7 @@ Vue.component('factor-dialog', {
 
         <v-card-text>
           <div class="factor-selection-label">
-            <v-icon size="20">mdi-clipboard-list-outline</v-icon>
+            <v-icon v-if="showIconsMdAndUp" size="20">mdi-clipboard-list-outline</v-icon>
             <span>短速底長堅難から1〜2個選択</span>
           </div>
 
@@ -81,7 +81,7 @@ Vue.component('factor-dialog', {
           </v-select>
 
           <div class="selection-info">
-            <v-icon size="18">mdi-information-outline</v-icon>
+            <v-icon v-if="showIconsMdAndUp" size="18">mdi-information-outline</v-icon>
             <span>{{ selectionInfoText }}</span>
           </div>
         </v-card-text>
@@ -99,7 +99,7 @@ Vue.component('factor-dialog', {
             class="action-button confirm-button"
             @click="confirmFactorSelection"
           >
-            <v-icon left size="20">mdi-check-circle-outline</v-icon>
+            <v-icon v-if="showIconsMdAndUp" left size="20">mdi-check-circle-outline</v-icon>
             設定
           </v-btn>
         </v-card-actions>
@@ -137,6 +137,10 @@ Vue.component('factor-dialog', {
         return '因子を2つ選択しています（最大数）';
       }
       return '';
+    },
+    showIconsMdAndUp() {
+      const breakpoint = this.$vuetify && this.$vuetify.breakpoint;
+      return breakpoint ? breakpoint.mdAndUp : true;
     }
   },
   watch: {
