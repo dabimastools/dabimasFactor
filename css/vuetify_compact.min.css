@@ -18163,7 +18163,7 @@
     opacity: .32
   }
   
-  .v-list-item {
+  /* .v-list-item {
     align-items: center;
     display: flex;
     flex: 1 1 100%;
@@ -18173,8 +18173,20 @@
     padding: 0 10px;
     position: relative;
     text-decoration: none
+  } */
+
+  .v-list-item {
+    align-items: center;
+    display: flex;
+    flex: 1 1 100%;
+    letter-spacing: normal;
+    min-height: 20px;
+    outline: none;
+    padding: 0 10px;
+    position: relative;
+    text-decoration: none
   }
-  
+
   .v-list-item--disabled {
     pointer-events: none
   }
@@ -18192,10 +18204,15 @@
     font-size: 0
   }
   
-  .v-list-item__action {
+  /* .v-list-item__action {
     align-self: center;
     margin: 12px 0
+  } */
+  .v-list-item__action {
+    align-self: center;
+    margin: 5px 0
   }
+
   
   .v-list-item__action .v-input, .v-list-item__action .v-input--selection-controls__input, .v-list-item__action .v-input__control, .v-list-item__action .v-input__slot {
     margin: 0!important
@@ -18378,9 +18395,13 @@
     margin-top: 16px
   }
   
-  .v-list--two-line .v-list-item, .v-list-item--two-line {
+  /* .v-list--two-line .v-list-item, .v-list-item--two-line {
     min-height: 64px
+  } */
+  .v-list--two-line .v-list-item, .v-list-item--two-line {
+    min-height: 20px
   }
+
   
   .v-list--two-line .v-list-item .v-list-item__icon, .v-list-item--two-line .v-list-item__icon {
     margin-bottom: 32px
@@ -20863,10 +20884,15 @@
     margin-top: 4px
   }
   
-  .v-input--selection-controls {
+  /* .v-input--selection-controls {
     margin-top: 16px;
     padding-top: 4px
+  } */
+  .v-input--selection-controls {
+    margin-top: 4px;
+    padding-top: 4px
   }
+
   
   .v-input--selection-controls>.v-input__append-outer, .v-input--selection-controls>.v-input__prepend-outer {
     margin-top: 0;
