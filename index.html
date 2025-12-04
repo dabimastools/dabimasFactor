@@ -1699,11 +1699,9 @@
           );
 
           // 合計因子数表示
-          // this.factorNumtoString = Array.from(new Array(10).fill("00"));
           this.factorNumtoString = Array.from(new Array(12).fill("00"));
 
           // インブリード因子数表示
-          // this.inbreedFactorNumtoString = Array.from(new Array(10).fill("00"));
           this.inbreedFactorNumtoString = Array.from(new Array(12).fill("00"));
 
           // 子系統数
@@ -2062,7 +2060,7 @@
 
           // 自動クロスされたところのボタンを非活性化させる
           allIndexes.forEach(element => {
-            this.isInbreedButtonClicked[element] = 0;
+            this.$set(this.isInbreedButtonClicked, element, 0);
           });
 
           const mergedGroupsByName = new Map();
