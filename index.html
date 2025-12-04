@@ -208,6 +208,7 @@
       <!-- 配合保存ダイアログ -->
       <combination-dialog
         v-model="combinationDialogVisible"
+        :all-horses-set="allHorsesSet"
         @restore="onCombinationRestore"
       ></combination-dialog>
 
@@ -1208,15 +1209,11 @@
           return this.selected.every((e) => e);
         },
         combinationCellStyle() {
-          return this.allHorsesSet
-            ? {
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                cursor: "pointer",
-              }
-            : {
-                background: "#bdbdbd",
-                cursor: "not-allowed",
-              };
+          // 常にダイアログを開けるようにする
+          return {
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            cursor: "pointer",
+          };
         }
       },
       watch: {
@@ -1277,9 +1274,7 @@
           console.log('combinationDialogVisible set to:', this.combinationDialogVisible);
         },
         handleCombinationCellClick: function () {
-          if (!this.allHorsesSet) {
-            return;
-          }
+          // 常にダイアログを開く（中身の活性/非活性はallHorsesSetで制御）
           this.combinationDialog();
         },
         onCombinationRestore: function (configData) {
@@ -2449,62 +2444,11 @@
 
           // 祖先除外ロジックを適用
           const excludedNodes = new Set();
+          const exceptionExcludedPairs = new Set(); // 例外パターンで除外されたペア（"idx1-idx2"形式）
           const broodmareGroupIndexes = new Set(); // 繫殖牝馬側のindexを記録（filterで使用）
           const recognizedCrosses = [];
           
-          for (const cross of crossCandidates) {
-            // 繫殖牝馬×種牡馬の全兄妹クロスの場合
-            if (cross.type === 'broodmare-stallion-sibling') {
-              // 種牡馬側のみをsiblingGroupsに追加
-              recognizedCrosses.push(cross);
-              
-              // 繫殖牝馬側の全ての馬を記録し、その祖先も除外
-              cross.broodmareGroupIndexes.forEach(idx => {
-                broodmareGroupIndexes.add(idx);
-                
-                // この繫殖牝馬の祖先も除外
-                const ancestors = getAncestorIndexes(idx);
-                ancestors.forEach(ancestorIdx => {
-                  excludedNodes.add(ancestorIdx);
-                });
-              });
-              
-              // 種牡馬側の全ての祖先を除外リストに追加
-              const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
-              broodmareAncestors.forEach(idx => {
-                excludedNodes.add(idx);
-              });
-              
-              continue;
-            }
-            
-            // 通常のクロス判定（名前一致・fullBrothers一致）
-            // どちらかのノードが除外リストに含まれているかチェック
-            const stallionExcluded = excludedNodes.has(cross.stallionIndex);
-            const broodmareExcluded = excludedNodes.has(cross.broodmareIndex);
-            
-            // 両方とも除外されている場合のみスキップ
-            if (stallionExcluded && broodmareExcluded) {
-              continue;
-            }
-            
-            // インブリード認定
-            recognizedCrosses.push(cross);
-            
-            // 使用したノードの祖先を除外リストに追加
-            const stallionAncestors = getAncestorIndexes(cross.stallionIndex);
-            const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
-            
-            stallionAncestors.forEach(idx => {
-              excludedNodes.add(idx);
-            });
-            
-            broodmareAncestors.forEach(idx => {
-              excludedNodes.add(idx);
-            });
-          }
-
-          // ===== 例外パターンのクロス判定 =====
+          // ===== 例外パターンのクロス判定（通常のクロス判定の前に実行） =====
           // ヘルパー関数：indexから世代を計算
           const getGenerationFromIndex = (index) => {
             if (index === 0 || index === 16) return 1;
@@ -2624,12 +2568,85 @@
                 
                 // 祖先を除外
                 if (exception.action.excludeAncestors) {
+                  // トリガー馬の祖先を取得
+                  const triggerAncestors = getAncestorIndexes(triggerIdx);
+                  triggerAncestors.add(triggerIdx); // トリガー馬自身も含める
+                  
+                  // ターゲット馬の祖先を取得
                   const ancestors = getAncestorIndexes(targetIdx);
-                  ancestors.forEach(idx => excludedNodes.add(idx));
+                  ancestors.forEach(ancestorIdx => {
+                    excludedNodes.add(ancestorIdx);
+                    
+                    // トリガー馬とその祖先との組み合わせを記録
+                    triggerAncestors.forEach(triggerAncestor => {
+                      exceptionExcludedPairs.add(`${triggerAncestor}-${ancestorIdx}`);
+                      exceptionExcludedPairs.add(`${ancestorIdx}-${triggerAncestor}`);
+                    });
+                  });
                 }
               });
             });
           });
+          
+          for (const cross of crossCandidates) {
+            // 繫殖牝馬×種牡馬の全兄妹クロスの場合
+            if (cross.type === 'broodmare-stallion-sibling') {
+              // 種牡馬側のみをsiblingGroupsに追加
+              recognizedCrosses.push(cross);
+              
+              // 繫殖牝馬側の全ての馬を記録し、その祖先も除外
+              cross.broodmareGroupIndexes.forEach(idx => {
+                broodmareGroupIndexes.add(idx);
+                
+                // この繫殖牝馬の祖先も除外
+                const ancestors = getAncestorIndexes(idx);
+                ancestors.forEach(ancestorIdx => {
+                  excludedNodes.add(ancestorIdx);
+                });
+              });
+              
+              // 種牡馬側の全ての祖先を除外リストに追加
+              const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
+              broodmareAncestors.forEach(idx => {
+                excludedNodes.add(idx);
+              });
+              
+              continue;
+            }
+            
+            // 通常のクロス判定（名前一致・fullBrothers一致）
+            // 例外パターンで除外されたペアかチェック
+            const pairKey1 = `${cross.stallionIndex}-${cross.broodmareIndex}`;
+            const pairKey2 = `${cross.broodmareIndex}-${cross.stallionIndex}`;
+            if (exceptionExcludedPairs.has(pairKey1) || exceptionExcludedPairs.has(pairKey2)) {
+              continue; // 例外パターンで除外されたペアなのでスキップ
+            }
+            
+            // どちらかのノードが除外リストに含まれているかチェック
+            const stallionExcluded = excludedNodes.has(cross.stallionIndex);
+            const broodmareExcluded = excludedNodes.has(cross.broodmareIndex);
+            
+            // 両方とも除外されている場合のみスキップ
+            if (stallionExcluded && broodmareExcluded) {
+              continue;
+            }
+            
+            // インブリード認定
+            recognizedCrosses.push(cross);
+            
+            // 使用したノードの祖先を除外リストに追加
+            const stallionAncestors = getAncestorIndexes(cross.stallionIndex);
+            const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
+            
+            stallionAncestors.forEach(idx => {
+              excludedNodes.add(idx);
+            });
+            
+            broodmareAncestors.forEach(idx => {
+              excludedNodes.add(idx);
+            });
+          }
+
 
           // sameNameGroupsとsiblingGroupsに分類
           const sameNameGroupsFinal = [];
