@@ -55,6 +55,16 @@
   border: 2px solid #e9ecef !important;
 }
 
+/* 警告メッセージ */
+.combination-input-area .v-alert {
+  margin-bottom: 12px !important;
+  font-size: 13px !important;
+}
+
+.combination-input-area .v-alert .v-alert__content {
+  padding: 8px 0 !important;
+}
+
 /* テキストボックスの下余白をゼロに */
 .combination-title-input {
   margin-bottom: 0 !important;
