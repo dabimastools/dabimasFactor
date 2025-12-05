@@ -316,15 +316,14 @@ Vue.component('combination-dialog', {
                   type="warning"
                   dense
                   outlined
-                  class="mb-2"
-                  style="font-size: 13px;"
+                  class="combination-warning-alert"
                 >
                   すべての馬を入力してください
                 </v-alert>
 
                 <v-text-field
                   v-model="newTitle"
-                  label="配合タイトル（10文字まで）"
+                  label="　配合タイトル（10文字まで）"
                   placeholder="例：クジラジャック配合"
                   outlined
                   dense

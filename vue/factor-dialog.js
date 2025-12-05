@@ -17,7 +17,7 @@ Vue.component('factor-dialog', {
       @input="updateVisible"
       scrollable
       persistent
-      max-width="480"
+      max-width="520"
       content-class="refined-factor-dialog"
     >
       <v-card>
