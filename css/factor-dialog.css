@@ -133,6 +133,44 @@
     background: #f5f5f5 !important;
 }
 
+/* 選択肢のフォントサイズを16pxに設定 */
+.v-menu__content .v-list-item.manual-factor-option .v-list-item__title {
+    font-size: 16px !important;
+}
+
+.v-menu__content .v-list-item.manual-factor-option .v-list-item__content {
+    font-size: 16px !important;
+}
+
+/* より具体的なセレクタでVuetifyのデフォルトを上書き */
+.manual-factor-menu .v-list-item.manual-factor-option .v-list-item__title {
+    font-size: 16px !important;
+}
+
+.manual-factor-menu .v-list-item.manual-factor-option .v-list-item__content {
+    font-size: 16px !important;
+}
+
+/* 選択肢の高さを調整 */
+.v-menu__content .v-list-item.manual-factor-option {
+    min-height: 28px !important;
+    padding: 4px 16px !important;
+}
+
+.manual-factor-menu .v-list-item.manual-factor-option {
+    min-height: 28px !important;
+    padding: 4px 16px !important;
+}
+
+/* ドロップダウンメニュー全体の最大高さを設定 */
+.manual-factor-menu.v-menu__content {
+    max-height: 320px !important;
+}
+
+.v-menu__content.manual-factor-menu .v-list {
+    padding: 8px 0 !important;
+}
+
 /* 選択された項目のみに色を適用 */
 .v-menu__content .v-list-item.manual-factor-option.f01.v-list-item--active,
 .manual-factor-chip.f01 {
@@ -261,4 +299,32 @@
 
 .v-menu__content .v-list-item.manual-factor-option .v-ripple__container {
     opacity: 0 !important;
+}
+/* 因子ダイアログ専用のアイコンスタイル */
+.refined-factor-dialog .v-input__icon {
+    align-items: center;
+    display: inline-flex;
+    height: 24px;
+    flex: 1 0 auto;
+    justify-content: center;
+    min-width: 12px;
+    width: 24px;
+}
+
+.refined-factor-dialog .v-icon.v-icon {
+    align-items: center;
+    display: inline-flex;
+    font-feature-settings: "liga";
+    font-size: 36px;
+    justify-content: center;
+    letter-spacing: normal;
+    line-height: 1;
+    position: relative;
+    text-indent: 0;
+    transition: .3s cubic-bezier(.25, .8, .5, 1), visibility 0s;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

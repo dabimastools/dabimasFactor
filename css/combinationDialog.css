@@ -55,14 +55,30 @@
   border: 2px solid #e9ecef !important;
 }
 
-/* 警告メッセージ */
-.combination-input-area .v-alert {
+/* 警告ダイアログ - カスタムスタイル */
+.combination-warning-alert.v-alert {
   margin-bottom: 12px !important;
-  font-size: 13px !important;
+  padding: 6px 12px !important;
+  min-height: auto !important;
 }
 
-.combination-input-area .v-alert .v-alert__content {
-  padding: 8px 0 !important;
+.combination-warning-alert.v-alert .v-alert__wrapper {
+  align-items: center !important;
+  min-height: auto !important;
+}
+
+.combination-warning-alert.v-alert .v-alert__icon {
+  align-self: center !important;
+  margin-top: 0 !important;
+  margin-right: 10px !important;
+  font-size: 18px !important;
+}
+
+.combination-warning-alert.v-alert .v-alert__content {
+  padding: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  align-self: center !important;
 }
 
 /* テキストボックスの下余白をゼロに */
@@ -239,6 +255,21 @@
   .combination-input-area {
     padding: 14px !important;
   }
+
+  /* 警告ダイアログ - モバイル版 */
+  .combination-warning-alert.v-alert {
+    margin-bottom: 10px !important;
+    padding: 5px 10px !important;
+  }
+
+  .combination-warning-alert.v-alert .v-alert__icon {
+    margin-right: 8px !important;
+    font-size: 16px !important;
+  }
+
+  .combination-warning-alert.v-alert .v-alert__content {
+    font-size: 12px !important;
+  }
   
   .combination-list-area {
     padding: 10px !important;
@@ -322,6 +353,21 @@
   .combination-input-area {
     padding: 12px !important;
   }
+
+  /* 警告ダイアログ - より小さい画面 */
+  .combination-warning-alert.v-alert {
+    margin-bottom: 8px !important;
+    padding: 4px 8px !important;
+  }
+
+  .combination-warning-alert.v-alert .v-alert__icon {
+    margin-right: 6px !important;
+    font-size: 15px !important;
+  }
+
+  .combination-warning-alert.v-alert .v-alert__content {
+    font-size: 11px !important;
+  }
   
   .combination-list-area {
     padding: 10px !important;
@@ -342,6 +388,12 @@
   .combination-input-area,
   .combination-list-area {
     padding: 10px !important;
+  }
+
+  /* 警告ダイアログ - 非常に小さい画面 */
+  .combination-warning-alert.v-alert {
+    margin-bottom: 8px !important;
+    padding: 4px 8px !important;
   }
 
   .combination-list-item {
