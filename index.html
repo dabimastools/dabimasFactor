@@ -497,7 +497,7 @@
     };
 
     // service workerの登録関係
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator && (location.protocol === "http:" || location.protocol === "https:")) {
       navigator.serviceWorker
         .register("./service-worker.js")
         .then(function (registration) {
