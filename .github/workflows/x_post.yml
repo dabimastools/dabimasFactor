@@ -51,26 +51,56 @@ jobs:
             --input latest_stallions.txt \
             --output latest_stallions.png
 
-      # 公開用 dabimasFactor.json を生成
+      # 公開用 json/dabimasFactor.json を生成
       - name: Build dabimasFactor.json
         run: |
           python scripts/build_dabimas_stream.py \
-            --output dabimasFactor.json \
+            --output json/dabimasFactor.json \
             --progress 200 \
             --fail-on-error
 
-      # 生成した JSON を main ブランチの json/ に反映
-      - name: Push dabimasFactor.json to main/json
-        env:
-          # GitHub Actions が自動発行するトークン
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # service-worker.js の CACHE_NAME を dabimas-factor-vYYYYMMDD-01 へ更新
+      - name: Update CACHE_NAME in service-worker.js
         run: |
-          # コミットメッセージの日付は JST で統一
+          python - <<'PY'
+          import re
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          sw_path = Path("service-worker.js")
+          src = sw_path.read_text(encoding="utf-8")
+
+          ymd = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
+          cache_name = f"dabimas-factor-v{ymd}-01"
+
+          updated, count = re.subn(
+              r"(?m)^var CACHE_NAME = '.*';$",
+              f"var CACHE_NAME = '{cache_name}';",
+              src,
+              count=1,
+          )
+          if count != 1:
+              raise RuntimeError("CACHE_NAME line was not found in service-worker.js")
+
+          sw_path.write_text(updated, encoding="utf-8")
+          print(f"Updated CACHE_NAME: {cache_name}")
+          PY
+
+      # json と service-worker.js を同じコミットで main に反映
+      - name: Commit and push JSON + service-worker cache name
+        run: |
           TODAY="$(TZ=Asia/Tokyo date +'%Y-%m-%d')"
-          python scripts/push_json_action.py \
-            --local-file dabimasFactor.json \
-            --dest-path json/dabimasFactor.json \
-            --message "Update json/dabimasFactor.json (${TODAY})"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add json/dabimasFactor.json service-worker.js
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update json/dabimasFactor.json and CACHE_NAME (${TODAY})"
+            git push
+          fi
 
       # 画像付きで X に投稿
       - name: Post to X
