@@ -92,7 +92,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Render a UTF-8 text file into a PNG image.")
     parser.add_argument("--input", default="latest_stallions.txt", help="Input text file path")
     parser.add_argument("--output", default="latest_stallions.png", help="Output PNG file path")
-    parser.add_argument("--font-path", default="fonts/NotoSansJP-Regular.otf", help="Font file path (OTF/TTF)")
+    parser.add_argument("--font-path", default="fonts/NotoSansCJKjp-Regular.otf", help="Font file path (OTF/TTF)")
     parser.add_argument("--title", default="ダビふぁく 追加データ", help="Image title")
     parser.add_argument("--width", type=int, default=1200, help="Image width in pixels")
     parser.add_argument("--padding", type=int, default=56, help="Horizontal/vertical padding in pixels")
