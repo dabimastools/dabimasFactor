@@ -104,6 +104,7 @@ jobs:
 
       # 画像付きで X に投稿
       - name: Post to X
+        id: post_to_x
         env:
           # X API の認証情報（リポジトリ Secrets）
           X_CLIENT_ID: ${{ secrets.X_CLIENT_ID }}
@@ -117,4 +118,15 @@ jobs:
           X_MEDIA_PATH: latest_stallions.png
         run: |
           python scripts/post_to_x.py
+
+      # Refresh token を Secrets にローテーション保存
+      - name: Rotate X refresh token in GitHub Secrets
+        if: ${{ always() && steps.post_to_x.outputs.new_refresh_token != '' }}
+        env:
+          GH_SECRETS_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
+          NEW_X_REFRESH_TOKEN: ${{ steps.post_to_x.outputs.new_refresh_token }}
+        run: |
+          python scripts/update_repo_secret.py \
+            --secret-name X_REFRESH_TOKEN \
+            --secret-value-env NEW_X_REFRESH_TOKEN
 

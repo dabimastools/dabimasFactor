@@ -3,6 +3,7 @@
 import json
 import mimetypes
 import os
+import uuid
 from pathlib import Path
 
 import requests
@@ -29,6 +30,21 @@ def refresh_access_token(client_id: str, refresh_token: str) -> dict:
     if response.status_code >= 400:
         raise RuntimeError(f"Token refresh failed: {response.status_code} {response.text}")
     return response.json()
+
+
+def set_github_output(name: str, value: str) -> None:
+    output_path = os.getenv("GITHUB_OUTPUT")
+    if not output_path:
+        return
+
+    delimiter = f"EOF_{uuid.uuid4().hex}"
+    with open(output_path, "a", encoding="utf-8") as fp:
+        fp.write(f"{name}<<{delimiter}\n{value}\n{delimiter}\n")
+
+
+def mask_for_github_logs(value: str) -> None:
+    if os.getenv("GITHUB_ACTIONS") == "true" and value:
+        print(f"::add-mask::{value}")
 
 
 def upload_image(access_token: str, image_path: str) -> str:
@@ -91,6 +107,13 @@ def main() -> int:
     access_token = token_response.get("access_token")
     if not access_token:
         raise RuntimeError(f"No access_token in response: {token_response}")
+
+    refreshed_token = token_response.get("refresh_token")
+    if isinstance(refreshed_token, str) and refreshed_token:
+        mask_for_github_logs(refreshed_token)
+        set_github_output("new_refresh_token", refreshed_token)
+    else:
+        set_github_output("new_refresh_token", "")
 
     media_id = upload_image(access_token, media_path) if media_path else None
     post_response = post_tweet(access_token, text, media_id=media_id)
