@@ -2174,6 +2174,13 @@
 
         // インブリード判定
         judgeInbreed: function () {
+          const isInbreedExcludedHorse = (horse) => {
+            const horseName = horse?.name;
+            if (typeof horseName !== "string") {
+              return false;
+            }
+            return horseName.trimStart().startsWith("★");
+          };
           // 世代対応表（indexから世代を取得）
           const generationMap = [
             1, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -2187,6 +2194,9 @@
           for (let loopIndex = 0; loopIndex < this.selected.length; loopIndex++) {
             const value = this.selected[loopIndex];
             if (!value || !value.name) {
+              continue;
+            }
+            if (isInbreedExcludedHorse(value)) {
               continue;
             }
             if (loopIndex < 16) {
