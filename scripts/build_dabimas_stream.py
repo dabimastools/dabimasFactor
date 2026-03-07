@@ -33,6 +33,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from pykakasi import kakasi
 
 
 # スクレイピング対象 URL。
@@ -166,6 +167,8 @@ STALLION_SKIP_ICONS: set[str] = set()
 
 SUB_NAME_RE = re.compile(r"[0-9]...|[一-龠].")
 NUM_RE = re.compile(r"\D")
+JAPANESE_TEXT_RE = re.compile(r"[ぁ-ゖァ-ヺ一-龯々ー]")
+KAKASI_CONVERTER = kakasi()
 
 
 def safe_str(v: object) -> str:
@@ -192,6 +195,14 @@ def normalize_src(src: str) -> str:
     if src.startswith("/"):
         return urljoin(BASE_URL, src)
     return src
+
+
+def to_hiragana_ruby(text: str) -> str:
+    """日本語を含む文字列をひらがなのルビへ変換する。"""
+    s = safe_str(text)
+    if not s or not JAPANESE_TEXT_RE.search(s):
+        return ""
+    return "".join(part["hira"] for part in KAKASI_CONVERTER.convert(s))
 
 
 def new_row() -> list[str]:
@@ -555,6 +566,7 @@ def all_row_to_dabifac_entry(row: list[str]) -> dict:
     # 親系統コードは辞書優先、見つからなければ2文字化で補完。
     return {
         "name": pure_name,
+        "ruby": to_hiragana_ruby(pure_name),
         "subName": sub_name,
         "nature": row_get(row, HD_NATURE),
         "sex": row_get(row, HD_GENDER),

@@ -760,6 +760,7 @@
         :value="selected[index]"
         :items="lists"
         :item-text="horse => [horse.nature ? '[' + horse.nature.charAt(0) + ']' : '', horse.name, horse.subName].filter(Boolean).join('')"
+        :filter="filterHorse"
         solo
         dense
         :placeholder="placeholderText"
@@ -828,6 +829,35 @@
         },
       },
       methods: {
+        normalizeSearchText(text) {
+          if (typeof text !== "string") {
+            return "";
+          }
+
+          return text
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .replace(/[\u30A1-\u30F6]/g, (char) =>
+              String.fromCharCode(char.charCodeAt(0) - 0x60)
+            );
+        },
+        filterHorse(horse, queryText, itemText) {
+          if (horse?.disabled) {
+            return false;
+          }
+
+          const normalizedQuery = this.normalizeSearchText(queryText);
+
+          if (!normalizedQuery) {
+            return true;
+          }
+
+          return [itemText, horse?.name, horse?.subName, horse?.ruby]
+            .map((text) => this.normalizeSearchText(text))
+            .filter(Boolean)
+            .some((text) => text.includes(normalizedQuery));
+        },
         getWidth(index, type) {
           let coefficient = 0;
           switch (index % 16) {
@@ -2181,6 +2211,13 @@
             }
             return horseName.trimStart().startsWith("★");
           };
+          const isBroodmarePlaceholderHorse = (horse) => {
+            const subName = horse?.subName;
+            if (typeof subName !== "string") {
+              return false;
+            }
+            return subName.startsWith("(") && subName.endsWith(")");
+          };
           // 世代対応表（indexから世代を取得）
           const generationMap = [
             1, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -2358,6 +2395,12 @@
             for (let bIdx = 0; bIdx < broodmaresArray.length; bIdx++) {
               const broodmare = broodmaresArray[bIdx];
               if (!broodmare || !broodmare.name) continue;
+              if (
+                isBroodmarePlaceholderHorse(stallion) ||
+                isBroodmarePlaceholderHorse(broodmare)
+              ) {
+                continue;
+              }
               
               let isSibling = false;
               
@@ -2453,7 +2496,8 @@
           });
 
           // 祖先除外ロジックを適用
-          const excludedNodes = new Set();
+          const excludedExceptionTargets = new Set();
+          const excludedAncestorPairs = new Set();
           const exceptionExcludedPairs = new Set(); // 例外パターンで除外されたペア（"idx1-idx2"形式）
           const broodmareGroupIndexes = new Set(); // 繫殖牝馬側のindexを記録（filterで使用）
           const recognizedCrosses = [];
@@ -2484,6 +2528,38 @@
               case '==': return gen === targetGen;
               default: return false;
             }
+          };
+
+          const getPairKey = (stallionIndex, broodmareIndex) =>
+            `${stallionIndex}-${broodmareIndex}`;
+
+          const addExcludedAncestorPairs = (stallionIndexes, broodmareIndexes) => {
+            const stallionAncestors = new Set();
+            const broodmareAncestors = new Set();
+
+            stallionIndexes
+              .filter((idx) => Number.isInteger(idx))
+              .forEach((idx) => {
+                getAncestorIndexes(idx).forEach((ancestorIdx) => {
+                  stallionAncestors.add(ancestorIdx);
+                });
+              });
+
+            broodmareIndexes
+              .filter((idx) => Number.isInteger(idx))
+              .forEach((idx) => {
+                getAncestorIndexes(idx).forEach((ancestorIdx) => {
+                  broodmareAncestors.add(ancestorIdx);
+                });
+              });
+
+            stallionAncestors.forEach((stallionAncestorIdx) => {
+              broodmareAncestors.forEach((broodmareAncestorIdx) => {
+                excludedAncestorPairs.add(
+                  getPairKey(stallionAncestorIdx, broodmareAncestorIdx)
+                );
+              });
+            });
           };
           
           // 例外パターンのチェック
@@ -2558,7 +2634,7 @@
                 const targetActualSide = getSideFromIndex(targetIdx);
                 
                 // 除外リストに含まれているかチェック
-                if (excludedNodes.has(targetIdx)) {
+                if (excludedExceptionTargets.has(targetIdx)) {
                   return; // 既に除外されている場合はスキップ
                 }
                 
@@ -2585,12 +2661,12 @@
                   // ターゲット馬の祖先を取得
                   const ancestors = getAncestorIndexes(targetIdx);
                   ancestors.forEach(ancestorIdx => {
-                    excludedNodes.add(ancestorIdx);
+                    excludedExceptionTargets.add(ancestorIdx);
                     
                     // トリガー馬とその祖先との組み合わせを記録
                     triggerAncestors.forEach(triggerAncestor => {
-                      exceptionExcludedPairs.add(`${triggerAncestor}-${ancestorIdx}`);
-                      exceptionExcludedPairs.add(`${ancestorIdx}-${triggerAncestor}`);
+                      exceptionExcludedPairs.add(getPairKey(triggerAncestor, ancestorIdx));
+                      exceptionExcludedPairs.add(getPairKey(ancestorIdx, triggerAncestor));
                     });
                   });
                 }
@@ -2609,35 +2685,30 @@
                 broodmareGroupIndexes.add(idx);
                 
                 // この繫殖牝馬の祖先も除外
-                const ancestors = getAncestorIndexes(idx);
-                ancestors.forEach(ancestorIdx => {
-                  excludedNodes.add(ancestorIdx);
-                });
               });
               
               // 種牡馬側の全ての祖先を除外リストに追加
-              const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
-              broodmareAncestors.forEach(idx => {
-                excludedNodes.add(idx);
-              });
+              addExcludedAncestorPairs(
+                cross.broodmareGroupIndexes,
+                [cross.broodmareIndex]
+              );
               
               continue;
             }
             
             // 通常のクロス判定（名前一致・fullBrothers一致）
             // 例外パターンで除外されたペアかチェック
-            const pairKey1 = `${cross.stallionIndex}-${cross.broodmareIndex}`;
-            const pairKey2 = `${cross.broodmareIndex}-${cross.stallionIndex}`;
+            const pairKey1 = getPairKey(cross.stallionIndex, cross.broodmareIndex);
+            const pairKey2 = getPairKey(cross.broodmareIndex, cross.stallionIndex);
             if (exceptionExcludedPairs.has(pairKey1) || exceptionExcludedPairs.has(pairKey2)) {
               continue; // 例外パターンで除外されたペアなのでスキップ
             }
             
             // どちらかのノードが除外リストに含まれているかチェック
-            const stallionExcluded = excludedNodes.has(cross.stallionIndex);
-            const broodmareExcluded = excludedNodes.has(cross.broodmareIndex);
+            const isAncestorPairExcluded = excludedAncestorPairs.has(pairKey1);
             
             // 両方とも除外されている場合のみスキップ
-            if (stallionExcluded && broodmareExcluded) {
+            if (isAncestorPairExcluded) {
               continue;
             }
             
@@ -2645,16 +2716,10 @@
             recognizedCrosses.push(cross);
             
             // 使用したノードの祖先を除外リストに追加
-            const stallionAncestors = getAncestorIndexes(cross.stallionIndex);
-            const broodmareAncestors = getAncestorIndexes(cross.broodmareIndex);
-            
-            stallionAncestors.forEach(idx => {
-              excludedNodes.add(idx);
-            });
-            
-            broodmareAncestors.forEach(idx => {
-              excludedNodes.add(idx);
-            });
+            addExcludedAncestorPairs(
+              [cross.stallionIndex],
+              [cross.broodmareIndex]
+            );
           }
 
 
