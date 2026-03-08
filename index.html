@@ -422,8 +422,8 @@
           colspan="3"
           :class="(styleFactorClasses[rowIndex] && styleFactorClasses[rowIndex][0]) || factorClasses[0]"
         >
-          <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
-          <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
         </td>
       </template>
       <template v-else>
