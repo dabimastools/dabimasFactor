@@ -65,8 +65,28 @@ footer {
 }
 
 @media screen and (min-width: 960px) {
+  .pedigree-desktop-search-row {
+    align-items: center !important;
+    min-height: 30px;
+  }
+
+  .pedigree-desktop-search-label-col {
+    align-items: center !important;
+    display: flex !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
   .pedigree-desktop-search-title {
+    align-items: center !important;
+    display: flex !important;
     font-size: 22px !important;
+    height: 30px;
+    margin: 0 !important;
+  }
+
+  .pedigree-factor-btn.v-btn {
+    padding: 0 2px !important;
   }
 }
 
