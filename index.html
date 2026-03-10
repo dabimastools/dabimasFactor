@@ -224,7 +224,7 @@
                 <v-row no-gutters>
                   <v-col cols="3">
                     <v-card-title
-                      v-if="$vuetify.breakpoint.mdAndUp"
+                      v-if="this.windowSize >= 770"
                       style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
                       class="px-0 pedigree-desktop-search-title"
                       outlined
@@ -236,7 +236,7 @@
                     <v-text-field
                       v-model="this.inputedMemoStallion"
                       @change="memoChangeStallion($event)"
-                      v-if="$vuetify.breakpoint.mdAndUp"
+                      v-if="this.windowSize >= 770"
                       label="メモ"
                       dense
                       single-line
@@ -286,7 +286,7 @@
                 <v-row no-gutters>
                   <v-col cols="4" class="d-flex align-center fill-height">
                     <v-card-title
-                      v-if="$vuetify.breakpoint.mdAndUp"
+                      v-if="this.windowSize >= 770"
                       style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
                       class="px-0 pedigree-desktop-search-title"
                       outlined
@@ -298,7 +298,7 @@
                     <v-text-field
                       v-model="this.inputedMemoBroodmare"
                       @change="memoChangeBroodmare($event)"
-                      v-if="$vuetify.breakpoint.mdAndUp"
+                      v-if="this.windowSize >= 770"
                       label="メモ"
                       dense
                       single-line
