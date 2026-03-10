@@ -214,19 +214,19 @@
 
 
       <main>
-        <v-container fluid class="pedigree-mobile-layout">
+        <v-container fluid>
           <v-spacer class="my-1 px-0 mx-0 my-0" />
           <v-row class="mx-1" align-content="center">
             <!-- <v-spacer class="my-1 px-0 mx-0 my-0" /> -->
             <!-- xsを設定できないので↓のようなカンジで -->
-            <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-mobile-column">
-              <v-card elevation="3" align-content="center" class="custom-card pedigree-mobile-card">
-                <v-row no-gutters class="pedigree-desktop-search-row">
-                  <v-col cols="3" class="pedigree-desktop-search-label-col">
+            <v-col sm="12" md="6" lg="6" xl="6" cols="12">
+              <v-card elevation="3" align-content="center" class="custom-card">
+                <v-row no-gutters>
+                  <v-col cols="3">
                     <v-card-title
-                      v-if="$vuetify.breakpoint.mdAndUp || this.windowSize >= 770"
-                      style="font-size: 16px; font-weight: bolder"
-                      class="px-0 py-0 pedigree-desktop-search-title d-flex align-center"
+                      v-if="this.windowSize >= 770"
+                      style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
+                      class="px-0"
                       outlined
                       >
                       種牡馬検索
@@ -236,7 +236,7 @@
                     <v-text-field
                       v-model="this.inputedMemoStallion"
                       @change="memoChangeStallion($event)"
-                      v-if="$vuetify.breakpoint.mdAndUp || this.windowSize >= 770"
+                      v-if="this.windowSize >= 770"
                       label="メモ"
                       dense
                       single-line
@@ -244,7 +244,7 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <table class="table_main pedigree-mobile-table">
+                <table class="table_main">
                   <tbody>
                     <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
                     <tr
@@ -281,14 +281,14 @@
               </v-card>
             </v-col>
             <!-- xsを設定できないので↓のようなカンジで -->
-            <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-mobile-column">
-              <v-card elevation="3" align-content="center" class="custom-card pedigree-mobile-card">
-                <v-row no-gutters class="pedigree-desktop-search-row">
-                  <v-col cols="4" class="pedigree-desktop-search-label-col">
+            <v-col sm="12" md="6" lg="6" xl="6" cols="12">
+              <v-card elevation="3" align-content="center" class="custom-card">
+                <v-row no-gutters>
+                  <v-col cols="4" class="d-flex align-center fill-height">
                     <v-card-title
-                      v-if="$vuetify.breakpoint.mdAndUp || this.windowSize >= 770"
-                      style="font-size: 16px; font-weight: bolder"
-                      class="px-0 py-0 pedigree-desktop-search-title d-flex align-center"
+                      v-if="this.windowSize >= 770"
+                      style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
+                      class="px-0"
                       outlined
                     >
                       繫殖牝馬検索
@@ -298,7 +298,7 @@
                     <v-text-field
                       v-model="this.inputedMemoBroodmare"
                       @change="memoChangeBroodmare($event)"
-                      v-if="$vuetify.breakpoint.mdAndUp || this.windowSize >= 770"
+                      v-if="this.windowSize >= 770"
                       label="メモ"
                       dense
                       single-line
@@ -307,7 +307,7 @@
                   </v-col>
                 </v-row>
                 <!-- 繫殖牝馬側 -->
-                <table class="table_main pedigree-mobile-table">
+                <table class="table_main">
                   <tbody>
                     <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
                     <tr
@@ -395,7 +395,6 @@
         <v-btn
           v-if="btnState === -1"
           :key="reload"
-          class="pedigree-icon-btn"
           @click="handleInbreedButtonClick(config.index)"
           icon
           v-bind="size"
@@ -403,7 +402,6 @@
         <v-btn
           v-else-if="btnState === 1"
           :key="reload"
-          class="pedigree-icon-btn"
           @click="handleInbreedButtonClick(config.index)"
           icon
           color="pink"
@@ -412,7 +410,6 @@
         <v-btn
           v-else
           :key="reload"
-          class="pedigree-icon-btn"
           icon
           color="pink"
           disabled
@@ -425,8 +422,8 @@
           colspan="3"
           :class="(styleFactorClasses[rowIndex] && styleFactorClasses[rowIndex][0]) || factorClasses[0]"
         >
-          <v-btn v-if="$vuetify.breakpoint.mdAndUp" class="pedigree-row-btn" variant="outlined" block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
-          <v-btn v-if="$vuetify.breakpoint.smAndDown" class="pedigree-row-btn" variant="outlined" x-small block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
         </td>
       </template>
       <template v-else>
@@ -435,15 +432,14 @@
           :colspan="shouldCollapseFactors ? 3 : null"
         >
           <template v-if="shouldCollapseFactors">
-            <v-btn v-if="$vuetify.breakpoint.mdAndUp" class="pedigree-factor-btn" variant="outlined" block @click.stop.prevent="openFactorDialog">因　子</v-btn>
-            <v-btn v-if="$vuetify.breakpoint.smAndDown" class="pedigree-factor-btn" variant="outlined" x-small block @click.stop.prevent="openFactorDialog">因　子</v-btn>
+            <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" block @click.stop.prevent="openFactorDialog">因子</v-btn>
+            <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small block @click.stop.prevent="openFactorDialog">因子</v-btn>
           </template>
           <template v-else>
             <!-- <v-btn v-if="shouldShowFirstFactorButton" class="manual-factor-trigger" @click.stop.prevent="openFactorDialog">因</v-btn> -->
             <template v-if="shouldShowFirstFactorButton">
               <v-btn
                 v-if="$vuetify.breakpoint.mdAndUp"
-                class="pedigree-factor-btn"
                 variant="outlined"
                 block
                 @click.stop.prevent="openFactorDialog"
@@ -452,7 +448,6 @@
               </v-btn>
               <v-btn
                 v-if="$vuetify.breakpoint.smAndDown"
-                class="pedigree-factor-btn"
                 variant="outlined"
                 x-small
                 block
@@ -503,115 +498,13 @@
 
     // service workerの登録関係
     if ("serviceWorker" in navigator && (location.protocol === "http:" || location.protocol === "https:")) {
-      var hadServiceWorkerController = !!navigator.serviceWorker.controller;
-      var isReloadingForUpdate = false;
-      var appShellVersion = null;
-      var currentDocumentLastModified = Date.parse(document.lastModified);
-
-      if (isNaN(currentDocumentLastModified)) {
-        currentDocumentLastModified = null;
-      }
-
-      function reloadForUpdate() {
-        if (isReloadingForUpdate) {
-          return;
-        }
-
-        isReloadingForUpdate = true;
-        window.location.reload();
-      }
-
-      function getAppShellVersion(response) {
-        var etag = response.headers.get("etag") || "";
-        var lastModified = response.headers.get("last-modified") || "";
-
-        if (!etag && !lastModified) {
-          return null;
-        }
-
-        return etag + "|" + lastModified;
-      }
-
-      function getLastModifiedTimestamp(value) {
-        var timestamp = Date.parse(value || "");
-
-        if (isNaN(timestamp)) {
-          return null;
-        }
-
-        return timestamp;
-      }
-
-      function checkAppShellUpdate() {
-        return fetch("./index.html?app-check=" + Date.now(), {
-          method: "HEAD",
-          cache: "no-store"
-        }).then(function (response) {
-          if (!response.ok) {
-            return;
-          }
-
-          var nextVersion = getAppShellVersion(response);
-          if (!nextVersion) {
-            return;
-          }
-
-          if (!appShellVersion) {
-            var nextLastModified = getLastModifiedTimestamp(
-              response.headers.get("last-modified")
-            );
-
-            if (
-              hadServiceWorkerController &&
-              currentDocumentLastModified !== null &&
-              nextLastModified !== null &&
-              nextLastModified > currentDocumentLastModified
-            ) {
-              reloadForUpdate();
-              return;
-            }
-
-            appShellVersion = nextVersion;
-            return;
-          }
-
-          if (appShellVersion !== nextVersion) {
-            reloadForUpdate();
-          }
-        });
-      }
-
-      navigator.serviceWorker.addEventListener("controllerchange", function () {
-        if (!hadServiceWorkerController) {
-          return;
-        }
-
-        reloadForUpdate();
-      });
-
       navigator.serviceWorker
-        .register("./service-worker.js", { updateViaCache: "none" })
+        .register("./service-worker.js")
         .then(function (registration) {
           console.log(
             "ServiceWorker registration successful with scope: ",
             registration.scope
           );
-
-          function checkForUpdates() {
-            if (!navigator.onLine) {
-              return;
-            }
-
-            registration.update().catch(function (err) {
-              console.log("ServiceWorker update check failed: ", err);
-            });
-
-            checkAppShellUpdate().catch(function (err) {
-              console.log("App update check failed: ", err);
-            });
-          }
-
-          checkForUpdates();
         })
         .catch(function (err) {
           console.log("ServiceWorker registration failed: ", err);
@@ -864,15 +757,12 @@
       template: `
       <v-autocomplete
         v-if="dispCategory%2 === 0"
-        class="pedigree-row-input"
         :value="selected[index]"
         :items="lists"
         :item-text="horse => [horse.nature ? '[' + horse.nature.charAt(0) + ']' : '', horse.name, horse.subName].filter(Boolean).join('')"
         :filter="filterHorse"
         solo
         dense
-        hide-details
-        single-line
         :placeholder="placeholderText"
         no-data-text="該当するデータはありません"
         @input="onChange(sex, index - (sex * 16), $event)"
@@ -889,25 +779,17 @@
       <v-row no-gutters v-else>
         <v-col :style="getWidth(index,0)">
           <v-text-field
-            class="pedigree-row-input"
             :value="category[index]"
             solo
-            dense
-            hide-details
-            single-line
             readonly
           ></v-text-field>
         </v-col>
         <v-col :style="getWidth(index,1)">
           <v-text-field
             placeholder="メモ入力"
-            class="pedigree-row-input"
             :value="inputed[index]"
             @change="memoChange(index, $event)"
             solo
-            dense
-            hide-details
-            single-line
           ></v-text-field>
         </v-col>
       </v-row>
@@ -1333,7 +1215,6 @@
           sameNameSpecialChecksByIndex: Array.from(new Array(32).fill(false)),
           reload: 0,
           size: {},
-          pedigreeLayoutRaf: null,
           combinationDialogVisible: false,
           inbreedLogTimer: null,
           deferInbreedCount: false,
@@ -1385,173 +1266,19 @@
       },
 
       mounted: function () {
-        this.registerViewportListeners();
-        this.handleViewportChange();
         try {
           // インブリード例外ルールを読み込む
           this.loadInbreedExceptions()
             .then(() => this.c1())
             .then(() => this.c2())
-            .then(() => this.c3())
-            .then(() => this.$nextTick(() => this.schedulePedigreeLayoutUpdate()));
+            .then(() => this.c3());
           // .finally(() => this.c4());
         } catch (error) {
           console.error(error);
         }
       },
 
-      updated: function () {
-        this.schedulePedigreeLayoutUpdate();
-      },
-
-      beforeDestroy: function () {
-        this.unregisterViewportListeners();
-      },
-
       methods: {
-        registerViewportListeners: function () {
-          if (typeof window === "undefined") {
-            return;
-          }
-          window.addEventListener("resize", this.handleViewportChange);
-          window.addEventListener("orientationchange", this.handleViewportChange);
-          if (window.visualViewport) {
-            window.visualViewport.addEventListener("resize", this.handleViewportChange);
-          }
-        },
-        unregisterViewportListeners: function () {
-          if (typeof window === "undefined") {
-            return;
-          }
-          if (this.pedigreeLayoutRaf !== null) {
-            window.cancelAnimationFrame(this.pedigreeLayoutRaf);
-            this.pedigreeLayoutRaf = null;
-          }
-          window.removeEventListener("resize", this.handleViewportChange);
-          window.removeEventListener("orientationchange", this.handleViewportChange);
-          if (window.visualViewport) {
-            window.visualViewport.removeEventListener("resize", this.handleViewportChange);
-          }
-        },
-        handleViewportChange: function () {
-          if (typeof window === "undefined") {
-            return;
-          }
-          this.windowSize = window.innerHeight;
-          this.schedulePedigreeLayoutUpdate();
-        },
-        schedulePedigreeLayoutUpdate: function () {
-          if (typeof window === "undefined") {
-            return;
-          }
-          if (this.pedigreeLayoutRaf !== null) {
-            window.cancelAnimationFrame(this.pedigreeLayoutRaf);
-          }
-          this.pedigreeLayoutRaf = window.requestAnimationFrame(() => {
-            this.pedigreeLayoutRaf = null;
-            this.updatePedigreeMobileRowHeight();
-          });
-        },
-        updatePedigreeMobileRowHeight: function () {
-          if (typeof window === "undefined" || !this.$el) {
-            return;
-          }
-          const layout = this.$el.querySelector(".pedigree-mobile-layout");
-          if (!layout) {
-            return;
-          }
-          if (window.innerWidth >= 960) {
-            layout.style.removeProperty("--pedigree-mobile-top-offset");
-            layout.style.removeProperty("--pedigree-mobile-row-height");
-            return;
-          }
-          const cards = Array.from(layout.querySelectorAll(".pedigree-mobile-card"));
-          const rows = Array.from(
-            layout.querySelectorAll(".pedigree-mobile-table tbody > tr")
-          );
-          if (cards.length === 0 || rows.length === 0) {
-            return;
-          }
-          const header = this.$el.querySelector("header");
-          const viewportHeight = window.visualViewport
-            ? window.visualViewport.height
-            : window.innerHeight;
-          const topGap = 0;
-          const bottomGap = 2;
-          const minRowHeight = 8;
-          const syncTopOffset = () => {
-            const headerBottom = header
-              ? header.getBoundingClientRect().bottom
-              : 0;
-            const firstCardRect = cards[0].getBoundingClientRect();
-            const topOffset = Math.max(
-              headerBottom + topGap - firstCardRect.top,
-              0
-            );
-            layout.style.setProperty(
-              "--pedigree-mobile-top-offset",
-              `${topOffset.toFixed(2)}px`
-            );
-          };
-          syncTopOffset();
-          const measureLayout = () => {
-            const headerBottom = header
-              ? header.getBoundingClientRect().bottom
-              : 0;
-            const firstCardRect = cards[0].getBoundingClientRect();
-            const lastCardRect = cards[cards.length - 1].getBoundingClientRect();
-            const totalRowHeight = rows.reduce(
-              (sum, row) => sum + row.getBoundingClientRect().height,
-              0
-            );
-            const visibleTop = Math.max(firstCardRect.top, headerBottom + topGap);
-            return {
-              availableHeight: Math.max(
-                viewportHeight - visibleTop - bottomGap,
-                0
-              ),
-              stackedHeight: lastCardRect.bottom - firstCardRect.top,
-              fixedHeight: Math.max(
-                lastCardRect.bottom - firstCardRect.top - totalRowHeight,
-                0
-              ),
-              averageRowHeight: totalRowHeight / rows.length,
-            };
-          };
-          let measurement = measureLayout();
-          let nextRowHeight = (
-            (measurement.availableHeight - measurement.fixedHeight) / rows.length
-          );
-          if (!Number.isFinite(nextRowHeight)) {
-            nextRowHeight = measurement.averageRowHeight;
-          }
-          nextRowHeight = Math.max(nextRowHeight, minRowHeight);
-
-          for (let i = 0; i < 4; i++) {
-            layout.style.setProperty(
-              "--pedigree-mobile-row-height",
-              `${nextRowHeight.toFixed(2)}px`
-            );
-            measurement = measureLayout();
-            const remainingHeight = measurement.availableHeight - measurement.stackedHeight;
-            if (Math.abs(remainingHeight) <= 1) {
-              break;
-            }
-            const adjustedRowHeight = Math.max(
-              nextRowHeight + remainingHeight / rows.length,
-              minRowHeight
-            );
-            if (Math.abs(adjustedRowHeight - nextRowHeight) < 0.05) {
-              nextRowHeight = adjustedRowHeight;
-              break;
-            }
-            nextRowHeight = adjustedRowHeight;
-          }
-          layout.style.setProperty(
-            "--pedigree-mobile-row-height",
-            `${nextRowHeight.toFixed(2)}px`
-          );
-        },
         // インブリード例外ルールを読み込む
         loadInbreedExceptions: function () {
           return fetch('./json/inbreed-exceptions.json')
@@ -2065,7 +1792,6 @@
         },
         handleClick() {
           this.dispCategory++;
-          this.$nextTick(() => this.schedulePedigreeLayoutUpdate());
         },
         getCss: function (i) {
           let css = "";
