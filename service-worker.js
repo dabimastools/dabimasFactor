@@ -1,8 +1,9 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260313-01';
+var CACHE_NAME = 'dabimas-factor-v20260315-01';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
+var APP_SHELL_URL = BASE_PATH + 'index.html';
 var urlsToCache = [
-  BASE_PATH + 'index.html',
+  APP_SHELL_URL,
   BASE_PATH + 'json/dabimasFactor.json',
   BASE_PATH + 'json/brosData.json',
   BASE_PATH + 'json/inbreed-exceptions.json',
@@ -43,28 +44,86 @@ var urlsToCache = [
   BASE_PATH + 'fonts/NotoSansJP-Thin.woff2',
 ];
 
+function isSameOriginGetRequest(request) {
+  return request.method === 'GET' && new URL(request.url).origin === self.location.origin;
+}
+
+function isOffline() {
+  return self.navigator && self.navigator.onLine === false;
+}
+
+function getCacheKey(request) {
+  return request.mode === 'navigate' ? APP_SHELL_URL : request;
+}
+
+function matchFromCache(cache, request) {
+  return cache.match(getCacheKey(request));
+}
+
+function updateCache(cache, request, response) {
+  if (response && response.ok) {
+    return cache.put(getCacheKey(request), response.clone());
+  }
+
+  return Promise.resolve();
+}
+
+function createNetworkRequest(request) {
+  return new Request(request, { cache: 'no-cache' });
+}
+
 // install cache
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches
-    .open(CACHE_NAME)
-    .then(function (cache) {
-      return cache.addAll(urlsToCache);
-    })
+      .open(CACHE_NAME)
+      .then(function (cache) {
+        return cache.addAll(urlsToCache);
+      })
+      .then(function () {
+        return self.skipWaiting();
+      })
   );
 });
 
-// use cache
+// online: network first / offline: cache only
 self.addEventListener('fetch', function (event) {
+  if (!isSameOriginGetRequest(event.request)) {
+    return;
+  }
+
+  if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
+    return;
+  }
+
   event.respondWith(
     caches.open(CACHE_NAME).then(function (cache) {
-      return cache.match(event.request).then(function (response) {
-        return response || fetch(event.request).then(function (response) {
-          return caches.open(CACHE_NAME).then(function (cache) {
-            cache.put(event.request, response.clone());
-            return response;
+      return matchFromCache(cache, event.request).then(function (cachedResponse) {
+        if (isOffline()) {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+
+          return Promise.reject(new Error('Offline and no cached response available.'));
+        }
+
+        return fetch(createNetworkRequest(event.request))
+          .then(function (networkResponse) {
+            if (networkResponse && networkResponse.ok) {
+              return updateCache(cache, event.request, networkResponse).then(function () {
+                return networkResponse;
+              });
+            }
+
+            return cachedResponse || networkResponse;
+          })
+          .catch(function (error) {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+
+            throw error;
           });
-        });
       });
     })
   );
@@ -73,17 +132,21 @@ self.addEventListener('fetch', function (event) {
 // refresh cache
 self.addEventListener('activate', function (event) {
   event.waitUntil(
-    caches.keys().then(function (cacheNames) {
-      return Promise.all(
-        cacheNames.filter(function (cacheName) {
-          return cacheName !== CACHE_NAME;
-        }).map(function (cacheName) {
-          return caches.delete(cacheName);
-        })
-      );
-    }).then(function () {
-      clients.claim();
-    })
+    caches
+      .keys()
+      .then(function (cacheNames) {
+        return Promise.all(
+          cacheNames
+            .filter(function (cacheName) {
+              return cacheName !== CACHE_NAME;
+            })
+            .map(function (cacheName) {
+              return caches.delete(cacheName);
+            })
+        );
+      })
+      .then(function () {
+        return clients.claim();
+      })
   );
 });
-

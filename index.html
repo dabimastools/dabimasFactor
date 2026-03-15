@@ -497,19 +497,56 @@
     };
 
     // service workerの登録関係
-    if ("serviceWorker" in navigator && (location.protocol === "http:" || location.protocol === "https:")) {
-      navigator.serviceWorker
-        .register("./service-worker.js")
-        .then(function (registration) {
-          console.log(
-            "ServiceWorker registration successful with scope: ",
-            registration.scope
-          );
+    let swRegistrationPromise = null;
+
+    function updateServiceWorker(registration) {
+      if (!registration) {
+        return Promise.resolve(null);
+      }
+
+      return registration
+        .update()
+        .then(function () {
+          return registration;
         })
         .catch(function (err) {
-          console.log("ServiceWorker registration failed: ", err);
+          console.log("ServiceWorker update check failed: ", err);
+          return registration;
         });
     }
+
+    function registerServiceWorker() {
+      if (
+        !("serviceWorker" in navigator) ||
+        !(location.protocol === "http:" || location.protocol === "https:") ||
+        !navigator.onLine
+      ) {
+        return Promise.resolve(null);
+      }
+
+      if (!swRegistrationPromise) {
+        swRegistrationPromise = navigator.serviceWorker
+          .register("./service-worker.js", { updateViaCache: "none" })
+          .then(function (registration) {
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+            return registration;
+          })
+          .catch(function (err) {
+            console.log("ServiceWorker registration failed: ", err);
+            swRegistrationPromise = null;
+            return null;
+          });
+      }
+
+      return swRegistrationPromise.then(function (registration) {
+        return updateServiceWorker(registration);
+      });
+    }
+
+    registerServiceWorker();
 
     var ua = navigator.userAgent.toLowerCase();
     var isiOS = ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1;
