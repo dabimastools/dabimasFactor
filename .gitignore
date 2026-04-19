@@ -3,3 +3,9 @@
 !.vscode/settings.json
 artifacts/
 tests/
+index.exp.bak.*.html
+index.exp.broken.*.html
+screenshot-*.png
+.chrome-runtime*/
+.chrome-headless*/
+.edge-runtime-test/
