@@ -25,8 +25,8 @@
     />
     <style>
       :root {
-        --exp-mobile-app-height: 100dvh;
-        --exp-mobile-main-height: calc(100dvh - 116px);
+        --exp-mobile-app-height: 100svh;
+        --exp-mobile-main-height: calc(100svh - 116px);
         --exp-mobile-card-gap: 2px;
         --exp-mobile-row-height: 18px;
       }
@@ -52,7 +52,7 @@
         display: flex;
         flex-direction: column;
         padding-top: 4px;
-        padding-bottom: 2px;
+        padding-bottom: calc(2px + env(safe-area-inset-bottom, 0px));
       }
 
       .exp-mobile-layout main .container > .spacer {
@@ -733,9 +733,8 @@
             <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
                 <v-row no-gutters class="pedigree-card-toolbar">
-                  <v-col cols="3">
+                  <v-col cols="12" md="3" class="d-flex align-center fill-height">
                     <v-card-title
-                      v-if="this.windowSize >= 770"
                       style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
                       class="px-0"
                       outlined
@@ -743,11 +742,10 @@
                       種牡馬検索
                     </v-card-title>
                   </v-col>
-                  <v-col mt-0>
+                  <v-col v-if="$vuetify.breakpoint.mdAndUp" mt-0>
                     <v-text-field
                       v-model="this.inputedMemoStallion"
                       @change="memoChangeStallion($event)"
-                      v-if="this.windowSize >= 770"
                       label="メモ"
                       dense
                       single-line
@@ -797,9 +795,8 @@
             <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
                 <v-row no-gutters class="pedigree-card-toolbar">
-                  <v-col cols="4" class="d-flex align-center fill-height">
+                  <v-col cols="12" md="4" class="d-flex align-center fill-height">
                     <v-card-title
-                      v-if="this.windowSize >= 770"
                       style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
                       class="px-0"
                       outlined
@@ -807,11 +804,10 @@
                       繫殖牝馬検索
                     </v-card-title>
                   </v-col>
-                  <v-col mt-0>
+                  <v-col v-if="$vuetify.breakpoint.mdAndUp" mt-0>
                     <v-text-field
                       v-model="this.inputedMemoBroodmare"
                       @change="memoChangeBroodmare($event)"
-                      v-if="this.windowSize >= 770"
                       label="メモ"
                       dense
                       single-line
@@ -2202,6 +2198,8 @@
           lockedMobileAppHeight: null,
           mobileRowHeight: 18,
           onOrientationChangeHandler: null,
+          onViewportGeometryChangeHandler: null,
+          mobileViewportGeometryTimerId: null,
           mobileViewportLockTimerIds: []
         };
       },
@@ -2278,6 +2276,21 @@
             }
           };
           window.addEventListener("orientationchange", this.onOrientationChangeHandler);
+          this.onViewportGeometryChangeHandler = () => {
+            if (!this.$vuetify.breakpoint.smAndDown) {
+              return;
+            }
+            this.clearMobileViewportGeometryTimer();
+            this.mobileViewportGeometryTimerId = setTimeout(() => {
+              this.mobileViewportGeometryTimerId = null;
+              this.refreshMobileViewportLock(false);
+            }, 48);
+          };
+          window.addEventListener("resize", this.onViewportGeometryChangeHandler);
+          if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", this.onViewportGeometryChangeHandler);
+            window.visualViewport.addEventListener("scroll", this.onViewportGeometryChangeHandler);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -2287,6 +2300,14 @@
         if (this.onOrientationChangeHandler) {
           window.removeEventListener("orientationchange", this.onOrientationChangeHandler);
         }
+        if (this.onViewportGeometryChangeHandler) {
+          window.removeEventListener("resize", this.onViewportGeometryChangeHandler);
+          if (window.visualViewport) {
+            window.visualViewport.removeEventListener("resize", this.onViewportGeometryChangeHandler);
+            window.visualViewport.removeEventListener("scroll", this.onViewportGeometryChangeHandler);
+          }
+        }
+        this.clearMobileViewportGeometryTimer();
         this.clearMobileViewportLayoutTimers();
       },
 
@@ -2313,25 +2334,23 @@
         getStableViewportHeight: function () {
           const docEl = document.documentElement || {};
           const body = document.body || {};
-          const outerHeight = Number(window.outerHeight) || 0;
+          if (window.visualViewport) {
+            const visibleHeight = Number(window.visualViewport.height) || 0;
+            if (visibleHeight > 0) {
+              return Math.floor(visibleHeight);
+            }
+          }
           const candidates = [
             Number(window.innerHeight) || 0,
             Number(docEl.clientHeight) || 0,
             Number(body.clientHeight) || 0,
           ];
-          if (window.visualViewport) {
-            candidates.push(Number(window.visualViewport.height) || 0);
-          }
-          const baseHeight = Math.max(
+          return Math.max(
             0,
             ...candidates
               .filter((value) => Number.isFinite(value) && value > 0)
               .map((value) => Math.floor(value))
           );
-          if (outerHeight > 0 && outerHeight - baseHeight >= 80) {
-            return Math.floor(outerHeight);
-          }
-          return baseHeight;
         },
         getStableViewportWidth: function () {
           const docEl = document.documentElement || {};
@@ -2350,6 +2369,40 @@
               .filter((value) => Number.isFinite(value) && value > 0)
               .map((value) => Math.floor(value))
           );
+        },
+        clearMobileViewportGeometryTimer: function () {
+          if (this.mobileViewportGeometryTimerId !== null) {
+            clearTimeout(this.mobileViewportGeometryTimerId);
+            this.mobileViewportGeometryTimerId = null;
+          }
+        },
+        isEditableElement: function (element) {
+          if (!element) {
+            return false;
+          }
+          if (element.isContentEditable) {
+            return true;
+          }
+          const tagName = typeof element.tagName === "string"
+            ? element.tagName.toLowerCase()
+            : "";
+          return tagName === "input" || tagName === "textarea";
+        },
+        shouldForceResetMobileViewportLock: function (viewportHeight) {
+          if (!(viewportHeight > 0)) {
+            return false;
+          }
+          if (!this.lockedMobileAppHeight || viewportHeight >= this.lockedMobileAppHeight) {
+            return true;
+          }
+          const shrinkAmount = this.lockedMobileAppHeight - viewportHeight;
+          if (shrinkAmount <= 140) {
+            return true;
+          }
+          const activeElement = typeof document !== "undefined"
+            ? document.activeElement
+            : null;
+          return !this.isEditableElement(activeElement);
         },
         clearMobileViewportLayoutTimers: function () {
           if (!Array.isArray(this.mobileViewportLockTimerIds)) {
@@ -2390,7 +2443,9 @@
           if (!(viewportHeight > 0)) {
             return;
           }
-          if (forceReset || !this.lockedMobileAppHeight) {
+          const shouldForceReset =
+            forceReset || this.shouldForceResetMobileViewportLock(viewportHeight);
+          if (shouldForceReset || !this.lockedMobileAppHeight) {
             this.lockedMobileAppHeight = viewportHeight;
           } else {
             this.lockedMobileAppHeight = Math.max(
