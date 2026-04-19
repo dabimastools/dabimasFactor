@@ -6,8 +6,10 @@ on:
   # GitHub Actions 画面から手動実行
   workflow_dispatch:
   schedule:
-    # cron は UTC 指定: 毎週金曜 09:15 UTC (= 18:15 JST)
-    - cron: "15 9 * * 5"
+    # cron は UTC 指定: 毎週金曜 08:15 UTC (= 17:15 JST)
+    - cron: "15 8 * * 5"
+    # Retry at 09:05 UTC (= 18:05 JST) if the site update is delayed
+    - cron: "5 9 * * 5"
 
 permissions:
   # JSON 更新結果を commit/push するために必要
@@ -42,10 +44,34 @@ jobs:
       # 最新の種牡馬情報を収集してテキスト化
       - name: Fetch latest news
         run: |
-          python scripts/fetch_latest_news.py --out latest_stallions.txt
+          python scripts/fetch_latest_news.py \
+            --out latest_stallions.txt \
+            --news-out latest_news_snapshot.txt
+
+      - name: Detect latest news changes
+        id: latest_news
+        shell: bash
+        run: |
+          SNAPSHOT=.github/state/latest_news_snapshot.txt
+          PREVIOUS_SNAPSHOT="$(mktemp)"
+          git fetch origin +refs/heads/main:refs/remotes/origin/main --depth=1
+          git show origin/main:"$SNAPSHOT" > "$PREVIOUS_SNAPSHOT" 2>/dev/null || true
+
+          if [ -s "$PREVIOUS_SNAPSHOT" ] && cmp -s latest_news_snapshot.txt "$PREVIOUS_SNAPSHOT"; then
+            echo "news_changed=false" >> "$GITHUB_OUTPUT"
+            echo "Latest news did not change. Skip remaining update steps."
+            rm -f "$PREVIOUS_SNAPSHOT"
+            exit 0
+          fi
+
+          mkdir -p "$(dirname "$SNAPSHOT")"
+          cp latest_news_snapshot.txt "$SNAPSHOT"
+          rm -f "$PREVIOUS_SNAPSHOT"
+          echo "news_changed=true" >> "$GITHUB_OUTPUT"
 
       # 取得したテキストを投稿用画像に変換
       - name: Render latest stallions image
+        if: ${{ steps.latest_news.outputs.news_changed == 'true' }}
         run: |
           python scripts/txt_to_png.py \
             --input latest_stallions.txt \
@@ -54,6 +80,7 @@ jobs:
 
       # 公開用 json/dabimasFactor.json を生成
       - name: Build dabimasFactor.json
+        if: ${{ steps.latest_news.outputs.news_changed == 'true' }}
         run: |
           python scripts/build_dabimas_stream.py \
             --output json/dabimasFactor.json \
@@ -62,6 +89,7 @@ jobs:
 
       # service-worker.js の CACHE_NAME を dabimas-factor-vYYYYMMDD-01 へ更新
       - name: Update CACHE_NAME in service-worker.js
+        if: ${{ steps.latest_news.outputs.news_changed == 'true' }}
         run: |
           python - <<'PY'
           import re
@@ -90,11 +118,12 @@ jobs:
 
       # json と service-worker.js を同じコミットで main に反映
       - name: Commit and push JSON + service-worker cache name
+        if: ${{ steps.latest_news.outputs.news_changed == 'true' }}
         run: |
           TODAY="$(TZ=Asia/Tokyo date +'%Y-%m-%d')"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add json/dabimasFactor.json service-worker.js
+          git add .github/state/latest_news_snapshot.txt json/dabimasFactor.json service-worker.js
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
@@ -105,6 +134,7 @@ jobs:
 
       # 画像付きで X に投稿
       - name: Post to X
+        if: ${{ steps.latest_news.outputs.news_changed == 'true' }}
         id: post_to_x
         env:
           # X API の認証情報（リポジトリ Secrets）
@@ -122,7 +152,7 @@ jobs:
 
       # Refresh token を Secrets にローテーション保存
       - name: Rotate X refresh token in GitHub Secrets
-        if: ${{ always() && steps.post_to_x.outputs.new_refresh_token != '' }}
+        if: ${{ steps.latest_news.outputs.news_changed == 'true' && steps.post_to_x.outputs.new_refresh_token != '' }}
         env:
           GH_SECRETS_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
           NEW_X_REFRESH_TOKEN: ${{ steps.post_to_x.outputs.new_refresh_token }}

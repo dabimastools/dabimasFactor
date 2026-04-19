@@ -36,6 +36,11 @@ def _find_latest_news_item(html: str) -> Tag:
     return first_item
 
 
+def extract_latest_news_text(html: str) -> str:
+    first_item = _find_latest_news_item(html)
+    return _normalize_spaces(first_item.get_text(" ", strip=True))
+
+
 def extract_latest_stallions_text(html: str) -> str:
     first_item = _find_latest_news_item(html)
 
@@ -74,6 +79,11 @@ def main() -> int:
         help="Output file path (default: %(default)s)",
     )
     parser.add_argument(
+        "--news-out",
+        default=None,
+        help="Optional output path for the normalized first news row",
+    )
+    parser.add_argument(
         "--timeout",
         type=float,
         default=20.0,
@@ -84,13 +94,21 @@ def main() -> int:
     response = requests.get(args.url, timeout=args.timeout)
     response.raise_for_status()
 
+    news_text = extract_latest_news_text(response.text)
     text = extract_latest_stallions_text(response.text)
 
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(text + "\n")
 
+    if args.news_out:
+        with open(args.news_out, "w", encoding="utf-8") as f:
+            f.write(news_text + "\n")
+
     print(f"Saved: {args.out}")
     print(text)
+    if args.news_out:
+        print(f"Saved: {args.news_out}")
+        print(news_text)
     return 0
 
 
