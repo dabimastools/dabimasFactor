@@ -1261,6 +1261,45 @@ div.horse_spec {
       0px -1px 0px #ffffff;
     /* 文字の影 */
   }
+
+  /*強*/
+  .f13 {
+    font-size: 10px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #3e3b5c;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*雷*/
+  .f14 {
+    font-size: 10px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #c64562;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
 }
 
 @media screen and (min-height: 770px) {
@@ -1506,6 +1545,45 @@ div.horse_spec {
       0px -1px 0px #ffffff;
     /* 文字の影 */
   }
+
+  /*強*/
+  .f13 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #3e3b5c;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
+  /*雷*/
+  .f14 {
+    font-size: 11px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #c64562;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+
 }
 
 
@@ -1750,11 +1828,48 @@ div.horse_spec {
       0px -1px 0px #ffffff;
     /* 文字の影 */
   }
+
+  /*強*/
+  .f13 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #3e3b5c;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
+  /*雷*/
+  .f14 {
+    font-size: 20px;
+    text-align: center;
+    color: #000000;
+    /* 文字の影 */
+    background: #c64562;
+    text-shadow:
+      1px 1px 0px #ffffff,
+      -1px 1px 0px #ffffff,
+      1px -1px 0px #ffffff,
+      -1px -1px 0px #ffffff,
+      1px 0px 0px #ffffff,
+      0px 1px 0px #ffffff,
+      -1px 0px 0px #ffffff,
+      0px -1px 0px #ffffff;
+    /* 文字の影 */
+  }
 }
 
 .factorNumCell{
   text-align: center;
-  width: 6%;
+  width: 5.3%;
   font-size: 10px;
   height:18px;
 }
@@ -1762,7 +1877,7 @@ div.horse_spec {
   /* 960px以上に適用されるCSS（PC用） */
   .factorNumCell{
     text-align: center;
-    width: 3.2%;
+    width: 2.7%;
     font-size: 20px;
     height:50px;
   }  
