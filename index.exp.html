@@ -1162,6 +1162,7 @@
       {key:"ワイルドリスク" ,value:"ワイルドリスク系"},
     ]
     const factorMap = new Map();
+    const horseSearchIndexCache = new WeakMap();
     const manualFactorOptions = ["短", "速", "底", "長", "堅", "難"];
     const MANUAL_INBREED_STORAGE_KEY = "dabimasManualInbreed";
 
@@ -1345,7 +1346,6 @@
               v-model="mobileDialogVisible"
               content-class="exp-mobile-picker-dialog"
               max-width="560"
-              eager
             >
               <v-card>
                 <div class="exp-mobile-picker-header">
@@ -1386,7 +1386,7 @@
                     <input
                       :id="mobileInputId"
                       ref="mobileSearchInput"
-                      :value="mobileQuery"
+                      :value="mobileQueryInput"
                       class="exp-mobile-search-input"
                       type="text"
                       :placeholder="placeholderText"
@@ -1397,17 +1397,13 @@
                       lang="ja"
                       :aria-busy="mobileSearchCompositionActive ? 'true' : 'false'"
                       enterkeyhint="search"
-                      @beforeinput="onMobileBeforeInput"
                       @input="onMobileSearchInput"
                       @compositionstart="onMobileCompositionStart"
-                      @compositionupdate="onMobileCompositionUpdate"
                       @compositionend="onMobileCompositionEnd"
-                      @keyup="onMobileKeyup"
-                      @change="onMobileSearchChange"
                       @keydown.enter.prevent="selectFirstMobileHorse"
                     />
                     <button
-                      v-if="mobileQuery"
+                      v-if="mobileQueryInput"
                       type="button"
                       class="exp-mobile-search-clear"
                       @click="clearMobileQuery"
@@ -1534,6 +1530,7 @@
       data() {
         return {
           mobileDialogVisible: false,
+          mobileQueryInput: "",
           mobileQuery: "",
           mobileSearchCompositionActive: false,
           mobileQuerySyncTimer: null,
@@ -1586,8 +1583,7 @@
             return true;
           }
 
-          return this.buildSearchTargets(horse, itemText)
-            .some((text) => text.includes(normalizedQuery));
+          return this.getHorseSearchIndexText(horse).includes(normalizedQuery);
         },
         buildHorseSearchText(horse) {
           if (!horse) {
@@ -1596,6 +1592,29 @@
           return [this.getHorseDisplayText(horse), horse.ruby]
             .filter(Boolean)
             .join("");
+        },
+        getHorseSearchIndexText(horse) {
+          if (!horse || typeof horse !== "object") {
+            return "";
+          }
+          const cached = horseSearchIndexCache.get(horse);
+          if (typeof cached === "string") {
+            return cached;
+          }
+          const searchText = this.normalizeSearchText(
+            [
+              this.getHorseBaseText(horse),
+              this.getHorseDisplayText(horse),
+              horse.name || "",
+              horse.subName || "",
+              horse.ruby || "",
+              horse.nature || "",
+            ]
+              .filter(Boolean)
+              .join("|")
+          );
+          horseSearchIndexCache.set(horse, searchText);
+          return searchText;
         },
         getHorseKey(horse) {
           if (!horse) {
@@ -1717,10 +1736,56 @@
             })
             .filter(Boolean);
         },
-        openMobileEditor() {
-          this.mobileDialogVisible = true;
+        clearMobileQuerySyncTimer() {
+          if (this.mobileQuerySyncTimer) {
+            clearTimeout(this.mobileQuerySyncTimer);
+            this.mobileQuerySyncTimer = null;
+          }
+        },
+        resetMobileQuery() {
+          this.clearMobileQuerySyncTimer();
+          this.mobileQueryInput = "";
           this.mobileQuery = "";
           this.mobileSearchCompositionActive = false;
+        },
+        getMobileInputValue(event) {
+          return event &&
+            event.target &&
+            typeof event.target.value === "string"
+            ? event.target.value
+            : "";
+        },
+        scheduleMobileQuerySync(delay = 80) {
+          this.clearMobileQuerySyncTimer();
+          if (delay <= 0) {
+            this.mobileQuery = this.mobileQueryInput;
+            return;
+          }
+          this.mobileQuerySyncTimer = setTimeout(() => {
+            this.mobileQuerySyncTimer = null;
+            this.mobileQuery = this.mobileQueryInput;
+          }, delay);
+        },
+        runAfterMobileDialogClose(callback) {
+          const invoke = () => {
+            if (typeof callback === "function") {
+              callback();
+            }
+          };
+          this.$nextTick(() => {
+            if (
+              typeof window !== "undefined" &&
+              typeof window.requestAnimationFrame === "function"
+            ) {
+              window.requestAnimationFrame(invoke);
+              return;
+            }
+            setTimeout(invoke, 0);
+          });
+        },
+        openMobileEditor() {
+          this.mobileDialogVisible = true;
+          this.resetMobileQuery();
           this.$nextTick(() => {
             const input = this.$refs.mobileSearchInput;
             if (input && typeof input.focus === "function") {
@@ -1730,98 +1795,45 @@
         },
         closeMobileEditor() {
           this.mobileDialogVisible = false;
-          this.mobileSearchCompositionActive = false;
-          if (this.mobileQuerySyncTimer) {
-            clearTimeout(this.mobileQuerySyncTimer);
-            this.mobileQuerySyncTimer = null;
-          }
+          this.resetMobileQuery();
         },
         clearMobileHorse() {
-          this.onChange(this.sex, this.index - this.sex * 16, null);
-          this.mobileQuery = "";
-          this.mobileSearchCompositionActive = false;
-          if (this.mobileQuerySyncTimer) {
-            clearTimeout(this.mobileQuerySyncTimer);
-            this.mobileQuerySyncTimer = null;
-          }
+          this.resetMobileQuery();
           this.mobileDialogVisible = false;
+          this.runAfterMobileDialogClose(() => {
+            this.onChange(this.sex, this.index - this.sex * 16, null);
+          });
         },
         selectMobileHorse(horse) {
           if (!horse || horse.disabled) {
             return;
           }
-          this.mobileQuery = "";
-          this.mobileSearchCompositionActive = false;
-          if (this.mobileQuerySyncTimer) {
-            clearTimeout(this.mobileQuerySyncTimer);
-            this.mobileQuerySyncTimer = null;
-          }
-          this.onChange(this.sex, this.index - this.sex * 16, horse);
+          this.resetMobileQuery();
           this.mobileDialogVisible = false;
-        },
-        syncMobileQueryFromEvent(event) {
-          const value =
-            event &&
-            event.target &&
-            typeof event.target.value === "string"
-              ? event.target.value
-              : "";
-          this.mobileQuery = value;
-          this.scheduleMobileQuerySync();
-        },
-        syncMobileQueryFromRef() {
-          const input = this.$refs.mobileSearchInput;
-          if (input && typeof input.value === "string") {
-            this.mobileQuery = input.value;
-          }
-        },
-        scheduleMobileQuerySync() {
-          if (this.mobileQuerySyncTimer) {
-            clearTimeout(this.mobileQuerySyncTimer);
-          }
-          this.mobileQuerySyncTimer = setTimeout(() => {
-            this.mobileQuerySyncTimer = null;
-            this.syncMobileQueryFromRef();
-          }, 0);
-          this.$nextTick(() => {
-            this.syncMobileQueryFromRef();
+          this.runAfterMobileDialogClose(() => {
+            this.onChange(this.sex, this.index - this.sex * 16, horse);
           });
         },
-        onMobileBeforeInput(event) {
-          this.syncMobileQueryFromEvent(event);
-        },
         onMobileSearchInput(event) {
-          this.syncMobileQueryFromEvent(event);
-        },
-        onMobileKeyup(event) {
-          this.syncMobileQueryFromEvent(event);
-        },
-        onMobileSearchChange(event) {
-          this.syncMobileQueryFromEvent(event);
+          this.mobileQueryInput = this.getMobileInputValue(event);
+          if (!this.mobileSearchCompositionActive) {
+            this.scheduleMobileQuerySync();
+          }
         },
         onMobileCompositionStart(event) {
           this.mobileSearchCompositionActive = true;
-          this.syncMobileQueryFromEvent(event);
-        },
-        onMobileCompositionUpdate(event) {
-          this.syncMobileQueryFromEvent(event);
+          this.mobileQueryInput = this.getMobileInputValue(event);
         },
         onMobileCompositionEnd(event) {
           this.mobileSearchCompositionActive = false;
-          this.syncMobileQueryFromEvent(event);
-          this.scheduleMobileQuerySync();
+          this.mobileQueryInput = this.getMobileInputValue(event);
+          this.scheduleMobileQuerySync(0);
         },
         clearMobileQuery() {
-          this.mobileQuery = "";
-          this.mobileSearchCompositionActive = false;
-          if (this.mobileQuerySyncTimer) {
-            clearTimeout(this.mobileQuerySyncTimer);
-            this.mobileQuerySyncTimer = null;
-          }
+          this.resetMobileQuery();
           this.$nextTick(() => {
             const input = this.$refs.mobileSearchInput;
             if (input && typeof input.focus === "function") {
-              input.value = "";
               input.focus();
             }
           });
@@ -1912,10 +1924,28 @@
         },
         filteredMobileLists() {
           const source = Array.isArray(this.lists) ? this.lists : [];
-          const query = this.mobileQuery || "";
-          return source
-            .filter((horse) => this.filterHorse(horse, query, this.buildHorseSearchText(horse)))
-            .slice(0, 160);
+          const normalizedQuery = this.normalizeSearchText(this.mobileQuery);
+          const limit = normalizedQuery ? 80 : 60;
+          const filtered = [];
+
+          for (let i = 0; i < source.length; i++) {
+            const horse = source[i];
+            if (!horse || horse.disabled) {
+              continue;
+            }
+            if (
+              normalizedQuery &&
+              !this.getHorseSearchIndexText(horse).includes(normalizedQuery)
+            ) {
+              continue;
+            }
+            filtered.push(horse);
+            if (filtered.length >= limit) {
+              break;
+            }
+          }
+
+          return filtered;
         },
         sex(newValue) {
           // index>=16が牝馬
