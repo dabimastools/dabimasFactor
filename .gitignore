@@ -9,3 +9,4 @@ screenshot-*.png
 .chrome-runtime*/
 .chrome-headless*/
 .edge-runtime-test/
+.claude/worktrees/

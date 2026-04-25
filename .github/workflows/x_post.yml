@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 60
     steps:
       # リポジトリのコードを runner に取得
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Python 実行環境を準備
       - name: Set up Python
