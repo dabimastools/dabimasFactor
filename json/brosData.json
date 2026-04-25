@@ -64,6 +64,8 @@
 {"key":"カイフタラ","bros":{"fullBrothers":["オペラハウス",""],"fullSisters":["",""]}},
 {"key":"オペラハウス","bros":{"fullBrothers":["カイフタラ",""],"fullSisters":["",""]}},
 {"key":"ファラモンド","bros":{"fullBrothers":["",""],"fullSisters":["ウマガミノイノリ",""]}},
-{"key":"ウマガミノイノリ","bros":{"fullBrothers":["ファラモンド",""],"fullSisters":["",""]}}
+{"key":"ウマガミノイノリ","bros":{"fullBrothers":["ファラモンド",""],"fullSisters":["",""]}},
+{"key":"ゴールデンサッシュ","bros":{"fullBrothers":["サッカーボーイ",""],"fullSisters":["",""]}},
+{"key":"サッカーボーイ","bros":{"fullBrothers":["",""],"fullSisters":["ゴールデンサッシュ",""]}}
 ]
 }
