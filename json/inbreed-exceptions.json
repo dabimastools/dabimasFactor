@@ -58,5 +58,27 @@
       "excludeAncestors": true,
       "displayInSameNameGroups": false
     }
+  },
+  {
+    "id": "sadlersWells-nureyev-special",
+    "name": "サドラーズウェルズの母母とヌレイエフの母が同じ",
+    "description": "サドラーズウェルズが4代目より小さく、相手側のヌレイエフが5代目より小さい場合、ヌレイエフをクロス認定",
+    "trigger": {
+      "horse": "サドラーズウェルズ",
+      "generation": 4,
+      "operator": "<",
+      "side": "either"
+    },
+    "target": {
+      "horse": "ヌレイエフ",
+      "generation": 5,
+      "operator": "<",
+      "side": "opposite"
+    },
+    "action": {
+      "recognizeAsCross": true,
+      "excludeAncestors": true,
+      "displayInSameNameGroups": false
+    }
   }
 ]

@@ -3938,9 +3938,22 @@
               
               searchArrays.forEach(arr => {
                 arr.forEach(horse => {
-                  if (horse && horse.name === exception.target.horse) {
-                    targetIndexes.push({index: horse.index, node: horse});
+                  if (!horse || horse.name !== exception.target.horse) {
+                    return;
                   }
+
+                  if (Number.isInteger(exception.target.generation)) {
+                    const targetGen = getGenerationFromIndex(horse.index);
+                    if (!checkGenerationCondition(
+                      targetGen,
+                      exception.target.generation,
+                      exception.target.operator
+                    )) {
+                      return;
+                    }
+                  }
+
+                  targetIndexes.push({index: horse.index, node: horse});
                 });
               });
               
