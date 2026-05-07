@@ -62,7 +62,7 @@
   {
     "id": "sadlersWells-nureyev-special",
     "name": "サドラーズウェルズの母母とヌレイエフの母が同じ",
-    "description": "サドラーズウェルズが4代目より小さく、相手側のヌレイエフが5代目より小さい場合、ヌレイエフをクロス認定",
+    "description": "サドラーズウェルズが4代目より小さく、相手側のヌレイエフが5代目より小さい場合、共通牝馬Special由来の祖先クロスを除外",
     "trigger": {
       "horse": "サドラーズウェルズ",
       "generation": 4,
@@ -76,7 +76,51 @@
       "side": "opposite"
     },
     "action": {
-      "recognizeAsCross": true,
+      "recognizeAsCross": false,
+      "excludeAncestors": true,
+      "displayInSameNameGroups": false
+    }
+  },
+  {
+    "id": "northernDancer-halo-almahmoud",
+    "name": "ノーザンダンサーの母母とヘイローの母母が同じ",
+    "description": "ノーザンダンサーが4代目より小さく、相手側のヘイローが4代目より小さい場合、共通牝馬Almahmoud由来の祖先クロスを除外",
+    "trigger": {
+      "horse": "ノーザンダンサー",
+      "generation": 4,
+      "operator": "<",
+      "side": "either"
+    },
+    "target": {
+      "horse": "ヘイロー",
+      "generation": 4,
+      "operator": "<",
+      "side": "opposite"
+    },
+    "action": {
+      "recognizeAsCross": false,
+      "excludeAncestors": true,
+      "displayInSameNameGroups": false
+    }
+  },
+  {
+    "id": "secretariat-sirGaylord-somethingroyal",
+    "name": "セクレタリアトの母とサーゲイロードの母が同じ",
+    "description": "セクレタリアトが5代目より小さく、相手側のサーゲイロードが5代目より小さい場合、共通牝馬Somethingroyal由来の祖先クロスを除外",
+    "trigger": {
+      "horse": "セクレタリアト",
+      "generation": 5,
+      "operator": "<",
+      "side": "either"
+    },
+    "target": {
+      "horse": "サーゲイロード",
+      "generation": 5,
+      "operator": "<",
+      "side": "opposite"
+    },
+    "action": {
+      "recognizeAsCross": false,
       "excludeAncestors": true,
       "displayInSameNameGroups": false
     }

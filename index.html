@@ -2704,19 +2704,21 @@
                   return; // 既に除外されている場合はスキップ
                 }
                 
-                // recognizedCrossesに追加
-                const crossData = {
-                  name: `${exception.target.horse}(例外:${exception.name})`,
-                  type: 'exception',
-                  stallionIndex: targetActualSide === 'stallion' ? targetIdx : null,
-                  broodmareIndex: targetActualSide === 'broodmare' ? targetIdx : null,
-                  stallionNode: targetActualSide === 'stallion' ? targetNode : null,
-                  broodmareNode: targetActualSide === 'broodmare' ? targetNode : null,
-                  exceptionId: exception.id,
-                  displayInSameNameGroups: exception.action.displayInSameNameGroups
-                };
-                
-                recognizedCrosses.push(crossData);
+                // 例外ターゲットをクロス表示する場合だけrecognizedCrossesに追加
+                if (exception.action.recognizeAsCross !== false) {
+                  const crossData = {
+                    name: `${exception.target.horse}(例外:${exception.name})`,
+                    type: 'exception',
+                    stallionIndex: targetActualSide === 'stallion' ? targetIdx : null,
+                    broodmareIndex: targetActualSide === 'broodmare' ? targetIdx : null,
+                    stallionNode: targetActualSide === 'stallion' ? targetNode : null,
+                    broodmareNode: targetActualSide === 'broodmare' ? targetNode : null,
+                    exceptionId: exception.id,
+                    displayInSameNameGroups: exception.action.displayInSameNameGroups
+                  };
+                  
+                  recognizedCrosses.push(crossData);
+                }
                 
                 // 祖先を除外
                 if (exception.action.excludeAncestors) {
