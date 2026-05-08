@@ -122,6 +122,12 @@
     "action": {
       "recognizeAsCross": false,
       "excludeAncestors": true,
+      "excludeAncestorBranches": [
+        {
+          "trigger": ["mother"],
+          "target": ["mother"]
+        }
+      ],
       "displayInSameNameGroups": false
     }
   }

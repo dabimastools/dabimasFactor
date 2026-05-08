@@ -3850,6 +3850,116 @@
           const getPairKey = (stallionIndex, broodmareIndex) =>
             `${stallionIndex}-${broodmareIndex}`;
 
+          const exceptionParentChildMap = {
+            0: [1, 100],
+            100: [3, 107],
+            107: [7, 115],
+            115: [15],
+            1: [2, 101],
+            101: [5, 111],
+            111: [11],
+            2: [4, 102],
+            102: [9],
+            3: [6, 103],
+            103: [13],
+            4: [8],
+            5: [10],
+            6: [12],
+            7: [14],
+            16: [17, 200],
+            200: [19, 207],
+            207: [23, 215],
+            215: [31],
+            17: [18, 201],
+            201: [21, 211],
+            211: [27],
+            18: [20, 202],
+            202: [25],
+            19: [22, 203],
+            203: [29],
+            20: [24],
+            21: [26],
+            22: [28],
+            23: [30],
+          };
+
+          const normalizeExceptionBranchPath = (path) => {
+            if (Array.isArray(path)) {
+              return path;
+            }
+            if (typeof path === "string") {
+              return path.split(".").filter((step) => step);
+            }
+            return [];
+          };
+
+          const resolveExceptionBranchRoot = (startIndex, path) => {
+            let currentIndex = startIndex;
+            for (const step of normalizeExceptionBranchPath(path)) {
+              const parents = exceptionParentChildMap[currentIndex];
+              if (!parents) {
+                return null;
+              }
+              if (step === "father" || step === "sire") {
+                currentIndex = parents[0];
+              } else if (step === "mother" || step === "dam") {
+                currentIndex = parents[1];
+              } else {
+                return null;
+              }
+              if (!Number.isInteger(currentIndex)) {
+                return null;
+              }
+            }
+            return currentIndex;
+          };
+
+          const getExceptionBranchAncestors = (startIndex, path) => {
+            const branchRoot = resolveExceptionBranchRoot(startIndex, path);
+            if (!Number.isInteger(branchRoot)) {
+              return new Set();
+            }
+            return getAncestorIndexes(branchRoot);
+          };
+
+          const addExceptionExcludedPairs = (triggerIdx, targetIdx, exception) => {
+            const branchRules = exception.action.excludeAncestorBranches;
+            if (Array.isArray(branchRules) && branchRules.length > 0) {
+              branchRules.forEach((rule) => {
+                const triggerAncestors = getExceptionBranchAncestors(
+                  triggerIdx,
+                  rule.trigger
+                );
+                const targetAncestors = getExceptionBranchAncestors(
+                  targetIdx,
+                  rule.target
+                );
+
+                targetAncestors.forEach((ancestorIdx) => {
+                  excludedExceptionTargets.add(ancestorIdx);
+                });
+                triggerAncestors.forEach((triggerAncestor) => {
+                  targetAncestors.forEach((ancestorIdx) => {
+                    exceptionExcludedPairs.add(getPairKey(triggerAncestor, ancestorIdx));
+                    exceptionExcludedPairs.add(getPairKey(ancestorIdx, triggerAncestor));
+                  });
+                });
+              });
+              return;
+            }
+
+            const triggerAncestors = getAncestorIndexes(triggerIdx);
+            triggerAncestors.add(triggerIdx);
+            const ancestors = getAncestorIndexes(targetIdx);
+            ancestors.forEach((ancestorIdx) => {
+              excludedExceptionTargets.add(ancestorIdx);
+              triggerAncestors.forEach((triggerAncestor) => {
+                exceptionExcludedPairs.add(getPairKey(triggerAncestor, ancestorIdx));
+                exceptionExcludedPairs.add(getPairKey(ancestorIdx, triggerAncestor));
+              });
+            });
+          };
+
           const addExcludedAncestorPairs = (stallionIndexes, broodmareIndexes) => {
             const stallionAncestors = new Set();
             const broodmareAncestors = new Set();
@@ -3986,21 +4096,7 @@
                 
                 // 祖先を除外
                 if (exception.action.excludeAncestors) {
-                  // トリガー馬の祖先を取得
-                  const triggerAncestors = getAncestorIndexes(triggerIdx);
-                  triggerAncestors.add(triggerIdx); // トリガー馬自身も含める
-                  
-                  // ターゲット馬の祖先を取得
-                  const ancestors = getAncestorIndexes(targetIdx);
-                  ancestors.forEach(ancestorIdx => {
-                    excludedExceptionTargets.add(ancestorIdx);
-                    
-                    // トリガー馬とその祖先との組み合わせを記録
-                    triggerAncestors.forEach(triggerAncestor => {
-                      exceptionExcludedPairs.add(getPairKey(triggerAncestor, ancestorIdx));
-                      exceptionExcludedPairs.add(getPairKey(ancestorIdx, triggerAncestor));
-                    });
-                  });
+                  addExceptionExcludedPairs(triggerIdx, targetIdx, exception);
                 }
               });
             });
