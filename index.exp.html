@@ -90,6 +90,11 @@
         overflow: hidden;
       }
 
+      .exp-mobile-layout .pedigree-card-shell {
+        border: 1px solid #9ea3aa !important;
+        box-sizing: border-box;
+      }
+
       .exp-mobile-layout .pedigree-card-shell > .spacer {
         display: none !important;
       }
@@ -239,6 +244,7 @@
         width: 100%;
         height: calc(var(--exp-mobile-row-height) - 1px);
         border: 0;
+        border-bottom: 1px solid #DDDDDD;
         border-radius: 4px;
         padding: 0 6px;
         background: transparent;
@@ -733,7 +739,7 @@
             <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
                 <v-row no-gutters class="pedigree-card-toolbar">
-                  <v-col cols="12" md="3" class="d-flex align-center fill-height">
+                  <v-col v-if="$vuetify.breakpoint.smAndDown" cols="12" md="3" class="d-flex align-center fill-height">
                     <v-card-title
                       style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
                       class="px-0"
@@ -795,7 +801,7 @@
             <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
                 <v-row no-gutters class="pedigree-card-toolbar">
-                  <v-col cols="12" md="4" class="d-flex align-center fill-height">
+                  <v-col v-if="$vuetify.breakpoint.smAndDown" cols="12" md="4" class="d-flex align-center fill-height">
                     <v-card-title
                       style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
                       class="px-0"
