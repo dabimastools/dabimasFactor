@@ -738,27 +738,6 @@
             <!-- xsを設定できないので↓のようなカンジで -->
             <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
-                <v-row no-gutters class="pedigree-card-toolbar">
-                  <v-col v-if="$vuetify.breakpoint.smAndDown" cols="12" md="3" class="d-flex align-center fill-height">
-                    <v-card-title
-                      style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
-                      class="px-0"
-                      outlined
-                      >
-                      種牡馬検索
-                    </v-card-title>
-                  </v-col>
-                  <v-col v-if="$vuetify.breakpoint.mdAndUp" mt-0>
-                    <v-text-field
-                      v-model="this.inputedMemoStallion"
-                      @change="memoChangeStallion($event)"
-                      label="メモ"
-                      dense
-                      single-line
-                      style="font-size: 10px;"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
                 <div class="pedigree-card-table-wrap">
                   <table class="table_main">
                     <tbody>
@@ -800,27 +779,6 @@
             <!-- xsを設定できないので↓のようなカンジで -->
             <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
-                <v-row no-gutters class="pedigree-card-toolbar">
-                  <v-col v-if="$vuetify.breakpoint.smAndDown" cols="12" md="4" class="d-flex align-center fill-height">
-                    <v-card-title
-                      style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
-                      class="px-0"
-                      outlined
-                    >
-                      繫殖牝馬検索
-                    </v-card-title>
-                  </v-col>
-                  <v-col v-if="$vuetify.breakpoint.mdAndUp" mt-0>
-                    <v-text-field
-                      v-model="this.inputedMemoBroodmare"
-                      @change="memoChangeBroodmare($event)"
-                      label="メモ"
-                      dense
-                      single-line
-                      style="font-size: 10px;"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
                 <!-- 繫殖牝馬側 -->
                 <div class="pedigree-card-table-wrap">
                   <table class="table_main">
