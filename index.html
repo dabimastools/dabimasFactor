@@ -1957,6 +1957,12 @@
             this.$set(this.inbreedList, targetIndex, null);
             this.clearManualInbreedForIndex(targetIndex);
           }
+          const selectedEntry = Number.isInteger(targetIndex)
+            ? this.selected[targetIndex]
+            : null;
+          if (horseData && selectedEntry?.uuid) {
+            this.deleteHorses(sex, id);
+          }
           if (horseData) {
             // リストにセットされた場合
             // 血統表データセット用に詰め替える
