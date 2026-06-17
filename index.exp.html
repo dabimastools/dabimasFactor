@@ -181,6 +181,30 @@
         font-size: 18px !important;
       }
 
+      .exp-mobile-layout .exp-mobile-screenshot-cell {
+        width: 14%;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      .exp-mobile-layout .exp-mobile-screenshot-button {
+        width: 100%;
+        min-height: 18px;
+        border: 0;
+        padding: 0;
+        background: #607d8b;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .exp-mobile-layout .exp-mobile-screenshot-button:disabled {
+        cursor: progress;
+        opacity: 0.68;
+      }
+
       .exp-mobile-layout .father_0,
       .exp-mobile-layout .father,
       .exp-mobile-layout .father_1,
@@ -654,8 +678,19 @@
 
           <tbody v-if="$vuetify.breakpoint.smAndDown">
             <tr>
-              <td width="1%"></td>
-              <td width="13%"></td>
+              <td colspan="2" class="exp-mobile-screenshot-cell">
+                <button
+                  type="button"
+                  class="exp-mobile-screenshot-button"
+                  :disabled="isCapturingScreenshot"
+                  aria-label="スクリーンショットを保存"
+                  title="スクリーンショットを保存"
+                  data-html2canvas-ignore="true"
+                  @click.stop.prevent="captureMobileScreenshot"
+                >
+                  <v-icon small color="white">mdi-camera</v-icon>
+                </button>
+              </td>
               <td class="f01">短</td>
               <td class="f02">速</td>
               <td class="f03">底</td>
@@ -2184,6 +2219,8 @@
           reload: 0,
           size: {},
           combinationDialogVisible: false,
+          isCapturingScreenshot: false,
+          html2CanvasLoadPromise: null,
           inbreedLogTimer: null,
           deferInbreedCount: false,
           deferredInbreedCountRequested: false,
@@ -2363,6 +2400,128 @@
               .filter((value) => Number.isFinite(value) && value > 0)
               .map((value) => Math.floor(value))
           );
+        },
+        buildScreenshotFileName: function () {
+          const now = new Date();
+          const pad = (value) => String(value).padStart(2, "0");
+          return [
+            "dabimas",
+            now.getFullYear(),
+            pad(now.getMonth() + 1),
+            pad(now.getDate()),
+            "-",
+            pad(now.getHours()),
+            pad(now.getMinutes()),
+            pad(now.getSeconds()),
+            ".png",
+          ].join("");
+        },
+        canvasToPngBlob: function (canvas) {
+          return new Promise((resolve) => {
+            canvas.toBlob((blob) => resolve(blob), "image/png");
+          });
+        },
+        downloadScreenshotBlob: function (blob, filename) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          link.rel = "noopener";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
+        },
+        saveScreenshotBlob: async function (blob, filename) {
+          if (
+            typeof File === "function" &&
+            navigator.share &&
+            navigator.canShare
+          ) {
+            const file = new File([blob], filename, { type: "image/png" });
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                files: [file],
+                title: "ダビふぁく",
+              });
+              return;
+            }
+          }
+          this.downloadScreenshotBlob(blob, filename);
+        },
+        loadHtml2Canvas: function () {
+          if (typeof window.html2canvas === "function") {
+            return Promise.resolve(window.html2canvas);
+          }
+          if (this.html2CanvasLoadPromise) {
+            return this.html2CanvasLoadPromise;
+          }
+
+          this.html2CanvasLoadPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+            script.async = true;
+            script.onload = () => {
+              if (typeof window.html2canvas === "function") {
+                resolve(window.html2canvas);
+              } else {
+                this.html2CanvasLoadPromise = null;
+                reject(new Error("html2canvas is not available"));
+              }
+            };
+            script.onerror = () => {
+              this.html2CanvasLoadPromise = null;
+              reject(new Error("Failed to load html2canvas"));
+            };
+            document.head.appendChild(script);
+          });
+
+          return this.html2CanvasLoadPromise;
+        },
+        captureMobileScreenshot: async function () {
+          if (!this.$vuetify.breakpoint.smAndDown || this.isCapturingScreenshot) {
+            return;
+          }
+
+          this.isCapturingScreenshot = true;
+          try {
+            const html2canvas = await this.loadHtml2Canvas();
+            this.applyMobileViewportLayout();
+            await this.$nextTick();
+            await new Promise((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(resolve));
+            });
+
+            const target = this.$el;
+            const rect = target.getBoundingClientRect();
+            const width = Math.ceil(rect.width);
+            const height = Math.ceil(rect.height);
+            const scale = Math.min(window.devicePixelRatio || 1, 3);
+            const canvas = await html2canvas(target, {
+              backgroundColor: "#ffffff",
+              scale,
+              width,
+              height,
+              windowWidth: Math.max(document.documentElement.clientWidth, width),
+              windowHeight: Math.max(document.documentElement.clientHeight, height),
+              scrollX: -window.scrollX,
+              scrollY: -window.scrollY,
+              ignoreElements: (element) =>
+                element.hasAttribute("data-html2canvas-ignore"),
+            });
+            const blob = await this.canvasToPngBlob(canvas);
+            if (!blob) {
+              throw new Error("Failed to create screenshot blob");
+            }
+            await this.saveScreenshotBlob(blob, this.buildScreenshotFileName());
+          } catch (error) {
+            if (!error || error.name !== "AbortError") {
+              console.error("Screenshot capture failed:", error);
+              alert("スクリーンショットの保存に失敗しました");
+            }
+          } finally {
+            this.isCapturingScreenshot = false;
+          }
         },
         clearMobileViewportGeometryTimer: function () {
           if (this.mobileViewportGeometryTimerId !== null) {
