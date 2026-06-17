@@ -23,6 +23,7 @@
       type="text/css"
       rel="stylesheet"
     />
+    <link href="./css/mobile.css" type="text/css" rel="stylesheet" />
     <link rel="icon" href="./favicon.ico" sizes="any" />
     <!-- 32×32 -->
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
@@ -45,8 +46,8 @@
     <!-- ローディングアニメーション↑ -->
 
     <!-- 非同期処理が完了した後に表示するコンテンツ -->
-    <v-app id="app">
-      <header>
+    <v-app id="app" :class="{ 'exp-mobile-layout': isCompactMobileLayout }">
+      <header ref="appHeader">
         <table width="100%" style="border-collapse: collapse">
           <tbody v-if="$vuetify.breakpoint.mdAndUp">
             <tr>
@@ -145,8 +146,19 @@
 
           <tbody v-if="$vuetify.breakpoint.smAndDown">
             <tr>
-              <td width="1%"></td>
-              <td width="13%"></td>
+              <td colspan="2" class="exp-mobile-screenshot-cell">
+                <button
+                  type="button"
+                  class="exp-mobile-screenshot-button"
+                  :disabled="isCapturingScreenshot"
+                  aria-label="Save screenshot"
+                  title="Save screenshot"
+                  data-html2canvas-ignore="true"
+                  @click.stop.prevent="captureMobileScreenshot"
+                >
+                  <v-icon small color="white">mdi-camera</v-icon>
+                </button>
+              </td>
               <td class="f01">短</td>
               <td class="f02">速</td>
               <td class="f03">底</td>
@@ -164,13 +176,13 @@
               <th v-if="dispCategory % 2 === 0" class="f00_theory">理論</th>
               <th v-else class="f00_theory">子系統</th>
             </tr>
-            <tr>
+            <tr class="mobile-nitro-header-row">
               <td colspan="16" class="f00_nitro_header"></td>
-              <td v-if="dispCategory % 2 === 0" rowspan="2" :class="styleThoeryClass" align="center"></td>
-              <td v-else rowspan="2" align="center">{{categoryNumtoString}}</td>
+              <td v-if="dispCategory % 2 === 0" rowspan="2" :class="['mobile-nitro-rowspan', styleThoeryClass]" align="center"></td>
+              <td v-else rowspan="2" align="center" class="mobile-nitro-rowspan">{{categoryNumtoString}}</td>
 
             </tr>
-            <tr>
+            <tr class="mobile-nitro-value-row">
               <td class="f00_nitro" colspan="2">ニトロ</td>
               <td class="factorNumCell">{{factorNumtoString[0]}}</td>
               <td class="factorNumCell">{{factorNumtoString[1]}}</td>
@@ -187,18 +199,19 @@
               <td class="factorNumCell">{{factorNumtoString[6]}}</td>
               <td class="factorNumCell">{{factorNumtoString[7]}}</td>
             </tr>
-            <tr>
+            <tr class="mobile-cross-header-row">
               <td colspan="16" class="f00_inbreed_header"></td>
-              <td v-if="dispCategory % 2 === 0" rowspan="2" @click="initializer()" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
+              <td v-if="dispCategory % 2 === 0" rowspan="2" @click="initializer()" class="mobile-cross-rowspan" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
               <td
                 v-else
                 rowspan="2"
                 :style="combinationCellStyle"
                 align="center"
+                class="mobile-cross-rowspan"
                 @click="handleCombinationCellClick"
               ><v-icon size="large" color="white">mdi-horse-variant</v-icon></td>
             </tr>
-            <tr>
+            <tr class="mobile-cross-value-row">
               <td colspan="2" class="f00_inbreed">クロス</td>
               <td class="factorNumCell">{{inbreedFactorNumtoString[0]}}</td>
               <td class="factorNumCell">{{inbreedFactorNumtoString[1]}}</td>
@@ -227,39 +240,17 @@
       ></combination-dialog>
 
 
-      <main>
+      <main ref="appMain">
         <v-container fluid>
           <v-spacer class="my-1 px-0 mx-0 my-0" />
           <v-row class="mx-1" align-content="center">
             <!-- <v-spacer class="my-1 px-0 mx-0 my-0" /> -->
             <!-- xsを設定できないので↓のようなカンジで -->
-            <v-col sm="12" md="6" lg="6" xl="6" cols="12">
-              <v-card elevation="3" align-content="center" class="custom-card">
-                <v-row no-gutters>
-                  <v-col cols="3">
-                    <v-card-title
-                      v-if="this.windowSize >= 770"
-                      style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
-                      class="px-0"
-                      outlined
-                      >
-                      種牡馬検索
-                    </v-card-title>
-                  </v-col>
-                  <v-col mt-0>
-                    <v-text-field
-                      v-model="this.inputedMemoStallion"
-                      @change="memoChangeStallion($event)"
-                      v-if="this.windowSize >= 770"
-                      label="メモ"
-                      dense
-                      single-line
-                      style="font-size: 10px;"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                <table class="table_main">
-                  <tbody>
+            <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
+              <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
+                <div class="pedigree-card-table-wrap">
+                  <table class="table_main">
+                    <tbody>
                     <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
                     <tr
                       is="pedigree-row"
@@ -289,40 +280,19 @@
                       :disp-button-name="dispButtonName"
                       :on-toggle-category="handleClick"
                     ></tr>
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                </div>
                 <v-spacer class="my-1 px-0 mx-0 my-0" />
               </v-card>
             </v-col>
             <!-- xsを設定できないので↓のようなカンジで -->
-            <v-col sm="12" md="6" lg="6" xl="6" cols="12">
-              <v-card elevation="3" align-content="center" class="custom-card">
-                <v-row no-gutters>
-                  <v-col cols="4" class="d-flex align-center fill-height">
-                    <v-card-title
-                      v-if="this.windowSize >= 770"
-                      style="font-size: 16px; font-weight: bolder d-flex justify-center fill-height"
-                      class="px-0"
-                      outlined
-                    >
-                      繫殖牝馬検索
-                    </v-card-title>
-                  </v-col>
-                  <v-col mt-0>
-                    <v-text-field
-                      v-model="this.inputedMemoBroodmare"
-                      @change="memoChangeBroodmare($event)"
-                      v-if="this.windowSize >= 770"
-                      label="メモ"
-                      dense
-                      single-line
-                      style="font-size: 10px;"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
+            <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
+              <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
                 <!-- 繫殖牝馬側 -->
-                <table class="table_main">
-                  <tbody>
+                <div class="pedigree-card-table-wrap">
+                  <table class="table_main">
+                    <tbody>
                     <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
                     <tr
                       is="pedigree-row"
@@ -352,8 +322,9 @@
                       :disp-button-name="dispButtonName"
                       :on-toggle-category="handleClick"
                     ></tr>
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                </div>
                 <!-- <v-spacer class="my-1 px-0 mx-0 my-0" /> -->
               </v-card>
             </v-col>
@@ -406,29 +377,51 @@
       </td>
 
       <td :class="inbreedButtonClass">
-        <v-btn
-          v-if="btnState === -1"
-          :key="reload"
-          @click="handleInbreedButtonClick(config.index)"
-          icon
-          v-bind="size"
-        ><v-icon>mdi-heart-outline</v-icon></v-btn>
-        <v-btn
-          v-else-if="btnState === 1"
-          :key="reload"
-          @click="handleInbreedButtonClick(config.index)"
-          icon
-          color="pink"
-          v-bind="size"
-        ><v-icon>mdi-heart</v-icon></v-btn>
-        <v-btn
-          v-else
-          :key="reload"
-          icon
-          color="pink"
-          disabled
-          v-bind="size"
-        ><v-icon>mdi-heart</v-icon></v-btn>
+        <template v-if="$vuetify.breakpoint.smAndDown">
+          <button
+            v-if="btnState === -1"
+            type="button"
+            class="exp-mobile-icon-btn"
+            @click="handleInbreedButtonClick(config.index)"
+          ><i class="mdi mdi-heart-outline"></i></button>
+          <button
+            v-else-if="btnState === 1"
+            type="button"
+            class="exp-mobile-icon-btn exp-mobile-icon-btn--active"
+            @click="handleInbreedButtonClick(config.index)"
+          ><i class="mdi mdi-heart"></i></button>
+          <button
+            v-else
+            type="button"
+            class="exp-mobile-icon-btn exp-mobile-icon-btn--disabled"
+            disabled
+          ><i class="mdi mdi-heart"></i></button>
+        </template>
+        <template v-else>
+          <v-btn
+            v-if="btnState === -1"
+            :key="reload"
+            @click="handleInbreedButtonClick(config.index)"
+            icon
+            v-bind="size"
+          ><v-icon>mdi-heart-outline</v-icon></v-btn>
+          <v-btn
+            v-else-if="btnState === 1"
+            :key="reload"
+            @click="handleInbreedButtonClick(config.index)"
+            icon
+            color="pink"
+            v-bind="size"
+          ><v-icon>mdi-heart</v-icon></v-btn>
+          <v-btn
+            v-else
+            :key="reload"
+            icon
+            color="pink"
+            disabled
+            v-bind="size"
+          ><v-icon>mdi-heart</v-icon></v-btn>
+        </template>
       </td>
 
       <template v-if="rowIndex === 16">
@@ -436,8 +429,13 @@
           colspan="3"
           :class="(styleFactorClasses[rowIndex] && styleFactorClasses[rowIndex][0]) || factorClasses[0]"
         >
-          <v-btn v-if="$vuetify.breakpoint.mdAndUp" variant="outlined" block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
-          <v-btn v-if="$vuetify.breakpoint.smAndDown" variant="outlined" x-small block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          <button
+            v-if="$vuetify.breakpoint.smAndDown"
+            type="button"
+            class="exp-mobile-text-btn"
+            @click="handleToggleCategory"
+          >{{ dispButtonName || '' }}</button>
+          <v-btn v-else variant="outlined" block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
         </td>
       </template>
       <template v-else>
@@ -581,6 +579,14 @@
     ];
     Object.freeze(INDEX_GENERATION_ASSIGNMENTS);
 
+    // 上から①〜⑯の連番をindex番号にマッピング
+    // rowConfigs の表示順: [0, 1, 2, 4, 8, 9, 5, 10, 11, 3, 6, 12, 13, 7, 14, 15]
+    const INDEX_TO_ROW_NUMBER = [
+      '①', '②', '③', '⑩', '④', '⑦', '⑪', '⑭', '⑤', '⑥', '⑧', '⑨', '⑫', '⑬', '⑮', '⑯',
+      '①', '②', '③', '⑩', '④', '⑦', '⑪', '⑭', '⑤', '⑥', '⑧', '⑨', '⑫', '⑬', '⑮', '⑯',
+    ];
+    Object.freeze(INDEX_TO_ROW_NUMBER);
+
     // 始祖
     const founder = [
       {key:"Intent" ,value:"インテント系"},
@@ -640,6 +646,7 @@
     const factorMap = new Map();
     const manualFactorOptions = ["短", "速", "底", "長", "堅", "難"];
     const MANUAL_INBREED_STORAGE_KEY = "dabimasManualInbreed";
+    const horseSearchIndexCache = new WeakMap();
 
     Vue.component('pedigree-row', {
       template: '#pedigree-row-template',
@@ -806,8 +813,120 @@
     // カスタムコンポーネント定義（コンボボックス）
     Vue.component("common-autocomplete", {
       template: `
-      <v-autocomplete
-        v-if="dispCategory%2 === 0"
+      <div class="exp-mobile-autocomplete-root">
+        <template v-if="dispCategory%2 === 0">
+          <template v-if="isMobileLayout">
+            <button
+              type="button"
+              class="exp-mobile-horse-trigger"
+              @click="openMobileEditor"
+            >
+              <span class="exp-mobile-horse-text">{{ mobileTriggerLabel }}</span>
+              <i class="mdi mdi-chevron-down"></i>
+            </button>
+            <v-dialog
+              v-model="mobileDialogVisible"
+              content-class="exp-mobile-picker-dialog"
+              max-width="560"
+            >
+              <v-card>
+                <div class="exp-mobile-picker-header">
+                  <div>
+                    <div class="exp-mobile-picker-title">{{ mobileDialogTitle }}</div>
+                    <div class="exp-mobile-picker-subtitle">{{ mobileDialogContextLabel }}</div>
+                  </div>
+                  <div class="exp-mobile-picker-actions">
+                    <button
+                      v-if="selected[index]"
+                      type="button"
+                      class="exp-mobile-picker-action exp-mobile-picker-action--clear"
+                      @click="clearMobileHorse"
+                    >クリア</button>
+                    <button
+                      type="button"
+                      class="exp-mobile-picker-action exp-mobile-picker-action--close"
+                      @click="closeMobileEditor"
+                    >閉じる</button>
+                  </div>
+                </div>
+                <div class="exp-mobile-picker-body">
+                  <div class="exp-mobile-current-selection">
+                    <div class="exp-mobile-current-selection-label">現在の選択</div>
+                    <div class="exp-mobile-current-selection-context">
+                      {{ mobileDialogContextLabel }}
+                    </div>
+                    <div class="exp-mobile-current-selection-value">
+                      {{ mobileCurrentSelectionLabel }}
+                    </div>
+                  </div>
+                  <label
+                    class="exp-mobile-search-label"
+                    :for="mobileInputId"
+                  >候補を検索</label>
+                  <div class="exp-mobile-search-shell">
+                    <i class="mdi mdi-magnify"></i>
+                    <input
+                      :id="mobileInputId"
+                      ref="mobileSearchInput"
+                      :value="mobileQueryInput"
+                      class="exp-mobile-search-input"
+                      type="text"
+                      :placeholder="placeholderText"
+                      autocomplete="off"
+                      autocapitalize="off"
+                      spellcheck="false"
+                      inputmode="search"
+                      lang="ja"
+                      :aria-busy="mobileSearchCompositionActive ? 'true' : 'false'"
+                      enterkeyhint="search"
+                      @input="onMobileSearchInput"
+                      @compositionstart="onMobileCompositionStart"
+                      @compositionend="onMobileCompositionEnd"
+                      @keydown.enter.prevent="selectFirstMobileHorse"
+                    />
+                    <button
+                      v-if="mobileQueryInput"
+                      type="button"
+                      class="exp-mobile-search-clear"
+                      @click="clearMobileQuery"
+                    >クリア</button>
+                  </div>
+                  <div class="exp-mobile-option-list">
+                    <button
+                      v-for="horse in filteredMobileLists"
+                      :key="getHorseKey(horse)"
+                      type="button"
+                      :class="[
+                        'exp-mobile-option-btn',
+                        { 'exp-mobile-option-btn--selected': isSelectedHorse(horse) }
+                      ]"
+                      @click="selectMobileHorse(horse)"
+                    >
+                      <div class="exp-option-item">
+                        <span class="exp-option-label exp-mobile-option-name">
+                          {{ getHorseBaseText(horse) }}
+                        </span>
+                        <span
+                          v-for="(factor, factorIndex) in getHorseFactorBadges(horse)"
+                          :key="getHorseKey(horse) + '-factor-' + factorIndex"
+                          :class="['exp-option-factor-badge', factor.className]"
+                        >{{ factor.text }}</span>
+                      </div>
+                    </button>
+                    <div
+                      v-if="filteredMobileLists.length === 0"
+                      class="exp-mobile-option-empty"
+                    >
+                      該当するデータはありません
+                    </div>
+                  </div>
+                </div>
+              </v-card>
+            </v-dialog>
+          </template>
+
+          <v-autocomplete
+            v-else
         :value="selected[index]"
         :items="lists"
         :item-text="horse => [horse.nature ? '[' + horse.nature.charAt(0) + ']' : '', horse.name, horse.subName].filter(Boolean).join('')"
@@ -826,7 +945,8 @@
             </v-list-item-content>
           </template>
         </template>
-      </v-autocomplete>
+          </v-autocomplete>
+        </template>
       <v-row no-gutters v-else>
         <v-col :style="getWidth(index,0)">
           <v-text-field
@@ -879,19 +999,463 @@
           required: true,
         },
       },
+      data() {
+        return {
+          mobileDialogVisible: false,
+          mobileQueryInput: "",
+          mobileQuery: "",
+          mobileSearchCompositionActive: false,
+          mobileQuerySyncTimer: null,
+        };
+      },
+      beforeDestroy() {
+        this.clearMobileQuerySyncTimer();
+      },
       methods: {
+        getStableViewportHeight: function () {
+          const docEl = document.documentElement || {};
+          const body = document.body || {};
+          const candidates = [
+            Number(window.innerHeight) || 0,
+            Number(docEl.clientHeight) || 0,
+            Number(body.clientHeight) || 0,
+          ];
+          if (window.visualViewport) {
+            candidates.push(Number(window.visualViewport.height) || 0);
+          }
+          return Math.max(
+            0,
+            ...candidates
+              .filter((value) => Number.isFinite(value) && value > 0)
+              .map((value) => Math.floor(value))
+          );
+        },
+        getStableViewportWidth: function () {
+          const docEl = document.documentElement || {};
+          const body = document.body || {};
+          const candidates = [
+            Number(window.innerWidth) || 0,
+            Number(docEl.clientWidth) || 0,
+            Number(body.clientWidth) || 0,
+          ];
+          if (window.visualViewport) {
+            candidates.push(Number(window.visualViewport.width) || 0);
+          }
+          return Math.max(
+            0,
+            ...candidates
+              .filter((value) => Number.isFinite(value) && value > 0)
+              .map((value) => Math.floor(value))
+          );
+        },
+        buildScreenshotFileName: function () {
+          const now = new Date();
+          const pad = (value) => String(value).padStart(2, "0");
+          return [
+            "dabimas",
+            now.getFullYear(),
+            pad(now.getMonth() + 1),
+            pad(now.getDate()),
+            "-",
+            pad(now.getHours()),
+            pad(now.getMinutes()),
+            pad(now.getSeconds()),
+            ".png",
+          ].join("");
+        },
+        canvasToPngBlob: function (canvas) {
+          return new Promise((resolve) => {
+            canvas.toBlob((blob) => resolve(blob), "image/png");
+          });
+        },
+        downloadScreenshotBlob: function (blob, filename) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          link.rel = "noopener";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
+        },
+        saveScreenshotBlob: async function (blob, filename) {
+          if (
+            typeof File === "function" &&
+            navigator.share &&
+            navigator.canShare
+          ) {
+            const file = new File([blob], filename, { type: "image/png" });
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                files: [file],
+                title: "dabimas",
+              });
+              return;
+            }
+          }
+          this.downloadScreenshotBlob(blob, filename);
+        },
+        loadHtml2Canvas: function () {
+          if (typeof window.html2canvas === "function") {
+            return Promise.resolve(window.html2canvas);
+          }
+          if (this.html2CanvasLoadPromise) {
+            return this.html2CanvasLoadPromise;
+          }
+
+          this.html2CanvasLoadPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "./cdn/html2canvas.min.js";
+            script.async = true;
+            script.onload = () => {
+              if (typeof window.html2canvas === "function") {
+                resolve(window.html2canvas);
+              } else {
+                this.html2CanvasLoadPromise = null;
+                reject(new Error("html2canvas is not available"));
+              }
+            };
+            script.onerror = () => {
+              this.html2CanvasLoadPromise = null;
+              reject(new Error("Failed to load html2canvas"));
+            };
+            document.head.appendChild(script);
+          });
+
+          return this.html2CanvasLoadPromise;
+        },
+        captureMobileScreenshot: async function () {
+          if (!this.$vuetify.breakpoint.smAndDown || this.isCapturingScreenshot) {
+            return;
+          }
+
+          this.isCapturingScreenshot = true;
+          try {
+            const html2canvas = await this.loadHtml2Canvas();
+            this.applyMobileViewportLayout();
+            await this.$nextTick();
+            await new Promise((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(resolve));
+            });
+
+            const target = this.$el;
+            const rect = target.getBoundingClientRect();
+            const width = Math.ceil(rect.width);
+            const height = Math.ceil(rect.height);
+            const scale = Math.min(window.devicePixelRatio || 1, 3);
+            const canvas = await html2canvas(target, {
+              backgroundColor: "#ffffff",
+              scale,
+              width,
+              height,
+              windowWidth: Math.max(document.documentElement.clientWidth, width),
+              windowHeight: Math.max(document.documentElement.clientHeight, height),
+              scrollX: -window.scrollX,
+              scrollY: -window.scrollY,
+              ignoreElements: (element) =>
+                element.hasAttribute("data-html2canvas-ignore"),
+            });
+            const blob = await this.canvasToPngBlob(canvas);
+            if (!blob) {
+              throw new Error("Failed to create screenshot blob");
+            }
+            await this.saveScreenshotBlob(blob, this.buildScreenshotFileName());
+          } catch (error) {
+            if (!error || error.name !== "AbortError") {
+              console.error("Screenshot capture failed:", error);
+              alert("Failed to save screenshot.");
+            }
+          } finally {
+            this.isCapturingScreenshot = false;
+          }
+        },
+        clearMobileViewportGeometryTimer: function () {
+          if (this.mobileViewportGeometryTimerId !== null) {
+            clearTimeout(this.mobileViewportGeometryTimerId);
+            this.mobileViewportGeometryTimerId = null;
+          }
+        },
+        isEditableElement: function (element) {
+          if (!element) {
+            return false;
+          }
+          if (element.isContentEditable) {
+            return true;
+          }
+          const tagName = typeof element.tagName === "string"
+            ? element.tagName.toLowerCase()
+            : "";
+          return tagName === "input" || tagName === "textarea";
+        },
+        shouldForceResetMobileViewportLock: function (viewportHeight) {
+          if (!(viewportHeight > 0)) {
+            return false;
+          }
+          if (!this.lockedMobileAppHeight || viewportHeight >= this.lockedMobileAppHeight) {
+            return true;
+          }
+          const shrinkAmount = this.lockedMobileAppHeight - viewportHeight;
+          if (shrinkAmount <= 140) {
+            return true;
+          }
+          const activeElement = typeof document !== "undefined"
+            ? document.activeElement
+            : null;
+          return !this.isEditableElement(activeElement);
+        },
+        clearMobileViewportLayoutTimers: function () {
+          if (!Array.isArray(this.mobileViewportLockTimerIds)) {
+            this.mobileViewportLockTimerIds = [];
+            return;
+          }
+          this.mobileViewportLockTimerIds.forEach((timerId) => {
+            clearTimeout(timerId);
+          });
+          this.mobileViewportLockTimerIds = [];
+        },
+        queueMobileViewportLayoutRetry: function (delay) {
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            return;
+          }
+          const timerId = setTimeout(() => {
+            this.applyMobileViewportLayout();
+          }, delay);
+          this.mobileViewportLockTimerIds.push(timerId);
+        },
+        scheduleInitialMobileViewportLayout: function () {
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            return;
+          }
+          this.clearMobileViewportLayoutTimers();
+          [0, 160, 480, 960, 1600, 2400].forEach((delay) => {
+            const timerId = setTimeout(() => {
+              this.refreshMobileViewportLock(delay === 0);
+            }, delay);
+            this.mobileViewportLockTimerIds.push(timerId);
+          });
+        },
+        refreshMobileViewportLock: function (forceReset) {
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            return;
+          }
+          const viewportHeight = this.getStableViewportHeight();
+          if (!(viewportHeight > 0)) {
+            return;
+          }
+          const shouldForceReset =
+            forceReset || this.shouldForceResetMobileViewportLock(viewportHeight);
+          if (shouldForceReset || !this.lockedMobileAppHeight) {
+            this.lockedMobileAppHeight = viewportHeight;
+          } else {
+            this.lockedMobileAppHeight = Math.max(
+              this.lockedMobileAppHeight,
+              viewportHeight
+            );
+          }
+          this.windowSize = this.getStableViewportHeight();
+          this.$nextTick(() => {
+            this.applyMobileViewportLayout();
+          });
+        },
+        applyMobileViewportLayout: function () {
+          const app = this.$el;
+          if (!app) {
+            return;
+          }
+          const rowEl =
+            app.querySelector("main .container > .spacer > .row.mx-1") ||
+            app.querySelector("main .container > .row.mx-1");
+          const cardCols = Array.from(
+            app.querySelectorAll(".pedigree-card-col")
+          );
+
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            if (rowEl) {
+              rowEl.style.removeProperty("grid-template-rows");
+            }
+            cardCols.forEach((col) => {
+              col.style.removeProperty("height");
+              const card = col.querySelector(".pedigree-card-shell");
+              if (card) {
+                card.style.removeProperty("height");
+              }
+            });
+            return;
+          }
+          if (!rowEl || cardCols.length !== 2) {
+            this.queueMobileViewportLayoutRetry(120);
+            return;
+          }
+          if (!this.lockedMobileAppHeight) {
+            this.lockedMobileAppHeight = this.getStableViewportHeight();
+          }
+          const viewportHeight = this.lockedMobileAppHeight;
+          const headerEl = this.$refs.appHeader;
+          const headerHeight = headerEl
+            ? Math.ceil(headerEl.getBoundingClientRect().height)
+            : 0;
+          const mainHeight = Math.max(120, viewportHeight - headerHeight);
+
+          app.style.setProperty("--exp-mobile-app-height", `${viewportHeight}px`);
+          app.style.setProperty("--exp-mobile-main-height", `${mainHeight}px`);
+
+          void app.offsetHeight;
+
+          const container = app.querySelector("main .container");
+          const containerStyle = container
+            ? window.getComputedStyle(container)
+            : null;
+          const containerPaddingHeight =
+            containerStyle
+              ? (parseFloat(containerStyle.paddingTop) || 0) +
+                (parseFloat(containerStyle.paddingBottom) || 0)
+              : 0;
+          const rowStyle = rowEl ? window.getComputedStyle(rowEl) : null;
+          const rowGap = rowStyle ? parseFloat(rowStyle.rowGap) || 0 : 0;
+          const safetyPerCard = 8;
+          const layoutSafety = 12;
+
+          const measuredCards = cardCols
+            .map((col) => {
+              const card = col.querySelector(".pedigree-card-shell");
+              if (!card) {
+                return null;
+              }
+              const toolbar = card.querySelector(".pedigree-card-toolbar");
+              const tableWrap = card.querySelector(".pedigree-card-table-wrap");
+              const toolbarRect = toolbar
+                ? toolbar.getBoundingClientRect()
+                : { height: 0 };
+              const tableRect = tableWrap
+                ? tableWrap.getBoundingClientRect()
+                : { height: 0 };
+              const cardStyle = window.getComputedStyle(card);
+              const toolbarHeight = Math.ceil(toolbarRect.height || 0);
+              const tableHeight = Math.ceil(tableRect.height || 0);
+              const borderHeight =
+                (parseFloat(cardStyle.borderTopWidth) || 0) +
+                (parseFloat(cardStyle.borderBottomWidth) || 0) +
+                safetyPerCard;
+              return {
+                col,
+                card,
+                toolbarHeight,
+                tableHeight,
+                borderHeight,
+              };
+            })
+            .filter(Boolean);
+          if (
+            measuredCards.length !== cardCols.length ||
+            measuredCards.some((value) => value.tableHeight <= 0)
+          ) {
+            this.queueMobileViewportLayoutRetry(120);
+            return;
+          }
+
+          const fixedHeight =
+            containerPaddingHeight +
+            rowGap +
+            layoutSafety +
+            measuredCards.reduce(
+              (sum, value) => sum + value.toolbarHeight + value.borderHeight,
+              0
+            );
+          const rowHeight = Math.max(8, (mainHeight - fixedHeight) / 32);
+          const cardHeights = measuredCards.map(
+            (value) => rowHeight * 16 + value.toolbarHeight + value.borderHeight
+          );
+
+          if (rowEl && cardHeights.length === measuredCards.length) {
+            rowEl.style.gridTemplateRows = cardHeights
+              .map((height) => `${height}px`)
+              .join(" ");
+          }
+          measuredCards.forEach((value, index) => {
+            const height = cardHeights[index];
+            value.col.style.height = `${height}px`;
+            value.card.style.height = `${height}px`;
+          });
+
+          this.mobileRowHeight = rowHeight;
+          app.style.setProperty("--exp-mobile-row-height", `${rowHeight}px`);
+        },
         normalizeSearchText(text) {
           if (typeof text !== "string") {
             return "";
           }
 
           return text
+            .normalize("NFKC")
             .trim()
             .toLowerCase()
-            .replace(/\s+/g, "")
+            .replace(/[\u3000\s]+/g, "")
             .replace(/[\u30A1-\u30F6]/g, (char) =>
               String.fromCharCode(char.charCodeAt(0) - 0x60)
             );
+        },
+        getHorseKey(horse) {
+          if (!horse) {
+            return "";
+          }
+          return [
+            horse.id || "",
+            horse.name || "",
+            horse.subName || "",
+            horse.ruby || "",
+          ].join("|");
+        },
+        getHorseBaseText(horse) {
+          if (!horse) {
+            return "";
+          }
+          const natureTag = horse.nature ? `[${horse.nature.charAt(0)}]` : "";
+          return [natureTag, horse.name || "", horse.subName || ""]
+            .filter(Boolean)
+            .join("");
+        },
+        getHorseSelectedText(horse) {
+          return this.getHorseBaseText(horse);
+        },
+        getHorseSearchIndexText(horse) {
+          if (!horse || typeof horse !== "object") {
+            return "";
+          }
+          const cached = horseSearchIndexCache.get(horse);
+          if (typeof cached === "string") {
+            return cached;
+          }
+          const searchText = this.normalizeSearchText(
+            [
+              this.getHorseBaseText(horse),
+              horse.name || "",
+              horse.subName || "",
+              horse.ruby || "",
+              horse.nature || "",
+            ]
+              .filter(Boolean)
+              .join("|")
+          );
+          horseSearchIndexCache.set(horse, searchText);
+          return searchText;
+        },
+        getHorseFactorBadges(horse) {
+          const factors = Array.isArray(horse?.factors) ? horse.factors : [];
+          return factors
+            .map((value, index) => {
+              const text = typeof value === "string" ? value.trim() : "";
+              if (!text) {
+                return null;
+              }
+              const code = factorMap.get(text) ?? "00";
+              return {
+                key: `${code}-${text}-${index}`,
+                text,
+                className: code !== "00" ? `f${code}` : "",
+              };
+            })
+            .filter(Boolean);
         },
         filterHorse(horse, queryText, itemText) {
           if (horse?.disabled) {
@@ -904,10 +1468,7 @@
             return true;
           }
 
-          return [itemText, horse?.name, horse?.subName, horse?.ruby]
-            .map((text) => this.normalizeSearchText(text))
-            .filter(Boolean)
-            .some((text) => text.includes(normalizedQuery));
+          return this.getHorseSearchIndexText(horse).includes(normalizedQuery);
         },
         getWidth(index, type) {
           let coefficient = 0;
@@ -964,6 +1525,121 @@
           }
           return retFactor;
         },
+        clearMobileQuerySyncTimer() {
+          if (this.mobileQuerySyncTimer) {
+            clearTimeout(this.mobileQuerySyncTimer);
+            this.mobileQuerySyncTimer = null;
+          }
+        },
+        resetMobileQuery() {
+          this.clearMobileQuerySyncTimer();
+          this.mobileQueryInput = "";
+          this.mobileQuery = "";
+          this.mobileSearchCompositionActive = false;
+        },
+        getMobileInputValue(event) {
+          return event &&
+            event.target &&
+            typeof event.target.value === "string"
+            ? event.target.value
+            : "";
+        },
+        scheduleMobileQuerySync(delay = 80) {
+          this.clearMobileQuerySyncTimer();
+          if (delay <= 0) {
+            this.mobileQuery = this.mobileQueryInput;
+            return;
+          }
+          this.mobileQuerySyncTimer = setTimeout(() => {
+            this.mobileQuerySyncTimer = null;
+            this.mobileQuery = this.mobileQueryInput;
+          }, delay);
+        },
+        runAfterMobileDialogClose(callback) {
+          const invoke = () => {
+            if (typeof callback === "function") {
+              callback();
+            }
+          };
+          this.$nextTick(() => {
+            if (
+              typeof window !== "undefined" &&
+              typeof window.requestAnimationFrame === "function"
+            ) {
+              window.requestAnimationFrame(invoke);
+              return;
+            }
+            setTimeout(invoke, 0);
+          });
+        },
+        openMobileEditor() {
+          this.mobileDialogVisible = true;
+          this.resetMobileQuery();
+          this.$nextTick(() => {
+            const input = this.$refs.mobileSearchInput;
+            if (input && typeof input.focus === "function") {
+              input.focus();
+            }
+          });
+        },
+        closeMobileEditor() {
+          this.mobileDialogVisible = false;
+          this.resetMobileQuery();
+        },
+        clearMobileHorse() {
+          this.resetMobileQuery();
+          this.mobileDialogVisible = false;
+          this.runAfterMobileDialogClose(() => {
+            this.onChange(this.sex, this.index - this.sex * 16, null);
+          });
+        },
+        selectMobileHorse(horse) {
+          if (!horse || horse.disabled) {
+            return;
+          }
+          this.resetMobileQuery();
+          this.mobileDialogVisible = false;
+          this.runAfterMobileDialogClose(() => {
+            this.onChange(this.sex, this.index - this.sex * 16, horse);
+          });
+        },
+        onMobileSearchInput(event) {
+          this.mobileQueryInput = this.getMobileInputValue(event);
+          if (!this.mobileSearchCompositionActive) {
+            this.scheduleMobileQuerySync();
+          }
+        },
+        onMobileCompositionStart(event) {
+          this.mobileSearchCompositionActive = true;
+          this.mobileQueryInput = this.getMobileInputValue(event);
+        },
+        onMobileCompositionEnd(event) {
+          this.mobileSearchCompositionActive = false;
+          this.mobileQueryInput = this.getMobileInputValue(event);
+          this.scheduleMobileQuerySync(0);
+        },
+        clearMobileQuery() {
+          this.resetMobileQuery();
+          this.$nextTick(() => {
+            const input = this.$refs.mobileSearchInput;
+            if (input && typeof input.focus === "function") {
+              input.focus();
+            }
+          });
+        },
+        selectFirstMobileHorse() {
+          if (this.mobileSearchCompositionActive) {
+            return;
+          }
+          if (this.filteredMobileLists.length > 0) {
+            this.selectMobileHorse(this.filteredMobileLists[0]);
+          }
+        },
+        isSelectedHorse(horse) {
+          const current = this.selected[this.index];
+          return this.getHorseKey(current) !== "" &&
+            this.getHorseKey(current) === this.getHorseKey(horse);
+        },
       },
       computed: {
         computedStyle(newValue) {
@@ -997,6 +1673,81 @@
         sex(newValue) {
           // index>=16が牝馬
           return Math.floor(newValue.index / 16);
+        },
+        isMobileLayout() {
+          return this.$vuetify.breakpoint.smAndDown;
+        },
+        placeholderText() {
+          const currentIndex = Number(this.index) || 0;
+          const rowNumber = INDEX_TO_ROW_NUMBER[currentIndex] || "";
+          let baseText;
+          if (Math.floor(currentIndex / 16) === 1 && currentIndex % 16 === 0) {
+            baseText = "繁殖牝馬を選んでください";
+          } else if ([3, 5, 7, 9, 11, 13, 15].includes(currentIndex % 16)) {
+            baseText = "種牡馬または繁殖牝馬を選んでください";
+          } else {
+            baseText = "種牡馬を選んでください";
+          }
+          return rowNumber ? `${rowNumber}${baseText}` : baseText;
+        },
+        mobileDialogTitle() {
+          if (this.sex === 1 && this.index % 16 === 0) {
+            return "繁殖牝馬を選択";
+          }
+          if ([3, 5, 7, 9, 11, 13, 15].includes(this.index % 16)) {
+            return "種牡馬 / 繁殖牝馬を選択";
+          }
+          return "種牡馬を選択";
+        },
+        mobileDialogContextLabel() {
+          const sideLabel = this.sex === 0 ? "種牡馬検索" : "繁殖牝馬検索";
+          const rowNumber = INDEX_TO_ROW_NUMBER[Number(this.index) || 0] || "";
+          return rowNumber ? `${sideLabel} ${rowNumber}` : sideLabel;
+        },
+        mobileTriggerLabel() {
+          const horse = this.selected[this.index];
+          if (!horse) {
+            return this.placeholderText;
+          }
+          return this.getHorseSelectedText(horse) || this.placeholderText;
+        },
+        mobileCurrentSelectionLabel() {
+          const horse = this.selected[this.index];
+          if (!horse) {
+            return "未選択";
+          }
+          return this.getHorseSelectedText(horse) || "未選択";
+        },
+        mobileInputId() {
+          return `exp-mobile-search-${this.index}`;
+        },
+        filteredMobileLists() {
+          const source = Array.isArray(this.lists) ? this.lists : [];
+          const normalizedQuery = this.normalizeSearchText(this.mobileQuery);
+          const limit = normalizedQuery ? 80 : 60;
+          const filtered = [];
+
+          for (let i = 0; i < source.length; i++) {
+            const horse = source[i];
+            if (!horse || horse.disabled) {
+              continue;
+            }
+            if (
+              normalizedQuery &&
+              !this.getHorseSearchIndexText(horse).includes(normalizedQuery)
+            ) {
+              continue;
+            }
+            filtered.push(horse);
+            if (filtered.length >= limit) {
+              break;
+            }
+          }
+
+          return filtered;
+        },
+        sex() {
+          return Math.floor((Number(this.index) || 0) / 16);
         },
         // 馬のリスト
         lists(newValue) {
@@ -1271,7 +2022,15 @@
           deferInbreedCount: false,
           deferredInbreedCountRequested: false,
           // インブリード例外ルール
-          inbreedExceptions: []
+          inbreedExceptions: [],
+          isCapturingScreenshot: false,
+          html2CanvasLoadPromise: null,
+          lockedMobileAppHeight: null,
+          mobileRowHeight: 18,
+          onOrientationChangeHandler: null,
+          onViewportGeometryChangeHandler: null,
+          mobileViewportGeometryTimerId: null,
+          mobileViewportLockTimerIds: []
         };
       },
       computed: {
@@ -1289,6 +2048,9 @@
         allHorsesSet() {
           return this.selected.every((e) => e);
         },
+        isCompactMobileLayout() {
+          return this.$vuetify.breakpoint.smAndDown;
+        },
         combinationCellStyle() {
           // 常にダイアログを開けるようにする
           return {
@@ -1299,6 +2061,9 @@
       },
       watch: {
         dispCategory: function(value) {
+          this.$nextTick(() => {
+            this.applyMobileViewportLayout();
+          });
           this.dispButtonName = value%2 === 0 ? '子系統' : '因　子';
         },
       },
@@ -1322,15 +2087,430 @@
           this.loadInbreedExceptions()
             .then(() => this.c1())
             .then(() => this.c2())
-            .then(() => this.c3());
+            .then(() => this.c3())
+            .finally(() => {
+              this.windowSize = this.getStableViewportHeight();
+              this.$nextTick(() => {
+                this.scheduleInitialMobileViewportLayout();
+              });
+            });
           // .finally(() => this.c4());
+          this.$nextTick(() => {
+            this.scheduleInitialMobileViewportLayout();
+          });
+          this.onOrientationChangeHandler = () => {
+            if (this.$vuetify.breakpoint.smAndDown) {
+              this.lockedMobileAppHeight = null;
+              this.scheduleInitialMobileViewportLayout();
+            }
+          };
+          window.addEventListener("orientationchange", this.onOrientationChangeHandler);
+          this.onViewportGeometryChangeHandler = () => {
+            if (!this.$vuetify.breakpoint.smAndDown) {
+              return;
+            }
+            this.clearMobileViewportGeometryTimer();
+            this.mobileViewportGeometryTimerId = setTimeout(() => {
+              this.mobileViewportGeometryTimerId = null;
+              this.refreshMobileViewportLock(false);
+            }, 48);
+          };
+          window.addEventListener("resize", this.onViewportGeometryChangeHandler);
+          if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", this.onViewportGeometryChangeHandler);
+            window.visualViewport.addEventListener("scroll", this.onViewportGeometryChangeHandler);
+          }
         } catch (error) {
           console.error(error);
         }
       },
 
+      beforeDestroy() {
+        if (this.onOrientationChangeHandler) {
+          window.removeEventListener("orientationchange", this.onOrientationChangeHandler);
+        }
+        if (this.onViewportGeometryChangeHandler) {
+          window.removeEventListener("resize", this.onViewportGeometryChangeHandler);
+          if (window.visualViewport) {
+            window.visualViewport.removeEventListener("resize", this.onViewportGeometryChangeHandler);
+            window.visualViewport.removeEventListener("scroll", this.onViewportGeometryChangeHandler);
+          }
+        }
+        this.clearMobileViewportGeometryTimer();
+        this.clearMobileViewportLayoutTimers();
+      },
+
       methods: {
         // インブリード例外ルールを読み込む
+        getStableViewportHeight: function () {
+          const docEl = document.documentElement || {};
+          const body = document.body || {};
+          const candidates = [
+            Number(window.innerHeight) || 0,
+            Number(docEl.clientHeight) || 0,
+            Number(body.clientHeight) || 0,
+          ];
+          if (window.visualViewport) {
+            candidates.push(Number(window.visualViewport.height) || 0);
+          }
+          return Math.max(
+            0,
+            ...candidates
+              .filter((value) => Number.isFinite(value) && value > 0)
+              .map((value) => Math.floor(value))
+          );
+        },
+        getStableViewportWidth: function () {
+          const docEl = document.documentElement || {};
+          const body = document.body || {};
+          const candidates = [
+            Number(window.innerWidth) || 0,
+            Number(docEl.clientWidth) || 0,
+            Number(body.clientWidth) || 0,
+          ];
+          if (window.visualViewport) {
+            candidates.push(Number(window.visualViewport.width) || 0);
+          }
+          return Math.max(
+            0,
+            ...candidates
+              .filter((value) => Number.isFinite(value) && value > 0)
+              .map((value) => Math.floor(value))
+          );
+        },
+        buildScreenshotFileName: function () {
+          const now = new Date();
+          const pad = (value) => String(value).padStart(2, "0");
+          return [
+            "dabimas",
+            now.getFullYear(),
+            pad(now.getMonth() + 1),
+            pad(now.getDate()),
+            "-",
+            pad(now.getHours()),
+            pad(now.getMinutes()),
+            pad(now.getSeconds()),
+            ".png",
+          ].join("");
+        },
+        canvasToPngBlob: function (canvas) {
+          return new Promise((resolve) => {
+            canvas.toBlob((blob) => resolve(blob), "image/png");
+          });
+        },
+        downloadScreenshotBlob: function (blob, filename) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          link.rel = "noopener";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 30000);
+        },
+        saveScreenshotBlob: async function (blob, filename) {
+          if (
+            typeof File === "function" &&
+            navigator.share &&
+            navigator.canShare
+          ) {
+            const file = new File([blob], filename, { type: "image/png" });
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                files: [file],
+                title: "dabimas",
+              });
+              return;
+            }
+          }
+          this.downloadScreenshotBlob(blob, filename);
+        },
+        loadHtml2Canvas: function () {
+          if (typeof window.html2canvas === "function") {
+            return Promise.resolve(window.html2canvas);
+          }
+          if (this.html2CanvasLoadPromise) {
+            return this.html2CanvasLoadPromise;
+          }
+
+          this.html2CanvasLoadPromise = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "./cdn/html2canvas.min.js";
+            script.async = true;
+            script.onload = () => {
+              if (typeof window.html2canvas === "function") {
+                resolve(window.html2canvas);
+              } else {
+                this.html2CanvasLoadPromise = null;
+                reject(new Error("html2canvas is not available"));
+              }
+            };
+            script.onerror = () => {
+              this.html2CanvasLoadPromise = null;
+              reject(new Error("Failed to load html2canvas"));
+            };
+            document.head.appendChild(script);
+          });
+
+          return this.html2CanvasLoadPromise;
+        },
+        captureMobileScreenshot: async function () {
+          if (!this.$vuetify.breakpoint.smAndDown || this.isCapturingScreenshot) {
+            return;
+          }
+
+          this.isCapturingScreenshot = true;
+          try {
+            const html2canvas = await this.loadHtml2Canvas();
+            this.applyMobileViewportLayout();
+            await this.$nextTick();
+            await new Promise((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(resolve));
+            });
+
+            const target = this.$el;
+            const rect = target.getBoundingClientRect();
+            const width = Math.ceil(rect.width);
+            const height = Math.ceil(rect.height);
+            const scale = Math.min(window.devicePixelRatio || 1, 3);
+            const canvas = await html2canvas(target, {
+              backgroundColor: "#ffffff",
+              scale,
+              width,
+              height,
+              windowWidth: Math.max(document.documentElement.clientWidth, width),
+              windowHeight: Math.max(document.documentElement.clientHeight, height),
+              scrollX: -window.scrollX,
+              scrollY: -window.scrollY,
+              ignoreElements: (element) =>
+                element.hasAttribute("data-html2canvas-ignore"),
+            });
+            const blob = await this.canvasToPngBlob(canvas);
+            if (!blob) {
+              throw new Error("Failed to create screenshot blob");
+            }
+            await this.saveScreenshotBlob(blob, this.buildScreenshotFileName());
+          } catch (error) {
+            if (!error || error.name !== "AbortError") {
+              console.error("Screenshot capture failed:", error);
+              alert("Failed to save screenshot.");
+            }
+          } finally {
+            this.isCapturingScreenshot = false;
+          }
+        },
+        clearMobileViewportGeometryTimer: function () {
+          if (this.mobileViewportGeometryTimerId !== null) {
+            clearTimeout(this.mobileViewportGeometryTimerId);
+            this.mobileViewportGeometryTimerId = null;
+          }
+        },
+        isEditableElement: function (element) {
+          if (!element) {
+            return false;
+          }
+          if (element.isContentEditable) {
+            return true;
+          }
+          const tagName = typeof element.tagName === "string"
+            ? element.tagName.toLowerCase()
+            : "";
+          return tagName === "input" || tagName === "textarea";
+        },
+        shouldForceResetMobileViewportLock: function (viewportHeight) {
+          if (!(viewportHeight > 0)) {
+            return false;
+          }
+          if (!this.lockedMobileAppHeight || viewportHeight >= this.lockedMobileAppHeight) {
+            return true;
+          }
+          const shrinkAmount = this.lockedMobileAppHeight - viewportHeight;
+          if (shrinkAmount <= 140) {
+            return true;
+          }
+          const activeElement = typeof document !== "undefined"
+            ? document.activeElement
+            : null;
+          return !this.isEditableElement(activeElement);
+        },
+        clearMobileViewportLayoutTimers: function () {
+          if (!Array.isArray(this.mobileViewportLockTimerIds)) {
+            this.mobileViewportLockTimerIds = [];
+            return;
+          }
+          this.mobileViewportLockTimerIds.forEach((timerId) => {
+            clearTimeout(timerId);
+          });
+          this.mobileViewportLockTimerIds = [];
+        },
+        queueMobileViewportLayoutRetry: function (delay) {
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            return;
+          }
+          const timerId = setTimeout(() => {
+            this.applyMobileViewportLayout();
+          }, delay);
+          this.mobileViewportLockTimerIds.push(timerId);
+        },
+        scheduleInitialMobileViewportLayout: function () {
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            return;
+          }
+          this.clearMobileViewportLayoutTimers();
+          [0, 160, 480, 960, 1600, 2400].forEach((delay) => {
+            const timerId = setTimeout(() => {
+              this.refreshMobileViewportLock(delay === 0);
+            }, delay);
+            this.mobileViewportLockTimerIds.push(timerId);
+          });
+        },
+        refreshMobileViewportLock: function (forceReset) {
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            return;
+          }
+          const viewportHeight = this.getStableViewportHeight();
+          if (!(viewportHeight > 0)) {
+            return;
+          }
+          const shouldForceReset =
+            forceReset || this.shouldForceResetMobileViewportLock(viewportHeight);
+          if (shouldForceReset || !this.lockedMobileAppHeight) {
+            this.lockedMobileAppHeight = viewportHeight;
+          } else {
+            this.lockedMobileAppHeight = Math.max(
+              this.lockedMobileAppHeight,
+              viewportHeight
+            );
+          }
+          this.windowSize = this.getStableViewportHeight();
+          this.$nextTick(() => {
+            this.applyMobileViewportLayout();
+          });
+        },
+        applyMobileViewportLayout: function () {
+          const app = this.$el;
+          if (!app) {
+            return;
+          }
+          const rowEl =
+            app.querySelector("main .container > .spacer > .row.mx-1") ||
+            app.querySelector("main .container > .row.mx-1");
+          const cardCols = Array.from(
+            app.querySelectorAll(".pedigree-card-col")
+          );
+
+          if (!this.$vuetify.breakpoint.smAndDown) {
+            if (rowEl) {
+              rowEl.style.removeProperty("grid-template-rows");
+            }
+            cardCols.forEach((col) => {
+              col.style.removeProperty("height");
+              const card = col.querySelector(".pedigree-card-shell");
+              if (card) {
+                card.style.removeProperty("height");
+              }
+            });
+            return;
+          }
+          if (!rowEl || cardCols.length !== 2) {
+            this.queueMobileViewportLayoutRetry(120);
+            return;
+          }
+          if (!this.lockedMobileAppHeight) {
+            this.lockedMobileAppHeight = this.getStableViewportHeight();
+          }
+          const viewportHeight = this.lockedMobileAppHeight;
+          const headerEl = this.$refs.appHeader;
+          const headerHeight = headerEl
+            ? Math.ceil(headerEl.getBoundingClientRect().height)
+            : 0;
+          const mainHeight = Math.max(120, viewportHeight - headerHeight);
+
+          app.style.setProperty("--exp-mobile-app-height", `${viewportHeight}px`);
+          app.style.setProperty("--exp-mobile-main-height", `${mainHeight}px`);
+
+          void app.offsetHeight;
+
+          const container = app.querySelector("main .container");
+          const containerStyle = container
+            ? window.getComputedStyle(container)
+            : null;
+          const containerPaddingHeight =
+            containerStyle
+              ? (parseFloat(containerStyle.paddingTop) || 0) +
+                (parseFloat(containerStyle.paddingBottom) || 0)
+              : 0;
+          const rowStyle = rowEl ? window.getComputedStyle(rowEl) : null;
+          const rowGap = rowStyle ? parseFloat(rowStyle.rowGap) || 0 : 0;
+          const safetyPerCard = 8;
+          const layoutSafety = 12;
+
+          const measuredCards = cardCols
+            .map((col) => {
+              const card = col.querySelector(".pedigree-card-shell");
+              if (!card) {
+                return null;
+              }
+              const toolbar = card.querySelector(".pedigree-card-toolbar");
+              const tableWrap = card.querySelector(".pedigree-card-table-wrap");
+              const toolbarRect = toolbar
+                ? toolbar.getBoundingClientRect()
+                : { height: 0 };
+              const tableRect = tableWrap
+                ? tableWrap.getBoundingClientRect()
+                : { height: 0 };
+              const cardStyle = window.getComputedStyle(card);
+              const toolbarHeight = Math.ceil(toolbarRect.height || 0);
+              const tableHeight = Math.ceil(tableRect.height || 0);
+              const borderHeight =
+                (parseFloat(cardStyle.borderTopWidth) || 0) +
+                (parseFloat(cardStyle.borderBottomWidth) || 0) +
+                safetyPerCard;
+              return {
+                col,
+                card,
+                toolbarHeight,
+                tableHeight,
+                borderHeight,
+              };
+            })
+            .filter(Boolean);
+          if (
+            measuredCards.length !== cardCols.length ||
+            measuredCards.some((value) => value.tableHeight <= 0)
+          ) {
+            this.queueMobileViewportLayoutRetry(120);
+            return;
+          }
+
+          const fixedHeight =
+            containerPaddingHeight +
+            rowGap +
+            layoutSafety +
+            measuredCards.reduce(
+              (sum, value) => sum + value.toolbarHeight + value.borderHeight,
+              0
+            );
+          const rowHeight = Math.max(8, (mainHeight - fixedHeight) / 32);
+          const cardHeights = measuredCards.map(
+            (value) => rowHeight * 16 + value.toolbarHeight + value.borderHeight
+          );
+
+          if (rowEl && cardHeights.length === measuredCards.length) {
+            rowEl.style.gridTemplateRows = cardHeights
+              .map((height) => `${height}px`)
+              .join(" ");
+          }
+          measuredCards.forEach((value, index) => {
+            const height = cardHeights[index];
+            value.col.style.height = `${height}px`;
+            value.card.style.height = `${height}px`;
+          });
+
+          this.mobileRowHeight = rowHeight;
+          app.style.setProperty("--exp-mobile-row-height", `${rowHeight}px`);
+        },
         loadInbreedExceptions: function () {
           return fetch('./json/inbreed-exceptions.json')
             .then(response => {

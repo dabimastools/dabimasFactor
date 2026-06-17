@@ -1,5 +1,5 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260612-01';
+var CACHE_NAME = 'dabimas-factor-v20260617-04';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
 var APP_SHELL_URL = BASE_PATH + 'index.html';
 var urlsToCache = [
@@ -8,6 +8,7 @@ var urlsToCache = [
   BASE_PATH + 'json/brosData.json',
   BASE_PATH + 'json/inbreed-exceptions.json',
   BASE_PATH + 'css/style.css',
+  BASE_PATH + 'css/exp-mobile.css',
   BASE_PATH + 'css/loading.css',
   BASE_PATH + 'css/materialdesignicons.min.css',
   BASE_PATH + 'css/materialdesignicons.min.css.map',
@@ -17,6 +18,7 @@ var urlsToCache = [
   BASE_PATH + 'vue/vue.min.js',
   BASE_PATH + 'vue/vuetify.js',
   BASE_PATH + 'vue/vuetify.js.map',
+  BASE_PATH + 'cdn/html2canvas.min.js',
   BASE_PATH + 'fonts/materialdesignicons-webfont.eot',
   BASE_PATH + 'fonts/materialdesignicons-webfont.ttf',
   BASE_PATH + 'fonts/materialdesignicons-webfont.woff',
