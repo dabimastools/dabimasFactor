@@ -21,7 +21,8 @@
 }
 
 #loader.loaded {
-    animation: fadeOut 1.5s forwards;
+    pointer-events: none;
+    animation: fadeOut 0.2s ease-out forwards;
 }
 
 .spinner {

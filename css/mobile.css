@@ -80,7 +80,11 @@
 }
 
 .exp-mobile-layout .pedigree-card-table-wrap .table_main {
+  width: 100%;
   height: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  table-layout: fixed;
 }
 
 .exp-mobile-layout .table_main > tbody > tr {
@@ -89,14 +93,23 @@
 
 .exp-mobile-layout .table_main td,
 .exp-mobile-layout .table_main th {
+  box-sizing: border-box;
   height: var(--exp-mobile-row-height);
   max-height: var(--exp-mobile-row-height);
   padding: 0 1px !important;
+  overflow: hidden;
   vertical-align: middle;
+}
+
+.exp-mobile-layout header table {
+  width: 100%;
+  table-layout: fixed;
 }
 
 .exp-mobile-layout header table td,
 .exp-mobile-layout header table th {
+  box-sizing: border-box;
+  overflow: hidden;
   padding: 0 !important;
   line-height: 1 !important;
 }
@@ -195,13 +208,51 @@
   line-height: 1 !important;
 }
 
-.exp-mobile-layout .styleParentLine,
-.exp-mobile-layout .styleFactorClassMain,
-.exp-mobile-layout .styleInbreedButton {
+.exp-mobile-layout .table_main .exp-mobile-label-col {
+  width: 12px !important;
+}
+
+.exp-mobile-layout .table_main .exp-mobile-horse-col {
+  width: auto;
+}
+
+.exp-mobile-layout .table_main .exp-mobile-generation-col {
+  width: 12px !important;
+}
+
+.exp-mobile-layout .table_main .exp-mobile-factor-col {
+  width: 15px !important;
+}
+
+.exp-mobile-layout .table_main .exp-mobile-parentline-col {
+  width: 16px !important;
+}
+
+.exp-mobile-layout .table_main .exp-mobile-inbreed-col {
+  width: 22px !important;
+}
+
+.exp-mobile-layout .styleFactorClassMain {
   width: 12px !important;
   min-width: 12px !important;
   max-width: 12px !important;
   font-size: 9px !important;
+  line-height: 1 !important;
+}
+
+.exp-mobile-layout .styleParentLine {
+  width: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+}
+
+.exp-mobile-layout .styleInbreedButton {
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+  font-size: 12px !important;
   line-height: 1 !important;
 }
 
@@ -246,6 +297,8 @@
 
 .exp-mobile-layout .exp-mobile-horse-trigger {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: calc(var(--exp-mobile-row-height) - 1px);
   border: 0;
   border-bottom: 1px solid #ddd;
@@ -257,10 +310,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
+  overflow: hidden;
 }
 
 .exp-mobile-layout .exp-mobile-autocomplete-root {
   width: 100%;
+  min-width: 0;
   height: 100%;
   display: flex;
   align-items: stretch;
@@ -289,6 +344,7 @@
 
 .exp-mobile-layout .exp-mobile-horse-text {
   flex: 1;
+  min-width: 0;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;

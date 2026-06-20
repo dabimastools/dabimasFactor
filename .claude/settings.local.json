@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "PowerShell(node \"C:\\\\derby\\\\dabimasFactor\\\\scripts\\\\test-lesson-jump-worker.mjs\")",
-      "Bash(awk 'NR>=2245 && NR<=2310' \"c:\\\\derby\\\\dabimasFactor\\\\css\\\\style.css\")"
+      "Bash(awk 'NR>=2245 && NR<=2310' \"c:\\\\derby\\\\dabimasFactor\\\\css\\\\style.css\")",
+      "Bash(gh auth *)",
+      "Bash(echo \"---exit: $?---\")"
     ]
   }
 }

@@ -250,6 +250,19 @@
               <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
                 <div class="pedigree-card-table-wrap">
                   <table class="table_main">
+                    <colgroup>
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-horse-col" />
+                      <col class="exp-mobile-generation-col" />
+                      <col class="exp-mobile-parentline-col" />
+                      <col class="exp-mobile-inbreed-col" />
+                      <col class="exp-mobile-factor-col" />
+                      <col class="exp-mobile-factor-col" />
+                      <col class="exp-mobile-factor-col" />
+                    </colgroup>
                     <tbody>
                     <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
                     <tr
@@ -292,6 +305,19 @@
                 <!-- 繫殖牝馬側 -->
                 <div class="pedigree-card-table-wrap">
                   <table class="table_main">
+                    <colgroup>
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-label-col" />
+                      <col class="exp-mobile-horse-col" />
+                      <col class="exp-mobile-generation-col" />
+                      <col class="exp-mobile-parentline-col" />
+                      <col class="exp-mobile-inbreed-col" />
+                      <col class="exp-mobile-factor-col" />
+                      <col class="exp-mobile-factor-col" />
+                      <col class="exp-mobile-factor-col" />
+                    </colgroup>
                     <tbody>
                     <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
                     <tr
@@ -503,10 +529,31 @@
 
   <script>
     //loadingAnimation
-    window.onload = () => {
+    const INITIAL_LOADER_FAILSAFE_MS = 4000;
+
+    function hideInitialLoader() {
       const loader = document.getElementById("loader");
+      if (!loader || loader.classList.contains("loaded")) {
+        return;
+      }
       loader.classList.add("loaded");
-    };
+    }
+
+    function scheduleInitialLoaderHide() {
+      if (typeof window.requestAnimationFrame !== "function") {
+        setTimeout(hideInitialLoader, 0);
+        return;
+      }
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(hideInitialLoader);
+      });
+    }
+
+    window.addEventListener("load", () => {
+      setTimeout(scheduleInitialLoaderHide, 600);
+    }, { once: true });
+
+    setTimeout(hideInitialLoader, INITIAL_LOADER_FAILSAFE_MS);
 
     // service workerの登録関係
     let swRegistrationPromise = null;
@@ -700,7 +747,11 @@
         },
         parentLineClass() {
           const classes = this.styleParentLineClasses || [];
-          return classes[this.rowIndex] || "";
+          const current = classes[this.rowIndex];
+          if (current && current.trim() !== "") {
+            return current;
+          }
+          return this.defaultParentLineClass;
         },
         parentLineText() {
           const lines = this.parentLines || [];
@@ -769,6 +820,13 @@
           }
           const baseClass = this.getCss(this.rowIndex) || "";
           return `${baseClass} styleFactorClassMain`.trim();
+        },
+        defaultParentLineClass() {
+          if (typeof this.getCss !== "function") {
+            return "styleParentLine";
+          }
+          const baseClass = this.getCss(this.rowIndex) || "";
+          return `${baseClass} styleParentLine`.trim();
         },
         defaultInbreedButtonClass() {
           if (typeof this.getCss !== "function") {
@@ -1690,6 +1748,19 @@
           }
           return rowNumber ? `${rowNumber}${baseText}` : baseText;
         },
+        mobilePlaceholderText() {
+          const currentIndex = Number(this.index) || 0;
+          const rowNumber = INDEX_TO_ROW_NUMBER[currentIndex] || "";
+          let baseText;
+          if (Math.floor(currentIndex / 16) === 1 && currentIndex % 16 === 0) {
+            baseText = "繁殖牝馬を選択";
+          } else if ([3, 5, 7, 9, 11, 13, 15].includes(currentIndex % 16)) {
+            baseText = "種牡馬/牝馬を選択";
+          } else {
+            baseText = "種牡馬を選択";
+          }
+          return rowNumber ? `${rowNumber}${baseText}` : baseText;
+        },
         mobileDialogTitle() {
           if (this.sex === 1 && this.index % 16 === 0) {
             return "繁殖牝馬を選択";
@@ -1707,7 +1778,7 @@
         mobileTriggerLabel() {
           const horse = this.selected[this.index];
           if (!horse) {
-            return this.placeholderText;
+            return this.mobilePlaceholderText;
           }
           return this.getHorseSelectedText(horse) || this.placeholderText;
         },
@@ -2097,6 +2168,7 @@
           // .finally(() => this.c4());
           this.$nextTick(() => {
             this.scheduleInitialMobileViewportLayout();
+            scheduleInitialLoaderHide();
           });
           this.onOrientationChangeHandler = () => {
             if (this.$vuetify.breakpoint.smAndDown) {
@@ -2122,6 +2194,7 @@
           }
         } catch (error) {
           console.error(error);
+          scheduleInitialLoaderHide();
         }
       },
 
