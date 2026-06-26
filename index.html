@@ -1669,10 +1669,18 @@
         },
         onMobileCompositionStart(event) {
           this.mobileSearchCompositionActive = true;
+          // IME変換中はVueによるvalue書き戻しを抑止する（v-modelと同等のガード）
+          if (event && event.target) {
+            event.target.composing = true;
+          }
           this.mobileQueryInput = this.getMobileInputValue(event);
         },
         onMobileCompositionEnd(event) {
           this.mobileSearchCompositionActive = false;
+          // 変換確定後はvalue書き戻しを再開する
+          if (event && event.target) {
+            event.target.composing = false;
+          }
           this.mobileQueryInput = this.getMobileInputValue(event);
           this.scheduleMobileQuerySync(0);
         },
