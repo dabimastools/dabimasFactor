@@ -4,7 +4,10 @@
       "PowerShell(node \"C:\\\\derby\\\\dabimasFactor\\\\scripts\\\\test-lesson-jump-worker.mjs\")",
       "Bash(awk 'NR>=2245 && NR<=2310' \"c:\\\\derby\\\\dabimasFactor\\\\css\\\\style.css\")",
       "Bash(gh auth *)",
-      "Bash(echo \"---exit: $?---\")"
+      "Bash(echo \"---exit: $?---\")",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(node --check service-worker.js)",
+      "Bash(node --check \"C:/renaissance/scripts/sheep-ro-reserve-autobook.user.js\")"
     ]
   }
 }

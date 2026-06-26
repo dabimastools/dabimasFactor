@@ -1,7 +1,13 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260620-01';
+var CACHE_NAME = 'dabimas-factor-v20260620-02';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
 var APP_SHELL_URL = BASE_PATH + 'index.html';
+// プリキャッシュは「実行時に実際に使われるもの」だけに絞る。
+// - フォントは woff2 のみ。モダンブラウザは @font-face の woff2 だけを取得するため、
+//   otf / woff / eot / ttf を addAll してもダウンロード帯域とストレージを浪費するだけ。
+// - source map（*.map）と未リンクの vuetify.min.css は実行時に不要なので除外。
+// - js/css は cache-first（後述）で初回アクセス時に runtime cache されるため、
+//   ここに載せていないもの（factor-dialog.css 等）もオフライン対応される。
 var urlsToCache = [
   APP_SHELL_URL,
   BASE_PATH + 'json/dabimasFactor.json',
@@ -11,43 +17,34 @@ var urlsToCache = [
   BASE_PATH + 'css/mobile.css',
   BASE_PATH + 'css/loading.css',
   BASE_PATH + 'css/materialdesignicons.min.css',
-  BASE_PATH + 'css/materialdesignicons.min.css.map',
   BASE_PATH + 'css/notosansjapanese.css',
   BASE_PATH + 'css/vuetify_compact.min.css',
-  BASE_PATH + 'css/vuetify.min.css',
   BASE_PATH + 'vue/vue.min.js',
   BASE_PATH + 'vue/vuetify.js',
-  BASE_PATH + 'vue/vuetify.js.map',
   BASE_PATH + 'cdn/html2canvas.min.js',
-  BASE_PATH + 'fonts/materialdesignicons-webfont.eot',
-  BASE_PATH + 'fonts/materialdesignicons-webfont.ttf',
-  BASE_PATH + 'fonts/materialdesignicons-webfont.woff',
   BASE_PATH + 'fonts/materialdesignicons-webfont.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-Black.otf',
-  BASE_PATH + 'fonts/NotoSansJP-Black.woff',
   BASE_PATH + 'fonts/NotoSansJP-Black.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-Bold.otf',
-  BASE_PATH + 'fonts/NotoSansJP-Bold.woff',
   BASE_PATH + 'fonts/NotoSansJP-Bold.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-DemiLight.otf',
-  BASE_PATH + 'fonts/NotoSansJP-DemiLight.woff',
   BASE_PATH + 'fonts/NotoSansJP-DemiLight.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-Light.otf',
-  BASE_PATH + 'fonts/NotoSansJP-Light.woff',
   BASE_PATH + 'fonts/NotoSansJP-Light.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-Medium.otf',
-  BASE_PATH + 'fonts/NotoSansJP-Medium.woff',
   BASE_PATH + 'fonts/NotoSansJP-Medium.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-Regular.otf',
-  BASE_PATH + 'fonts/NotoSansJP-Regular.woff',
   BASE_PATH + 'fonts/NotoSansJP-Regular.woff2',
-  BASE_PATH + 'fonts/NotoSansJP-Thin.otf',
-  BASE_PATH + 'fonts/NotoSansJP-Thin.woff',
   BASE_PATH + 'fonts/NotoSansJP-Thin.woff2',
 ];
 
 function isSameOriginGetRequest(request) {
   return request.method === 'GET' && new URL(request.url).origin === self.location.origin;
+}
+
+// 日次で更新され得るデータ。これだけは network-first で鮮度を優先する。
+function isDataRequest(request) {
+  return /\/json\//.test(new URL(request.url).pathname);
+}
+
+// フォント・vendored JS/CSS など、デプロイ毎に CACHE_NAME を bump する前提で
+// 不変とみなせるアセット。cache-first にしてオンラインでも再取得しない。
+function isStaticAsset(request) {
+  return request.mode !== 'navigate' && !isDataRequest(request);
 }
 
 function isOffline() {
@@ -98,6 +95,26 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
+  // 静的アセットは cache-first。キャッシュにあればネットワークに行かない（オンラインでも）。
+  if (isStaticAsset(event.request)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function (cache) {
+        return cache.match(event.request).then(function (cachedResponse) {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          return fetch(event.request).then(function (networkResponse) {
+            return updateCache(cache, event.request, networkResponse).then(function () {
+              return networkResponse;
+            });
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // データ（json/）とナビゲーションは network-first で鮮度優先、オフライン時はキャッシュ。
   event.respondWith(
     caches.open(CACHE_NAME).then(function (cache) {
       return matchFromCache(cache, event.request).then(function (cachedResponse) {
