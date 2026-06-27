@@ -1513,7 +1513,7 @@
                       @input="onMobileSearchInput"
                       @compositionstart="onMobileCompositionStart"
                       @compositionend="onMobileCompositionEnd"
-                      @keydown.enter.prevent="selectFirstMobileHorse"
+                      @keydown.enter="onMobileSearchEnter"
                     />
                     <button
                       v-if="mobileQueryInput"
@@ -1928,10 +1928,22 @@
           });
         },
         onMobileSearchInput(event) {
-          this.mobileQueryInput = this.getMobileInputValue(event);
-          if (!this.mobileSearchCompositionActive) {
-            this.scheduleMobileQuerySync();
+          // IME変換中はモデルを更新しない（再描画で変換状態を乱さないため。v-model相当のガード）
+          if (this.mobileSearchCompositionActive) {
+            return;
           }
+          this.mobileQueryInput = this.getMobileInputValue(event);
+          this.scheduleMobileQuerySync();
+        },
+        onMobileSearchEnter(event) {
+          // IME変換確定中はEnterのデフォルト動作（変換確定）を妨げない
+          if (this.mobileSearchCompositionActive || (event && event.isComposing)) {
+            return;
+          }
+          if (event && typeof event.preventDefault === "function") {
+            event.preventDefault();
+          }
+          this.selectFirstMobileHorse();
         },
         onMobileCompositionStart(event) {
           this.mobileSearchCompositionActive = true;
