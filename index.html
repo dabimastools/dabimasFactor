@@ -694,6 +694,12 @@
     const manualFactorOptions = ["短", "速", "底", "長", "堅", "難"];
     const MANUAL_INBREED_STORAGE_KEY = "dabimasManualInbreed";
     const horseSearchIndexCache = new WeakMap();
+    // v-forの:key用に、馬オブジェクトごとの一意で安定したキーを採番する。
+    // データにはid空＋同名(キタサンブラック等)で内容が完全一致する馬が複数あり、
+    // 内容ベースのkeyだとVueのkeyed diffが重複keyで破綻してリストが正しく
+    // 更新されない/ダイアログが閉じない等の不具合を起こすため、instance単位で一意化する。
+    const horseListKeyCache = new WeakMap();
+    let horseListKeySeq = 0;
 
     Vue.component('pedigree-row', {
       template: '#pedigree-row-template',
@@ -952,7 +958,7 @@
                   <div class="exp-mobile-option-list">
                     <button
                       v-for="horse in filteredMobileLists"
-                      :key="getHorseKey(horse)"
+                      :key="getHorseListKey(horse)"
                       type="button"
                       :class="[
                         'exp-mobile-option-btn',
@@ -966,7 +972,7 @@
                         </span>
                         <span
                           v-for="(factor, factorIndex) in getHorseFactorBadges(horse)"
-                          :key="getHorseKey(horse) + '-factor-' + factorIndex"
+                          :key="getHorseListKey(horse) + '-factor-' + factorIndex"
                           :class="['exp-option-factor-badge', factor.className]"
                         >{{ factor.text }}</span>
                       </div>
@@ -1463,6 +1469,19 @@
             horse.subName || "",
             horse.ruby || "",
           ].join("|");
+        },
+        // v-forの:key専用。馬オブジェクトのinstance単位で一意かつ安定なキーを返す。
+        // （内容一致の重複馬でもkeyが衝突しないようにし、keyed diffの破綻を防ぐ）
+        getHorseListKey(horse) {
+          if (!horse || typeof horse !== "object") {
+            return "empty";
+          }
+          let key = horseListKeyCache.get(horse);
+          if (key === undefined) {
+            key = "h" + ++horseListKeySeq;
+            horseListKeyCache.set(horse, key);
+          }
+          return key;
         },
         getHorseBaseText(horse) {
           if (!horse) {
