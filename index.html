@@ -1602,15 +1602,26 @@
             ? event.target.value
             : "";
         },
-        scheduleMobileQuerySync(delay = 80) {
+        // DOMの実値を基準に検索クエリを同期する。compositionイベントの発火に
+        // 依存しないため、iOS標準IMEでもサードパーティIME(flick等)でも確実に反映される。
+        syncMobileQueryFromDom() {
+          const input = this.$refs.mobileSearchInput;
+          const value =
+            input && typeof input.value === "string"
+              ? input.value
+              : this.mobileQueryInput;
+          this.mobileQueryInput = value;
+          this.mobileQuery = value;
+        },
+        scheduleMobileQuerySync(delay = 120) {
           this.clearMobileQuerySyncTimer();
           if (delay <= 0) {
-            this.mobileQuery = this.mobileQueryInput;
+            this.syncMobileQueryFromDom();
             return;
           }
           this.mobileQuerySyncTimer = setTimeout(() => {
             this.mobileQuerySyncTimer = null;
-            this.mobileQuery = this.mobileQueryInput;
+            this.syncMobileQueryFromDom();
           }, delay);
         },
         runAfterMobileDialogClose(callback) {
@@ -1662,16 +1673,36 @@
           });
         },
         onMobileSearchInput(event) {
-          // IME変換中はモデルを更新しない（再描画で変換状態を乱さないため。v-model相当のガード）
-          if (this.mobileSearchCompositionActive) {
-            return;
+          // iOSサードパーティIME(flick等)対策:
+          // compositionendが発火しない/isComposing=false のinputが来た場合は、
+          // 合成は終了したものとみなしてフラグを補正する（合成状態のまま固まるのを防ぐ）。
+          if (
+            event &&
+            event.isComposing === false &&
+            this.mobileSearchCompositionActive
+          ) {
+            this.mobileSearchCompositionActive = false;
+            if (event.target) {
+              event.target.composing = false;
+            }
+            // 非合成状態に補正した直後の再描画でvalueが古い値に書き戻されるのを防ぐため、
+            // モデルをDOM実値に合わせておく。
+            this.mobileQueryInput = this.getMobileInputValue(event);
           }
-          this.mobileQueryInput = this.getMobileInputValue(event);
-          this.scheduleMobileQuerySync();
+          // クエリ同期はcompositionイベントに依存せずdebounceで行う。
+          // 変換中は確定待ちで長めの保険のみ（標準IMEはcompositionendで即時反映される）。
+          // compositionendが来ない端末でも、この保険で最終的に必ず反映される。
+          this.scheduleMobileQuerySync(
+            this.mobileSearchCompositionActive ? 700 : 120
+          );
         },
         onMobileSearchEnter(event) {
-          // IME変換確定中はEnterのデフォルト動作（変換確定）を妨げない
-          if (this.mobileSearchCompositionActive || (event && event.isComposing)) {
+          // IME変換確定中はEnterのデフォルト動作（変換確定）を妨げない。
+          // event.isComposing を優先し、無い場合のみ自前フラグで判定する。
+          const composing = event
+            ? event.isComposing === true
+            : this.mobileSearchCompositionActive;
+          if (composing) {
             return;
           }
           if (event && typeof event.preventDefault === "function") {
@@ -1685,7 +1716,6 @@
           if (event && event.target) {
             event.target.composing = true;
           }
-          this.mobileQueryInput = this.getMobileInputValue(event);
         },
         onMobileCompositionEnd(event) {
           this.mobileSearchCompositionActive = false;
@@ -1693,7 +1723,7 @@
           if (event && event.target) {
             event.target.composing = false;
           }
-          this.mobileQueryInput = this.getMobileInputValue(event);
+          // DOM実値から即時同期する
           this.scheduleMobileQuerySync(0);
         },
         clearMobileQuery() {
@@ -1706,9 +1736,8 @@
           });
         },
         selectFirstMobileHorse() {
-          if (this.mobileSearchCompositionActive) {
-            return;
-          }
+          // 変換中の判定は呼び出し元(onMobileSearchEnter)で済んでいるため、ここでは
+          // 合成フラグに依存しない（flick等でフラグが残っても選択できるようにする）。
           if (this.filteredMobileLists.length > 0) {
             this.selectMobileHorse(this.filteredMobileLists[0]);
           }
