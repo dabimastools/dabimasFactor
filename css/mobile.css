@@ -101,6 +101,25 @@
   vertical-align: middle;
 }
 
+/* 行の区切りグレー線を全列でそろえて一直線にする。
+   セルのクラスごとに罫線の有無がバラバラなので行単位で統一する。 */
+.exp-mobile-layout .table_main > tbody > tr > td {
+  border-bottom: 1px solid #ddd;
+}
+
+/* 父・母の縦カラーバーには横線を入れず連続させる。
+   さらに白い border-top は border-collapse でセレクタ列の下端に
+   透けて線が白っぽく見える原因になるため、モバイルでは消す。 */
+.exp-mobile-layout .table_main > tbody > tr > td.father,
+.exp-mobile-layout .table_main > tbody > tr > td.father_0,
+.exp-mobile-layout .table_main > tbody > tr > td.father_1,
+.exp-mobile-layout .table_main > tbody > tr > td.mother,
+.exp-mobile-layout .table_main > tbody > tr > td.mother_0,
+.exp-mobile-layout .table_main > tbody > tr > td.mother_1 {
+  border-top: 0;
+  border-bottom: 0;
+}
+
 .exp-mobile-layout header table {
   width: 100%;
   table-layout: fixed;
@@ -299,10 +318,9 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  height: calc(var(--exp-mobile-row-height) - 1px);
+  height: 100%;
   border: 0;
-  border-bottom: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 0 6px;
   background: transparent;
   color: inherit;

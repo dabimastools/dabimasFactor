@@ -1,5 +1,9 @@
 @import url(./notosansjapanese.css);
 
+/* 端末のダークモード設定を無視して常にライト表示にする */
+:root {
+  color-scheme: only light;
+}
 
 body {
   font-family: "Noto Sans Japanese", "SF Pro Text", "SF Pro Icons",
