@@ -2653,6 +2653,45 @@
 
           this.mobileRowHeight = rowHeight;
           app.style.setProperty("--exp-mobile-row-height", `${rowHeight}px`);
+
+          this.markPedigreeStairEdges();
+        },
+        // 父母カラーバーの段の区切り(白線)は、真上に色セルがある箇所だけに出す。
+        // 階段の外縁（真上が空白＝セレクタ/コンテンツ）の先頭セルでは白線を消す。
+        // rowspan/colspan の格子なので CSS では判定できず、矩形の隣接で判定する。
+        markPedigreeStairEdges: function () {
+          const app = this.$el;
+          if (!app) {
+            return;
+          }
+          const EDGE_CLASS = "exp-mobile-colorseg-edge";
+          const SELECTOR =
+            "td.father, td.father_0, td.father_1, td.mother, td.mother_0, td.mother_1";
+          const tables = app.querySelectorAll(
+            ".pedigree-card-shell .table_main"
+          );
+          const isMobile = this.$vuetify.breakpoint.smAndDown;
+          tables.forEach((table) => {
+            const cells = Array.from(table.querySelectorAll(SELECTOR));
+            if (!isMobile) {
+              cells.forEach((cell) => cell.classList.remove(EDGE_CLASS));
+              return;
+            }
+            const rects = cells.map((cell) => ({
+              cell,
+              rect: cell.getBoundingClientRect(),
+            }));
+            rects.forEach(({ cell, rect }) => {
+              // 自分の上辺に底辺が接し、横方向に重なる色セルがあれば「真上が色」
+              const hasColoredAbove = rects.some(
+                ({ rect: other }) =>
+                  Math.abs(other.bottom - rect.top) <= 2 &&
+                  other.left < rect.right - 1 &&
+                  other.right > rect.left + 1
+              );
+              cell.classList.toggle(EDGE_CLASS, !hasColoredAbove);
+            });
+          });
         },
         loadInbreedExceptions: function () {
           return fetch('./json/inbreed-exceptions.json')

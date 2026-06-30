@@ -107,9 +107,9 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* 父・母の縦カラーバーには横線を入れず連続させる。
-   さらに白い border-top は border-collapse でセレクタ列の下端に
-   透けて線が白っぽく見える原因になるため、モバイルでは消す。 */
+/* 父・母の縦カラーバー。
+   白い border-top/bottom は border-collapse でセレクタ列の下端に透けて
+   線が白っぽく見える原因になるため、罫線としては全色セルで消す。 */
 .exp-mobile-layout .table_main > tbody > tr > td.father,
 .exp-mobile-layout .table_main > tbody > tr > td.father_0,
 .exp-mobile-layout .table_main > tbody > tr > td.father_1,
@@ -118,6 +118,22 @@
 .exp-mobile-layout .table_main > tbody > tr > td.mother_1 {
   border-top: 0;
   border-bottom: 0;
+}
+
+/* 段の区切り(白1px)は、元設計で border-top を持っていたクラス
+   （_0 と無印 = セグメントの先頭）だけに、隣セルへ滲まない box-shadow の
+   インセットで描く。_1（連続セル）には付けないので、上下が同じ色で
+   つながる箇所や、空白側に接する端には余計な線が出ない。 */
+.exp-mobile-layout .table_main > tbody > tr > td.father_0,
+.exp-mobile-layout .table_main > tbody > tr > td.father,
+.exp-mobile-layout .table_main > tbody > tr > td.mother_0,
+.exp-mobile-layout .table_main > tbody > tr > td.mother {
+  box-shadow: inset 0 1px 0 0 #fff;
+}
+
+/* 階段の外縁（真上が空白）のセルは JS で印を付け、上端の白線を消す */
+.exp-mobile-layout .table_main > tbody > tr > td.exp-mobile-colorseg-edge {
+  box-shadow: none;
 }
 
 .exp-mobile-layout header table {
