@@ -355,6 +355,28 @@
   align-items: stretch;
 }
 
+/* 子系統モード（dispCategory%2!==0）のセル内は Vuetify の v-text-field
+   （系統名 readonly / メモ入力）になる。これは理論モードのトリガーと違い
+   行高 --exp-mobile-row-height まで縮まず 1px/行ほど高くなるため、16行が
+   固定カード高さを超えて最下行がクリップされる（特に iOS Safari ではセルが
+   伸びて溢れが大きくなる）。トリガーと同様に行高ぴったりへ固定して収める。 */
+.exp-mobile-layout .table_main .v-text-field.v-input,
+.exp-mobile-layout .table_main .v-text-field .v-input__control,
+.exp-mobile-layout .table_main .v-text-field .v-input__slot {
+  min-height: 0 !important;
+  height: calc(var(--exp-mobile-row-height) - 1px) !important;
+  overflow: hidden !important;
+}
+
+.exp-mobile-layout .table_main .v-text-field .v-input__slot {
+  margin: 0 !important;
+}
+
+.exp-mobile-layout .table_main .v-text-field input {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .exp-mobile-autocomplete-root.inbreed > .v-input input,
 .exp-mobile-autocomplete-root.inbreed > .v-input .v-select__selection,
 .exp-mobile-autocomplete-root.inbreed > .exp-mobile-horse-trigger,
