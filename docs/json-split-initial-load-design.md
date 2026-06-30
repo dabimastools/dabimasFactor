@@ -905,6 +905,98 @@ PC:
 9. CI の生成・commit 対象を更新する。
 10. full JSON fallback を残すか削除するか判断する。
 
+## 完了条件（Definition of Done）
+
+「分割しても従来と同じことが全部できる」ことを担保する。下記 A〜H をすべて満たせたら完了とする。各項目は実機（PC / スマホ）で確認する。チェックボックスはそのまま検収リストに使える。
+
+判定の前提となる重要な性質:
+
+- 32 セルは 1 セル = 血統ノード 1 件として個別に `selected` に保存される。**画面の復元（表示）には `descendants` は不要**。`descendants` が必要になるのは「馬を（再）選択して `setDataForPedigree()` が 16 セルを組み直すとき」だけ。
+- したがって復元の合否は「表示の復元」と「復元後の再選択」を分けて確認する。
+
+### A. 既存機能のリグレッションが無い
+
+- [ ] 初期表示される（summary のみで候補リスト・検索が動く）
+- [ ] 種牡馬を選択 → 血統が 15 件展開される
+- [ ] 繁殖牝馬を選択 → 展開される
+- [ ] 途中セルへ選択できる
+- [ ] 削除できる（同一 uuid のセルが連動して消える）
+- [ ] リセットできる
+- [ ] 配合理論が表示される
+- [ ] クロス（インブリード）が表示される
+- [ ] 手動因子を付与・反映できる（`applyManualFactors`）
+- [ ] 強制インブリード（ハート）が従来通り動く
+- [ ] リロードで localStorage から画面が復元される
+
+### B. 保存ダイアログ（IndexedDB 配合保存）の保存・復元パターン
+
+`vue/CombinationDialog.js` の保存・復元が、分割後も全パターンで成立すること。**ここが本対応の最重要受け入れ条件。**
+
+想定パターンと期待結果:
+
+| # | 保存時の状態 | 復元の文脈 | 期待結果 |
+| --- | --- | --- | --- |
+| B1 | 通常馬のみで 32 セル完成（新・軽量保存形式） | 同一端末で復元 | 32 セルの表示・因子・親系統・クロス・理論がすべて元通り |
+| B2 | B1 を復元後、いずれかのセルを**再選択** | 同一端末 | `ensureHorseDetail()` が `id`→chunk で `descendants` を補完し、血統が再展開される |
+| B3 | 旧形式（分割前・`descendants` 同梱・`id` 無し）で保存済みの配合 | 分割後アプリで復元 | 表示が復元される。再選択時も同梱 `descendants` を使って展開できる（破壊しない） |
+| B4 | 自家製馬を含む配合 | **同一端末**で復元 | custom horse は IndexedDB `customHorses` から解決され、手動因子込みで復元される |
+| B5 | 自家製馬を含む配合 | サイトデータ削除後 / 別端末で復元 | config に同梱した custom horse レコード（指摘 D）から復元できる。同梱が無い旧保存は「その馬だけ欠落」を許容し、他セルは壊さない |
+| B6 | 保存直後に detail chunk が未取得 | オンライン復元 | 復元表示は即時。再選択時に未取得 chunk を待つ（短い待ち）だけで成立 |
+| B7 | 保存→復元→さらに上書き保存 | 同一端末 | 軽量形式で再保存され、IndexedDB の配合サイズが肥大しない |
+
+- [ ] B1〜B7 をすべて満たす
+- [ ] 復元後に「保存」した配合と、元の配合の表示が一致する（往復で壊れない）
+- [ ] 復元で `setDataForPedigree()` が呼ばれるパス（再選択）でも、`descendants.length === 15` ガードに引っかからない
+
+### C. 自家製馬ライブラリ（IndexedDB）
+
+- [ ] 自家製馬を保存できる（`saveCustomHorse`、`id` upsert）
+- [ ] 一覧を `createdAt` 降順で取得できる（`loadCustomHorses`）
+- [ ] 取得・削除できる（`getCustomHorse` / `deleteCustomHorse`）
+- [ ] localStorage の上限に依存せず、数千頭規模を保存しても保存処理が失敗しない
+- [ ] 初回利用時に `navigator.storage.persist()` を要求し、eviction されにくい
+- [ ] 自家製馬を候補として再選択でき、その `descendants`（先祖 + その時点の手動因子）が血統に反映される
+- [ ] `CombinationDialog.js` と `combinationDB.js` の DB version / ストア構成が一致している（VersionError が出ない）
+
+### D. オフライン
+
+- [ ] prefetch 完了後はオフラインで従来同等に使える（選択・展開・保存・復元）
+- [ ] 初回訪問直後でオフラインになり未取得 chunk を選択した場合、アプリが壊れず「再試行可能」のメッセージを出す（既存セルは保持）
+- [ ] summary / app shell / CSS / JS はオフラインでも読める（install cache 済み）
+
+### E. 生成データ整合性（`build_dabimas_stream.py`）
+
+- [ ] summary に `descendants` が無い
+- [ ] detail に `id` と `descendants` がある
+- [ ] `id` が一意
+- [ ] `id` が URL 由来で安定（並び替え後の再生成でも同じ馬に同じ `id`）
+- [ ] summary の `detailChunk` と実際の chunk 配置が 1:1 で一致
+- [ ] 全 `id` が summary と detail で 1:1（抜け漏れ無し）
+- [ ] 各 detail の `descendants.length === 15`
+
+### F. 性能（現行 full JSON との比較）
+
+- [ ] 初期 DOM 表示 / loader 消滅が現行以上に速い（または同等）
+- [ ] summary fetch + parse が full JSON より明確に軽い
+- [ ] detail cache hit 時の選択時間が現行と同等
+- [ ] detail cache miss 時の選択時間が許容範囲（loading 表示で吸収）
+- [ ] localStorage 保存サイズが現行より小さい（`descendants` 非保存）
+
+### G. 互換・移行（破壊しない）
+
+- [ ] 旧 `dabimasFactor`（`descendants` あり・`id` 無し）の保存データでも表示復元できる
+- [ ] 旧保存データの再選択時は、まず同梱 `descendants` を使い、無ければ summary matching を試みる
+- [ ] 破壊的 migration をしない（旧データを読めなくしない）
+- [ ] full JSON fallback を残す間は、summary 取得失敗時に従来動作へ退避できる
+
+### H. 異常系・端
+
+- [ ] detail chunk の取得失敗時、`onChangeMain()` が state を壊す前に中断し、既存セルを保持する（指摘 F）
+- [ ] chunk に `id` が無い場合 `ensureHorseDetail()` が throw ではなく扱える（null ガード、指摘 E）
+- [ ] 同じ馬を複数セルに選択してもクロス判定が従来通り
+- [ ] 自家製馬を含む配合でもクロス判定が従来通り（`fullBrothers` 等が保持されている）
+- [ ] `index.html` と `index.exp.html` の両方で A〜H が成立する（差分ドリフト無し）
+
 ## やらない方がよい実装
 
 - detail 全体 4.3MB を初回選択時に読む
