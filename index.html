@@ -241,6 +241,21 @@
         @restore="onCombinationRestore"
       ></combination-dialog>
 
+      <!-- detail（血統）取得失敗時の再試行メッセージ -->
+      <v-snackbar
+        v-model="horseDetailError.show"
+        :timeout="4000"
+        color="error"
+        top
+      >
+        {{ horseDetailError.message }}
+        <template v-slot:action="{ attrs }">
+          <v-btn text v-bind="attrs" @click="horseDetailError.show = false">
+            閉じる
+          </v-btn>
+        </template>
+      </v-snackbar>
+
 
       <main ref="appMain">
         <v-container fluid>
@@ -702,6 +717,42 @@
     // 更新されない/ダイアログが閉じない等の不具合を起こすため、instance単位で一意化する。
     const horseListKeyCache = new WeakMap();
     let horseListKeySeq = 0;
+
+    // crypto.randomUUID() は secure context（HTTPS / localhost）でしか使えない。
+    // LAN IPへの素のHTTPアクセス（実機テスト等）では crypto.randomUUID が
+    // 存在せず即例外になるため、getRandomValues（secure context不要）ベースの
+    // フォールバックを用意する。
+    function generateUuid() {
+      if (
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
+      ) {
+        return crypto.randomUUID();
+      }
+      if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0"));
+        return (
+          hex.slice(0, 4).join("") +
+          "-" +
+          hex.slice(4, 6).join("") +
+          "-" +
+          hex.slice(6, 8).join("") +
+          "-" +
+          hex.slice(8, 10).join("") +
+          "-" +
+          hex.slice(10, 16).join("")
+        );
+      }
+      // 最終手段（crypto自体が無い極めて古い環境向け）
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
+    }
 
     Vue.component('pedigree-row', {
       template: '#pedigree-row-template',
@@ -1924,7 +1975,26 @@
     Vue.config.performance = true;
     Vue.config.productionTip = false;
 
-    new Vue({
+    // 実機デバッグ用の一時計測: 通常は捕まえていない例外/rejectionも
+    // 画面上部の赤いメッセージ欄（horseDetailError）に出して、devtoolsが無い
+    // 端末でも原因文言を直接読めるようにする。
+    var __debugAppInstance = null;
+    window.addEventListener("error", function (event) {
+      if (__debugAppInstance && typeof __debugAppInstance.notifyHorseDetailError === "function") {
+        __debugAppInstance.notifyHorseDetailError(
+          "DEBUG error: " + (event.message || "unknown") + " @ " + (event.filename || "") + ":" + (event.lineno || "")
+        );
+      }
+    });
+    window.addEventListener("unhandledrejection", function (event) {
+      if (__debugAppInstance && typeof __debugAppInstance.notifyHorseDetailError === "function") {
+        var reason = event.reason;
+        var msg = reason && reason.message ? reason.message : String(reason);
+        __debugAppInstance.notifyHorseDetailError("DEBUG rejection: " + msg);
+      }
+    });
+
+    __debugAppInstance = new Vue({
       el: "#app",
       vuetify: new Vuetify(),
 
@@ -2110,6 +2180,17 @@
           theoryMigoto: [9, 11, 13, 15],
           // 全兄弟
           brosData:[],
+          // JSON 分割ロード用の状態（summary + detail chunk）
+          horseDetailChunks: {},
+          horseDetailChunkPromises: {},
+          customHorseDetails: {},
+          customHorseDb: null,
+          horseSummaryLoaded: false,
+          horseSummaryChunkSize: 128,
+          horseDetailTotalChunks: 0,
+          horseDetailPreloadStarted: false,
+          horseDetailLoadingIndexes: {},
+          horseDetailError: { show: false, message: "" },
           // インブリードボタン押下フラグを一次元配列で定義（-1：未クリック　1：クリック　0:使用不可）
           isInbreedButtonClicked: Array.from(new Array(32).fill(0)),
           // styleInbreedButtonClasses（インブリードさせるボタン定義）を一次元配列で定義
@@ -3242,42 +3323,404 @@
           return css;
         },
 
-        dbinitializer() {
-          fetch("./json/dabimasFactor.json")
+        // ===== JSON 分割ロード（summary + detail chunk）=====
+        // summary 1 件を候補リスト用の馬オブジェクトへ整える（descendants は持たない）。
+        normalizeHorseSummary(horse) {
+          return {
+            id: horse.id,
+            detailChunk:
+              typeof horse.detailChunk === "number" ? horse.detailChunk : 0,
+            name: horse.name || "",
+            ruby: horse.ruby || "",
+            subName: horse.subName || "",
+            nature: horse.nature || "",
+            sex: horse.sex,
+            parentLine: horse.parentLine || "",
+            son: horse.son || "",
+            factors: Array.isArray(horse.factors) ? horse.factors : ["", "", ""],
+            source: "base",
+          };
+        },
+        // 馬リスト（horsesBase / horses / stallions / broodmares 等）を作る共通処理。
+        buildHorseLists(horsesList) {
+          horsesList.forEach((horse) => Object.freeze(horse));
+          this.horsesBase = Object.freeze(horsesList);
+          this.horses = this.horsesBase.filter(
+            (horse) => horse.sex === "0" || horse.sex === "1"
+          );
+          this.stallionsBase = Object.freeze(
+            this.horses.filter((horse) => horse.sex === "0")
+          );
+          this.stallions = [...this.stallionsBase];
+          this.broodmaresBase = Object.freeze(
+            this.horses.filter((horse) => horse.sex === "1")
+          );
+          this.broodmares = [...this.broodmaresBase];
+          this.horseDataLists = [this.horses, this.stallions, this.broodmares];
+        },
+        // detail chunk を取得して Map<id, detail> を返す。Promise / 結果を cache する。
+        fetchHorseDetailChunk(chunkIndex) {
+          const idx = Number(chunkIndex);
+          if (!Number.isInteger(idx) || idx < 0) {
+            return Promise.reject(
+              new Error("Invalid detail chunk index: " + chunkIndex)
+            );
+          }
+          if (this.horseDetailChunks[idx]) {
+            return Promise.resolve(this.horseDetailChunks[idx]);
+          }
+          if (this.horseDetailChunkPromises[idx]) {
+            return this.horseDetailChunkPromises[idx];
+          }
+          const padded = ("000" + idx).slice(-3);
+          const url = `./json/dabimasFactor-details/dabimasFactor.details.${padded}.json`;
+          const promise = fetch(url)
             .then((response) => {
+              if (!response.ok) {
+                throw new Error("detail chunk fetch failed: " + response.status);
+              }
               return response.json();
             })
             .then((json) => {
-              // jsonから取得 - Object.freeze()でリアクティブシステムのオーバーヘッドを削減
-              const horsesList = json.horseLists;
-              // 各馬データをフリーズ（変更されないため）
-              horsesList.forEach(horse => Object.freeze(horse));
-              this.horsesBase = Object.freeze(horsesList);
-              //this.allHorses = [...this.allHorsesBase];
-              this.horses = this.horsesBase.filter(function (horse) {
-                return horse.sex === "0" || horse.sex === "1";
+              const map = new Map();
+              (json.horseDetails || []).forEach((detail) => {
+                map.set(detail.id, detail);
+              });
+              this.$set(this.horseDetailChunks, idx, map);
+              return map;
+            })
+            .catch((error) => {
+              // 失敗した promise は握り続けない（再試行可能にする）
+              this.$delete(this.horseDetailChunkPromises, idx);
+              throw error;
+            });
+          this.$set(this.horseDetailChunkPromises, idx, promise);
+          return promise;
+        },
+        // freeze 済み summary を mutate せず、descendants を載せた新オブジェクトを返す（指摘 G）。
+        hydrateHorseWithDetail(horse, descendants) {
+          return { ...horse, descendants };
+        },
+        // 名前等から summary 側の馬を探す（旧データ・id 欠落時のフォールバック / 指摘 G）。
+        findSummaryHorse(horse) {
+          if (!horse || !Array.isArray(this.horsesBase)) {
+            return null;
+          }
+          if (horse.id) {
+            const byId = this.horsesBase.find((h) => h.id === horse.id);
+            if (byId) {
+              return byId;
+            }
+          }
+          const name = horse.name || "";
+          const subName = horse.subName || "";
+          const sex = horse.sex;
+          const matches = this.horsesBase.filter(
+            (h) =>
+              h.name === name && (h.subName || "") === subName && h.sex === sex
+          );
+          if (matches.length <= 1) {
+            return matches[0] || null;
+          }
+          const factorsKey = JSON.stringify(horse.factors || []);
+          const refined = matches.filter(
+            (h) => JSON.stringify(h.factors || []) === factorsKey
+          );
+          return refined.length === 1 ? refined[0] : matches[0];
+        },
+        // 選択時に detail（descendants 15 件）を確定させる。state を壊さない純粋関数。
+        ensureHorseDetail(horse) {
+          if (!horse) {
+            return Promise.resolve(horse);
+          }
+          // 1) 旧 snapshot 互換: 既に descendants を持つならそのまま使う（指摘 E）
+          if (Array.isArray(horse.descendants) && horse.descendants.length === 15) {
+            return Promise.resolve(horse);
+          }
+          // 2) 自家製馬: IndexedDB の customHorses から detail を解決（指摘 H）
+          if (horse.source === "custom" || horse.customHorseId) {
+            const customId = horse.customHorseId || horse.id;
+            return this.getCustomHorseDetail(customId).then((detail) => {
+              if (
+                detail &&
+                Array.isArray(detail.descendants) &&
+                detail.descendants.length === 15
+              ) {
+                return this.hydrateHorseWithDetail(horse, detail.descendants);
+              }
+              return Promise.reject(
+                new Error("Custom horse detail not found: " + customId)
+              );
+            });
+          }
+          // 3) 通常馬: summary 由来の detailChunk + id で chunk から（指摘 B）。
+          let chunkIndex = horse.detailChunk;
+          let lookupId = horse.id;
+          if (chunkIndex === undefined || chunkIndex === null || !lookupId) {
+            const matched = this.findSummaryHorse(horse);
+            if (
+              !matched ||
+              matched.detailChunk === undefined ||
+              matched.detailChunk === null
+            ) {
+              return Promise.reject(new Error("Horse detail metadata missing"));
+            }
+            chunkIndex = matched.detailChunk;
+            lookupId = matched.id;
+          }
+          return this.fetchHorseDetailChunk(chunkIndex).then((detailMap) => {
+            const detail = detailMap.get(lookupId);
+            if (detail && Array.isArray(detail.descendants)) {
+              return this.hydrateHorseWithDetail(horse, detail.descendants);
+            }
+            // id が chunk に無い → 名前等で 1 回だけ再解決を試す（指摘 G）
+            const matched = this.findSummaryHorse(horse);
+            if (
+              matched &&
+              matched.id !== lookupId &&
+              matched.detailChunk !== undefined &&
+              matched.detailChunk !== null
+            ) {
+              return this.fetchHorseDetailChunk(matched.detailChunk).then(
+                (retryMap) => {
+                  const retryDetail = retryMap.get(matched.id);
+                  if (retryDetail && Array.isArray(retryDetail.descendants)) {
+                    return this.hydrateHorseWithDetail(
+                      horse,
+                      retryDetail.descendants
+                    );
+                  }
+                  return Promise.reject(
+                    new Error(
+                      "Horse detail not found: " + (horse.id || horse.name)
+                    )
+                  );
+                }
+              );
+            }
+            return Promise.reject(
+              new Error("Horse detail not found: " + (horse.id || horse.name))
+            );
+          });
+        },
+        // idle 中に detail chunk を順次先読みする（全 chunk を一気に読まない / 案 B）。
+        prefetchHorseDetails() {
+          if (this.horseDetailPreloadStarted || !this.horseSummaryLoaded) {
+            return;
+          }
+          const total = this.horseDetailTotalChunks;
+          if (!total) {
+            return;
+          }
+          this.horseDetailPreloadStarted = true;
+          let next = 0;
+          const pump = () => {
+            while (next < total && this.horseDetailChunks[next]) {
+              next++;
+            }
+            if (next >= total) {
+              return;
+            }
+            const chunkIndex = next;
+            next++;
+            this.fetchHorseDetailChunk(chunkIndex)
+              .catch(() => {})
+              .then(() => {
+                schedule();
+              });
+          };
+          const schedule = () => {
+            if (next >= total) {
+              return;
+            }
+            if (typeof window.requestIdleCallback === "function") {
+              window.requestIdleCallback(() => pump(), { timeout: 2000 });
+            } else {
+              setTimeout(pump, 300);
+            }
+          };
+          if (typeof window.requestIdleCallback === "function") {
+            window.requestIdleCallback(() => pump(), { timeout: 2000 });
+          } else {
+            setTimeout(pump, 1000);
+          }
+        },
+        // ===== 自家製馬 detail（IndexedDB customHorses）=====
+        // CombinationDialog と同じスキーマ（version 2）で DB を開く。接続は使い回す。
+        ensureCustomHorseDb() {
+          if (this.customHorseDb) {
+            return Promise.resolve(this.customHorseDb);
+          }
+          return new Promise((resolve, reject) => {
+            if (!window.indexedDB) {
+              reject(new Error("IndexedDB unsupported"));
+              return;
+            }
+            const request = window.indexedDB.open("DabifacCombinationDB", 2);
+            request.onerror = () => reject(request.error);
+            request.onupgradeneeded = (event) => {
+              const db = event.target.result;
+              if (!db.objectStoreNames.contains("configs")) {
+                const store = db.createObjectStore("configs", {
+                  keyPath: "id",
+                  autoIncrement: true,
+                });
+                store.createIndex("savedAt", "savedAt", { unique: false });
+              }
+              if (!db.objectStoreNames.contains("customHorses")) {
+                const customStore = db.createObjectStore("customHorses", {
+                  keyPath: "id",
+                });
+                customStore.createIndex("createdAt", "createdAt", {
+                  unique: false,
+                });
+              }
+            };
+            request.onsuccess = () => {
+              this.customHorseDb = request.result;
+              resolve(request.result);
+            };
+          });
+        },
+        // customHorses store から 1 件取得（再選択時の detail 解決）。
+        getCustomHorseDetail(customHorseId) {
+          if (!customHorseId) {
+            return Promise.resolve(null);
+          }
+          if (this.customHorseDetails[customHorseId]) {
+            return Promise.resolve(this.customHorseDetails[customHorseId]);
+          }
+          return this.ensureCustomHorseDb().then(
+            (db) =>
+              new Promise((resolve, reject) => {
+                const tx = db.transaction(["customHorses"], "readonly");
+                const store = tx.objectStore("customHorses");
+                const request = store.get(customHorseId);
+                request.onsuccess = () => {
+                  if (request.result) {
+                    this.$set(
+                      this.customHorseDetails,
+                      customHorseId,
+                      request.result
+                    );
+                  }
+                  resolve(request.result || null);
+                };
+                request.onerror = () => reject(request.error);
+              })
+          );
+        },
+        // customHorses store を全件読み込んで customHorseDetails に載せる（候補再利用用）。
+        loadCustomHorseDetails() {
+          return this.ensureCustomHorseDb()
+            .then(
+              (db) =>
+                new Promise((resolve, reject) => {
+                  const tx = db.transaction(["customHorses"], "readonly");
+                  const store = tx.objectStore("customHorses");
+                  const request = store.getAll();
+                  request.onsuccess = () => {
+                    (request.result || []).forEach((record) => {
+                      this.$set(this.customHorseDetails, record.id, record);
+                    });
+                    resolve(request.result || []);
+                  };
+                  request.onerror = () => reject(request.error);
+                })
+            )
+            .catch(() => []);
+        },
+        // ===== localStorage 軽量化 =====
+        // descendants / searchText / displayName を落とした保存用 snapshot を作る。
+        stripHorseForStorage(horse) {
+          if (!horse) {
+            return horse;
+          }
+          const { descendants, searchText, displayName, ...rest } = horse;
+          return rest;
+        },
+        serializeSelectedForStorage(selected) {
+          if (!Array.isArray(selected)) {
+            return selected;
+          }
+          return selected.map((horse) =>
+            horse ? this.stripHorseForStorage(horse) : null
+          );
+        },
+        // dabimasFactor / Category をまとめて軽量保存する。
+        persistSelectedToStorage() {
+          if (typeof window === "undefined" || !window.localStorage) {
+            return;
+          }
+          window.localStorage.setItem(
+            "dabimasFactor",
+            JSON.stringify(this.serializeSelectedForStorage(this.selected))
+          );
+          window.localStorage.setItem(
+            "dabimasFactorCategory",
+            JSON.stringify(this.category)
+          );
+        },
+        // detail 取得失敗時の再試行可能メッセージ（既存セルは保持済み・指摘 F）。
+        notifyHorseDetailError(message) {
+          this.horseDetailError = {
+            show: true,
+            message:
+              message ||
+              "血統データの取得に失敗しました。通信状況を確認して、もう一度選択してください。",
+          };
+        },
+        dbinitializer() {
+          // 旧 full JSON を読み込む退避経路（summary 取得失敗時のフォールバック）。
+          const loadFullJsonFallback = () =>
+            fetch("./json/dabimasFactor.json")
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("full json fetch failed: " + response.status);
+                }
+                return response.json();
+              })
+              .then((json) => {
+                this.horseSummaryLoaded = false;
+                this.buildHorseLists(json.horseLists);
+                this.c4();
               });
 
-              // 牡馬だけを抽出
-              this.stallionsBase = Object.freeze(this.horses.filter(function (horse) {
-                return horse.sex === "0";
-              }));
-              this.stallions = [...this.stallionsBase];
-
-              // 牝馬だけを抽出
-              this.broodmaresBase = Object.freeze(this.horses.filter(function (horse) {
-                return horse.sex === "1";
-              }));
-              this.broodmares = [...this.broodmaresBase];
-
-              this.horseDataLists = [
-                this.horses,
-                this.stallions,
-                this.broodmares,
-              ];
-
+          // 通常経路: 軽量 summary を読み込む。descendants はここでは持たない。
+          fetch("./json/dabimasFactor.summary.json")
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("summary fetch failed: " + response.status);
+              }
+              return response.json();
+            })
+            .then((json) => {
+              this.horseSummaryChunkSize = json.chunkSize || 128;
+              const horsesList = (json.horseLists || []).map((horse) =>
+                this.normalizeHorseSummary(horse)
+              );
+              this.horseDetailTotalChunks = horsesList.reduce(
+                (max, horse) =>
+                  Math.max(max, (Number(horse.detailChunk) || 0) + 1),
+                0
+              );
+              this.horseSummaryLoaded = true;
+              this.buildHorseLists(horsesList);
               // 保存されていた場合はリストア処理を行う
               this.c4();
+              // 初期表示を邪魔しない idle のタイミングで detail を先読みする
+              this.prefetchHorseDetails();
+            })
+            .catch((error) => {
+              // summary が無い・壊れている場合は従来の full JSON へ退避する（指摘 G）
+              console.warn(
+                "summary load failed, falling back to full json",
+                error
+              );
+              return loadFullJsonFallback();
+            })
+            .catch((error) => {
+              console.error("dbinitializer failed", error);
             });
 
             // 全兄弟データを読み込む
@@ -3313,6 +3756,29 @@
         // 選択時のメイン処理
         onChangeMain: async function (sex, id, horseData) {
           const targetIndex = Number(id) + Number(sex) * 16;
+
+          // state を壊す前に detail（descendants 15 件）を確定させる（指摘 F）。
+          // 取得に失敗した場合は何も変更せず return（既存セルを保持）。
+          let hydratedHorseData = null;
+          if (horseData) {
+            if (Number.isInteger(targetIndex)) {
+              this.$set(this.horseDetailLoadingIndexes, targetIndex, true);
+            }
+            try {
+              hydratedHorseData = await this.ensureHorseDetail(horseData);
+            } catch (error) {
+              console.warn("ensureHorseDetail failed", error);
+              if (Number.isInteger(targetIndex)) {
+                this.$delete(this.horseDetailLoadingIndexes, targetIndex);
+              }
+              this.notifyHorseDetailError();
+              return;
+            }
+            if (Number.isInteger(targetIndex)) {
+              this.$delete(this.horseDetailLoadingIndexes, targetIndex);
+            }
+          }
+
           if (Number.isInteger(targetIndex)) {
             this.$set(this.isInbreedButtonClicked, targetIndex, -1);
             this.$set(this.dispColor, targetIndex, "");
@@ -3322,14 +3788,14 @@
           const selectedEntry = Number.isInteger(targetIndex)
             ? this.selected[targetIndex]
             : null;
-          if (horseData && selectedEntry?.uuid) {
+          if (hydratedHorseData && selectedEntry?.uuid) {
             this.deleteHorses(sex, id);
           }
-          if (horseData) {
+          if (hydratedHorseData) {
             // リストにセットされた場合
             // 血統表データセット用に詰め替える
             console.time('setDataForPedigree');
-            const dataForPedigree = this.setDataForPedigree(sex, id, horseData);
+            const dataForPedigree = this.setDataForPedigree(sex, id, hydratedHorseData);
             console.timeEnd('setDataForPedigree');
             // 血統表にデータをセットする
             console.time('setPedigree');
@@ -3359,9 +3825,8 @@
           this.dispTheory();
           console.timeEnd('理論');
 
-          // 内容をローカルに保存する
-          localStorage.setItem("dabimasFactor", JSON.stringify(this.selected));
-          localStorage.setItem("dabimasFactorCategory",JSON.stringify(this.category));
+          // 内容をローカルに保存する（descendants を含まない軽量 snapshot）
+          this.persistSelectedToStorage();
         },
 
         // リストから削除
@@ -4725,10 +5190,8 @@
 
           this.factorNumtoString = this.dispFactorCounts(this.factorCd);
 
-          if (typeof window !== "undefined" && window.localStorage) {
-            window.localStorage.setItem("dabimasFactor", JSON.stringify(this.selected));
-            window.localStorage.setItem("dabimasFactorCategory",JSON.stringify(this.category));
-          }
+          // descendants を含まない軽量 snapshot で保存する
+          this.persistSelectedToStorage();
         },
 
         dispFactorCounts: function (factorCdArray) {
@@ -4771,8 +5234,16 @@
           const retDataForPedigree = Array.from(new Array(16).fill(null));
 
           if (horseData) {
+            // detail（先祖 15 件）が確定していることを前提にする（指摘 F）。
+            // onChangeMain が ensureHorseDetail で補完済みのはずだが、念のため防御する。
+            if (
+              !Array.isArray(horseData.descendants) ||
+              horseData.descendants.length !== 15
+            ) {
+              throw new Error("Horse detail is not loaded.");
+            }
             let bros;
-            const myId = crypto.randomUUID();
+            const myId = generateUuid();
             // リストで選択した性別（種牡馬 or 繁殖牝馬）をセット
             this.selectedSex = horseData.sex;
             // 空以外を選択した場合

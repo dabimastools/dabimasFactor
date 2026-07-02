@@ -1,5 +1,5 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260630-04';
+var CACHE_NAME = 'dabimas-factor-v20260630-05';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
 var APP_SHELL_URL = BASE_PATH + 'index.html';
 // プリキャッシュは「実行時に実際に使われるもの」だけに絞る。
@@ -10,6 +10,12 @@ var APP_SHELL_URL = BASE_PATH + 'index.html';
 //   ここに載せていないもの（factor-dialog.css 等）もオフライン対応される。
 var urlsToCache = [
   APP_SHELL_URL,
+  // 初期表示用の軽量 summary を install cache する（案 B）。
+  BASE_PATH + 'json/dabimasFactor.summary.json',
+  // detail chunk（json/dabimasFactor-details/*.json）は install では addAll しない。
+  // 1 ファイルの 404 で install 全体が失敗する（指摘 C）ため、fetch ハンドラの
+  // network-first 経路で runtime cache される。アプリ側 prefetch で順次温める。
+  // 旧 full JSON は移行期間の fallback として残す（summary 取得失敗時の退避先）。
   BASE_PATH + 'json/dabimasFactor.json',
   BASE_PATH + 'json/brosData.json',
   BASE_PATH + 'json/inbreed-exceptions.json',

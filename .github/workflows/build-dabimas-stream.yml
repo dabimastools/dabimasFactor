@@ -33,6 +33,9 @@ jobs:
           mkdir -p artifacts
           python scripts/build_dabimas_stream.py \
             --output artifacts/dabimasFactor.json \
+            --summary-output artifacts/dabimasFactor.summary.json \
+            --details-output-dir artifacts/dabimasFactor-details \
+            --detail-chunk-size 128 \
             --all-output artifacts/all_rows.ndjson \
             --delay "${{ github.event.inputs.delay || '0' }}" \
             --limit "${{ github.event.inputs.limit || '0' }}" \

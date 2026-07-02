@@ -161,14 +161,22 @@ Vue.component('combination-dialog', {
       this.saving = true;
 
       try {
+        const dabimasFactor = localStorage.getItem('dabimasFactor');
         const configData = {
-          dabimasFactor: localStorage.getItem('dabimasFactor'),
+          dabimasFactor: dabimasFactor,
           dabimasFactorCategory: localStorage.getItem('dabimasFactorCategory'),
           dabimasMemo: localStorage.getItem('dabimasMemo'),
           dabimasMemoStallion: localStorage.getItem('dabimasMemoStallion'),
           dabimasMemoBroodmare: localStorage.getItem('dabimasMemoBroodmare'),
           dabimasManualInbreed: localStorage.getItem('dabimasManualInbreed')
         };
+
+        // 指摘 D: この配合が参照する自家製馬レコードを config に同梱して
+        // 自己完結させる（別端末・サイトデータ削除後でも復元できるように）。
+        const customIds = this.collectCustomHorseIds(dabimasFactor);
+        if (customIds.length > 0) {
+          configData.customHorses = await this.readCustomHorses(customIds);
+        }
 
         const configDataCopy = JSON.parse(JSON.stringify(configData));
 
@@ -178,26 +186,111 @@ Vue.component('combination-dialog', {
           configData: configDataCopy
         };
 
-        const transaction = this.db.transaction(['configs'], 'readwrite');
-        const objectStore = transaction.objectStore('configs');
-        const request = objectStore.add(config);
+        await new Promise((resolve, reject) => {
+          const transaction = this.db.transaction(['configs'], 'readwrite');
+          const objectStore = transaction.objectStore('configs');
+          const request = objectStore.add(config);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
 
-        request.onsuccess = () => {
-          this.showToast(`「${this.newTitle}」を保存しました`, 'success');
-          this.newTitle = '';
-          this.loadSavedConfigs();
-          this.saving = false;
-        };
-
-        request.onerror = () => {
-          this.showToast('保存に失敗しました', 'error');
-          this.saving = false;
-        };
+        this.showToast(`「${this.newTitle}」を保存しました`, 'success');
+        this.newTitle = '';
+        await this.loadSavedConfigs();
       } catch (error) {
         console.error('保存エラー:', error);
         this.showToast('保存に失敗しました', 'error');
+      } finally {
         this.saving = false;
       }
+    },
+
+    // dabimasFactor snapshot から、参照している自家製馬の id を集める。
+    collectCustomHorseIds(dabimasFactorStr) {
+      if (!dabimasFactorStr) {
+        return [];
+      }
+      let parsed;
+      try {
+        parsed = JSON.parse(dabimasFactorStr);
+      } catch (error) {
+        return [];
+      }
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      const ids = new Set();
+      parsed.forEach((cell) => {
+        if (!cell) {
+          return;
+        }
+        if (cell.source === 'custom' || cell.customHorseId) {
+          const id = cell.customHorseId || cell.id;
+          if (id) {
+            ids.add(id);
+          }
+        }
+      });
+      return [...ids];
+    },
+
+    // customHorses store から指定 id のレコードをまとめて取得する。
+    readCustomHorses(ids) {
+      return new Promise((resolve) => {
+        if (
+          !Array.isArray(ids) ||
+          ids.length === 0 ||
+          !this.db.objectStoreNames.contains('customHorses')
+        ) {
+          resolve([]);
+          return;
+        }
+        const transaction = this.db.transaction(['customHorses'], 'readonly');
+        const store = transaction.objectStore('customHorses');
+        const results = [];
+        let remaining = ids.length;
+        ids.forEach((id) => {
+          const request = store.get(id);
+          request.onsuccess = () => {
+            if (request.result) {
+              results.push(request.result);
+            }
+            remaining -= 1;
+            if (remaining === 0) {
+              resolve(results);
+            }
+          };
+          request.onerror = () => {
+            remaining -= 1;
+            if (remaining === 0) {
+              resolve(results);
+            }
+          };
+        });
+      });
+    },
+
+    // 同梱されていた自家製馬レコードを customHorses store へ書き戻す（upsert）。
+    writeCustomHorses(records) {
+      return new Promise((resolve, reject) => {
+        if (
+          !Array.isArray(records) ||
+          records.length === 0 ||
+          !this.db.objectStoreNames.contains('customHorses')
+        ) {
+          resolve();
+          return;
+        }
+        const transaction = this.db.transaction(['customHorses'], 'readwrite');
+        const store = transaction.objectStore('customHorses');
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        records.forEach((record) => {
+          if (record && record.id) {
+            store.put(record);
+          }
+        });
+      });
     },
 
     async restoreConfig() {
@@ -206,46 +299,58 @@ Vue.component('combination-dialog', {
       this.restoring = true;
 
       try {
-        const transaction = this.db.transaction(['configs'], 'readonly');
-        const objectStore = transaction.objectStore('configs');
-        const request = objectStore.get(this.selectedId);
+        const config = await new Promise((resolve, reject) => {
+          const transaction = this.db.transaction(['configs'], 'readonly');
+          const objectStore = transaction.objectStore('configs');
+          const request = objectStore.get(this.selectedId);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
 
-        request.onsuccess = () => {
-          const config = request.result;
-          
-          if (config.configData.dabimasFactor) {
-            localStorage.setItem('dabimasFactor', config.configData.dabimasFactor);
-          }
-          if (config.configData.dabimasFactorCategory) {
-            localStorage.setItem('dabimasFactorCategory', config.configData.dabimasFactorCategory);
-          }
-          if (config.configData.dabimasMemo) {
-            localStorage.setItem('dabimasMemo', config.configData.dabimasMemo);
-          }
-          if (config.configData.dabimasMemoStallion) {
-            localStorage.setItem('dabimasMemoStallion', config.configData.dabimasMemoStallion);
-          }
-          if (config.configData.dabimasMemoBroodmare) {
-            localStorage.setItem('dabimasMemoBroodmare', config.configData.dabimasMemoBroodmare);
-          }
-          if (config.configData.dabimasManualInbreed) {
-            localStorage.setItem('dabimasManualInbreed', config.configData.dabimasManualInbreed);
-          }
-
-          this.$emit('restore', config.configData);
-          
-          this.showToast(`「${config.title}」を復元しました`, 'success');
-          this.restoring = false;
-          this.close();
-        };
-
-        request.onerror = () => {
+        if (!config) {
           this.showToast('復元に失敗しました', 'error');
-          this.restoring = false;
-        };
+          return;
+        }
+
+        const configData = config.configData;
+
+        if (configData.dabimasFactor) {
+          localStorage.setItem('dabimasFactor', configData.dabimasFactor);
+        }
+        if (configData.dabimasFactorCategory) {
+          localStorage.setItem('dabimasFactorCategory', configData.dabimasFactorCategory);
+        }
+        if (configData.dabimasMemo) {
+          localStorage.setItem('dabimasMemo', configData.dabimasMemo);
+        }
+        if (configData.dabimasMemoStallion) {
+          localStorage.setItem('dabimasMemoStallion', configData.dabimasMemoStallion);
+        }
+        if (configData.dabimasMemoBroodmare) {
+          localStorage.setItem('dabimasMemoBroodmare', configData.dabimasMemoBroodmare);
+        }
+        if (configData.dabimasManualInbreed) {
+          localStorage.setItem('dabimasManualInbreed', configData.dabimasManualInbreed);
+        }
+
+        // 指摘 D: 同梱された自家製馬を customHorses store へ書き戻す。
+        // これで別端末・サイトデータ削除後でも、その自家製馬を再選択できる。
+        if (Array.isArray(configData.customHorses) && configData.customHorses.length > 0) {
+          try {
+            await this.writeCustomHorses(configData.customHorses);
+          } catch (error) {
+            console.warn('custom horse の復元に失敗しました', error);
+          }
+        }
+
+        this.$emit('restore', configData);
+
+        this.showToast(`「${config.title}」を復元しました`, 'success');
+        this.close();
       } catch (error) {
         console.error('復元エラー:', error);
         this.showToast('復元に失敗しました', 'error');
+      } finally {
         this.restoring = false;
       }
     },

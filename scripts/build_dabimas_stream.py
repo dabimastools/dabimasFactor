@@ -22,9 +22,11 @@ Excel 依存なしで `dabimasFactor.json` を生成するスクリプト。
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import time
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
@@ -259,6 +261,68 @@ def get_factor_short(factor_no: str) -> str:
         return FACTOR_SHORT_DICT.get(int(factor_no), "")
     except ValueError:
         return ""
+
+
+# 詳細ページ URL から末尾の数値（例: /kouryaku/stallions/12345.html → 12345）を拾う。
+HORSE_URL_NUM_RE = re.compile(r"/(\d+)\.html")
+# JS 側 normalizeSearchText と同じく、半角/全角スペース類を畳む。
+SEARCH_SPACE_RE = re.compile(r"[　\s]+")
+
+
+def derive_horse_id(sex: str, url: str) -> str:
+    """
+    安定 `id` を導出する（指摘 A）。
+
+    出力連番ではなく、詳細ページ URL 内の数値から導出するので、元サイトの
+    並び替え・増減で再生成しても同じ馬には同じ id が付く。`sex` 接頭で
+    種牡馬(s)/牝馬(b) の URL 数値が衝突しないようにする。
+
+    URL から数値が取れない異常系では URL 全体の SHA-1 先頭でフォールバックする
+    （連番には絶対にしない）。
+    """
+    prefix = "s" if sex == "0" else "b" if sex == "1" else "x"
+    m = HORSE_URL_NUM_RE.search(url or "")
+    if m:
+        return f"{prefix}{m.group(1)}"
+    digest = hashlib.sha1((url or "").encode("utf-8")).hexdigest()[:12]
+    return f"{prefix}h{digest}"
+
+
+def normalize_search_text(text: str) -> str:
+    """
+    index.html の `normalizeSearchText` と同じ正規化を Python で再現する。
+
+    NFKC 正規化 → trim → 小文字化 → 空白除去 → カタカナをひらがな化。
+    summary に焼き込む `searchText` を、アプリ実行時の検索インデックスと
+    一致させるために使う。
+    """
+    if not isinstance(text, str):
+        return ""
+    s = unicodedata.normalize("NFKC", text).strip().lower()
+    s = SEARCH_SPACE_RE.sub("", s)
+    out = []
+    for ch in s:
+        code = ord(ch)
+        # U+30A1..U+30F6（カタカナ）をひらがなへ。JS 実装と同じ範囲。
+        if 0x30A1 <= code <= 0x30F6:
+            out.append(chr(code - 0x60))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def build_display_name(name: str, sub_name: str, nature: str) -> str:
+    """index.html の `getHorseBaseText` と同じ表示名を生成する。"""
+    nature_tag = f"[{nature[0]}]" if nature else ""
+    return "".join(part for part in (nature_tag, name or "", sub_name or "") if part)
+
+
+def build_search_text(name: str, sub_name: str, ruby: str, nature: str, display_name: str) -> str:
+    """index.html の `getHorseSearchIndexText` と同じ検索テキストを生成する。"""
+    raw = "|".join(
+        part for part in (display_name, name or "", sub_name or "", ruby or "", nature or "") if part
+    )
+    return normalize_search_text(raw)
 
 
 def get_direct_child_by_tag(parent: Optional[Tag], tag_name: str) -> Optional[Tag]:
@@ -565,13 +629,17 @@ def all_row_to_dabifac_entry(row: list[str]) -> dict:
             }
         )
 
+    sex = row_get(row, HD_GENDER)
+
     # 親系統コードは辞書優先、見つからなければ2文字化で補完。
     return {
+        # URL 由来の安定 id（指摘 A）。summary / detail の join key になる。
+        "id": derive_horse_id(sex, row_get(row, HD_HORSE_ID)),
         "name": pure_name,
         "ruby": to_hiragana_ruby(pure_name),
         "subName": sub_name,
         "nature": row_get(row, HD_NATURE),
-        "sex": row_get(row, HD_GENDER),
+        "sex": sex,
         "parentLine": PARENTAL_LINE_DICT.get(parent_line_raw.strip(), get_parent_line_name(parent_line_raw)),
         "son": parent_line_raw,
         "factors": [
@@ -588,6 +656,70 @@ def all_row_to_sparse_dict(row: list[str]) -> dict[str, str]:
     return {str(i): row[i] for i in range(1, ROW_SIZE + 1) if row[i] != ""}
 
 
+def entry_to_summary(entry: dict, detail_chunk: int) -> dict:
+    """full entry 1 件を summary 1 件へ変換する（descendants は含めない）。"""
+    display_name = build_display_name(entry["name"], entry["subName"], entry["nature"])
+    return {
+        "id": entry["id"],
+        "detailChunk": detail_chunk,
+        "name": entry["name"],
+        "ruby": entry["ruby"],
+        "subName": entry["subName"],
+        "nature": entry["nature"],
+        "sex": entry["sex"],
+        "parentLine": entry["parentLine"],
+        "son": entry["son"],
+        "factors": entry["factors"],
+        "displayName": display_name,
+        "searchText": build_search_text(
+            entry["name"], entry["subName"], entry["ruby"], entry["nature"], display_name
+        ),
+    }
+
+
+def write_summary(path: Path, entries: list[dict], chunk_size: int) -> None:
+    """summary JSON を書き出す。`detailChunk` は書き出し順 + chunk_size で焼き込む。"""
+    horse_lists = [
+        entry_to_summary(entry, index // chunk_size) for index, entry in enumerate(entries)
+    ]
+    obj = {"version": 1, "chunkSize": chunk_size, "horseLists": horse_lists}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as fp:
+        json.dump(obj, fp, ensure_ascii=False, separators=(",", ":"))
+        fp.write("\n")
+
+
+def detail_chunk_filename(chunk_index: int) -> str:
+    """detail chunk のファイル名（3桁ゼロ埋め）。"""
+    return f"dabimasFactor.details.{chunk_index:03d}.json"
+
+
+def write_details(dir_path: Path, entries: list[dict], chunk_size: int) -> int:
+    """detail chunk 群を書き出し、chunk 数を返す。各 detail は id と descendants のみ。"""
+    dir_path.mkdir(parents=True, exist_ok=True)
+    num_chunks = (len(entries) + chunk_size - 1) // chunk_size if entries else 0
+
+    # 件数が減って chunk 数が前回より少なくなった場合に、古い chunk ファイルが
+    # 残らないよう、生成対象外の dabimasFactor.details.*.json を先に掃除する。
+    for stale in dir_path.glob("dabimasFactor.details.*.json"):
+        m = re.search(r"dabimasFactor\.details\.(\d+)\.json$", stale.name)
+        if m and int(m.group(1)) >= num_chunks:
+            stale.unlink()
+
+    for chunk_index in range(num_chunks):
+        start = chunk_index * chunk_size
+        chunk_entries = entries[start:start + chunk_size]
+        horse_details = [
+            {"id": entry["id"], "descendants": entry["descendants"]} for entry in chunk_entries
+        ]
+        obj = {"version": 1, "chunkIndex": chunk_index, "horseDetails": horse_details}
+        out_path = dir_path / detail_chunk_filename(chunk_index)
+        with out_path.open("w", encoding="utf-8", newline="\n") as fp:
+            json.dump(obj, fp, ensure_ascii=False, separators=(",", ":"))
+            fp.write("\n")
+    return num_chunks
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     """CLI エントリポイント。成功時0、`--fail-on-error` 条件で1を返す。"""
     # CLI の流れ: 引数解析 -> URL収集 -> ページ解析 -> 出力書き込み。
@@ -596,6 +728,22 @@ def main(argv: Optional[list[str]] = None) -> int:
         description="Excel 依存なしで dabimasFactor.json を生成する。"
     )
     parser.add_argument("--output", default="dabimasFactor.json", help="出力 JSON パス。")
+    parser.add_argument(
+        "--summary-output",
+        default=None,
+        help="任意: summary JSON（descendants 抜き・id/detailChunk 入り）の出力パス。",
+    )
+    parser.add_argument(
+        "--details-output-dir",
+        default=None,
+        help="任意: detail chunk（id + descendants）の出力ディレクトリ。",
+    )
+    parser.add_argument(
+        "--detail-chunk-size",
+        type=int,
+        default=128,
+        help="detail chunk 1 ファイルあたりの件数（デフォルト128）。",
+    )
     parser.add_argument(
         "--all-output",
         default=None,
@@ -620,11 +768,18 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     output_path = Path(args.output)
+    summary_output_path = Path(args.summary_output) if args.summary_output else None
+    details_output_dir = Path(args.details_output_dir) if args.details_output_dir else None
+    chunk_size = max(1, args.detail_chunk_size)
     all_output_path = Path(args.all_output) if args.all_output else None
     urls_file = Path(args.urls_file) if args.urls_file else None
 
     # 出力前に親ディレクトリを作成する。
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    if summary_output_path is not None:
+        summary_output_path.parent.mkdir(parents=True, exist_ok=True)
+    if details_output_dir is not None:
+        details_output_dir.mkdir(parents=True, exist_ok=True)
     if all_output_path is not None:
         all_output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -644,6 +799,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     print(f"target urls: {len(urls)}")
     print(f"output: {output_path}")
     print(f"workers: {workers}")
+    if summary_output_path:
+        print(f"summary-output: {summary_output_path}")
+    if details_output_dir:
+        print(f"details-output-dir: {details_output_dir} (chunk-size {chunk_size})")
     if urls_file is not None:
         print(f"urls-file: {urls_file}")
     if all_output_path:
@@ -654,6 +813,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     errors = 0
     stallion_last_name = ""
     stallion_last_ability = ""
+    # summary / details を後段でまとめて書くため、書き出し順に entry を保持する。
+    # （full JSON は従来どおりストリーム書き込み。entry 約 2,800 件はメモリ上問題ない）
+    need_split_output = summary_output_path is not None or details_output_dir is not None
+    entries: list[dict] = []
 
     all_fp = all_output_path.open("w", encoding="utf-8", newline="\n") if all_output_path else None
 
@@ -723,6 +886,9 @@ def main(argv: Optional[list[str]] = None) -> int:
                     out.write(serialized)
                     first = False
 
+                    if need_split_output:
+                        entries.append(entry)
+
                     if all_fp is not None:
                         all_fp.write(
                             json.dumps(all_row_to_sparse_dict(row), ensure_ascii=False, separators=(",", ":"))
@@ -739,6 +905,25 @@ def main(argv: Optional[list[str]] = None) -> int:
         if all_fp is not None:
             all_fp.close()
         fetcher.close()
+
+    # summary / details の書き出し（指定時のみ）。
+    if need_split_output:
+        # id 一意性チェック（指摘 A / テスト計画 E）。重複は致命的なので即エラー終了。
+        id_counts: dict[str, int] = {}
+        for entry in entries:
+            id_counts[entry["id"]] = id_counts.get(entry["id"], 0) + 1
+        duplicate_ids = {hid: n for hid, n in id_counts.items() if n > 1}
+        if duplicate_ids:
+            sample = list(duplicate_ids.items())[:5]
+            print(f"[error] duplicate horse ids detected: {sample} (total {len(duplicate_ids)})")
+            return 1
+
+        if summary_output_path is not None:
+            write_summary(summary_output_path, entries, chunk_size)
+            print(f"summary written: {summary_output_path} ({len(entries)} horses)")
+        if details_output_dir is not None:
+            num_chunks = write_details(details_output_dir, entries, chunk_size)
+            print(f"details written: {details_output_dir} ({num_chunks} chunks)")
 
     print(f"done: written={written}, skipped={skipped}, errors={errors}")
     if args.fail_on_error and errors > 0:

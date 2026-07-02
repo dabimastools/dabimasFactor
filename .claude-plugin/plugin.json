@@ -1,0 +1,14 @@
+{
+  "name": "dabimas-skills",
+  "skills": [
+    "./skills/engineering/diagnosing-bugs",
+    "./skills/engineering/tdd",
+    "./skills/engineering/implement",
+    "./skills/engineering/prototype",
+    "./skills/engineering/code-review",
+    "./skills/engineering/resolving-merge-conflicts",
+    "./skills/productivity/grill-me",
+    "./skills/productivity/grilling",
+    "./skills/productivity/handoff"
+  ]
+}
