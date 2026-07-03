@@ -68,15 +68,36 @@ function Test-GuardRules {
     }
   }
 
+  # During the index-split-completion-plan Phase 4 migration, root app methods
+  # move from index.html into vue/app/**/*.js incrementally. Check required
+  # snippets against the concatenation of index.html + vue/app/**/*.js so the
+  # guard keeps passing throughout that migration (BOM/mojibake checks above
+  # still apply only to $FilePath itself).
+  $projectRoot = Join-Path $scriptRoot ".."
+  $appJsDir = Join-Path $projectRoot "vue\app"
+  $combined = $raw
+  if (Test-Path -LiteralPath $appJsDir) {
+    $appJsFiles = Get-ChildItem -LiteralPath $appJsDir -Filter "*.js" -Recurse -File
+    foreach ($appJsFile in $appJsFiles) {
+      $combined += "`n" + (Get-Content -LiteralPath $appJsFile.FullName -Raw -Encoding UTF8)
+    }
+  }
+
+  # "watch:" / "methods:" intentionally omit the trailing "{" here: Phase 4
+  # rewrites these from inline object literals ("methods: {") to
+  # "methods: Object.assign({}, window.Dabimas.app.methods, {" and eventually
+  # "watch: window.Dabimas.app.watch,". Checking just the key name keeps the
+  # guard meaningful (still catches an accidentally deleted key) across every
+  # intermediate shape.
   $requiredSnippets = @(
-    "watch: {",
-    "methods: {",
+    "watch:",
+    "methods:",
     "handleCombinationCellClick: function () {",
     "combinationDialog: function () {",
     "this.dispButtonName = value%2 === 0 ?"
   )
   foreach ($snippet in $requiredSnippets) {
-    if (-not $raw.Contains($snippet)) {
+    if (-not $combined.Contains($snippet)) {
       $errors.Add("Required snippet missing: $snippet")
     }
   }

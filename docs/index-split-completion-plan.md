@@ -32,7 +32,7 @@
 | 3-3 | `desktop-horse-autocomplete.js` 分離 | **完了**（2026-07-03） |
 | 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | **実装・自動検証完了。実機確認待ち**（2026-07-03） |
 | 3-5 | `horse-cell` へのリネーム（任意: emit 化） | **完了**（2026-07-03。emit化は任意のため未実施） |
-| 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | 未着手 |
+| 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | **完了**（2026-07-03） |
 | 4-1 | methods スライス: ui-viewport | 未着手 |
 | 4-2 | methods スライス: combination / storage | 未着手 |
 | 4-3 | methods スライス: horse-loading | 未着手 |
@@ -70,6 +70,11 @@
   **★停止ポイント: このコミット完了後、ユーザーに実機（iPhone + flick IME）での検索動作確認を依頼し、OK が出るまで Phase 3-5 以降に進まない。** 確認してほしい操作: ダイアログを開く→flickで2文字以上入力→候補が絞り込まれる→候補タップで反映されダイアログが閉じる→クリア→閉じる。加えて、クロス発生セル（バックパサー等）のモバイル表示で馬名が赤字太字になっていることも見た目で確認してほしい（今回の設計変更点の実地検証）。
   → **2026-07-03 ユーザーより実機確認OKの回答を受領。Phase 3-5 以降へ進行可。**
 - **2026-07-03**: Phase 3-5 完了・Phase 3 全体完了。コンポーネント登録名を `common-autocomplete` → `horse-cell` にリネームし、`pedigree-row.js` のテンプレートタグ（`<horse-cell>`）と各ファイルの説明コメント（`horseSelectionOptions` 含む）を現状に追随させた。任意項目（function props → event emit 化）は計画書どおり実施しなかった（本計画のゴールに影響しないため）。検証: verify-index-exp OK、コンソールエラー0件、S1・S2がベースラインと完全一致、PC/モバイルの画面表示・モバイルダイアログ開閉ともに正常動作を確認。**次に着手すべきは Phase 4-0（`vue/app/` 足場＋guard スクリプト更新。Phase 4 開始前の必須の先行作業）。**
+- **2026-07-03**: Phase 4-0 完了。`scripts/codex-powershell.ps1` の `Test-GuardRules` を「index.html + vue/app/**/*.js を連結した文字列」に対して必須スニペットを検査する方式に変更（BOM/mojibake検査は対象ファイルのみのまま）。`"watch: {"` / `"methods: {"` は `"watch:"` / `"methods:"` に緩和（Phase 4 の途中で `methods: {` → `methods: Object.assign({}, window.Dabimas.app.methods, {` → 最終的に `methods: Object.assign({}, window.Dabimas.app.methods)` と形が変わるため、キー名の存在だけを見る）。AGENTS.md にもクロスファイル検査になったことを追記。
+
+  **重大な落とし穴（要記録）**: guardスクリプトへ追加した日本語コメント入りの新コードを保存した直後、`verify-index-exp` が `The variable '$projectRoot' cannot be retrieved because it has not been set.` という一見無関係なエラーで毎回失敗するようになった。原因はコード自体のバグではなく、`codex-powershell.ps1` が UTF-8 (BOMなし) で日本語コメントを含むように変更されたため、Windows PowerShell 5.1 (`powershell.exe`、pwsh.exe ではない) がこのファイルをシステム既定コードページで読み込み、マルチバイト文字列を誤読して以降のパース位置がずれたこと。**対処**: このファイル（`.ps1`）に追加するコメントは日本語を避け英語で書く（既存の英語オンリーの規約に合わせる）ことで解消した。**今後 `scripts/*.ps1` に手を入れる際は、BOMなしUTF-8で日本語コメントを追加すると同様の現象が再発しうるので、英語コメントを使うか事前にBOM付きで保存すること。**
+
+  index.html 側は `window.Dabimas.app = window.Dabimas.app || {}; window.Dabimas.app.methods = window.Dabimas.app.methods || {};` を boot スクリプトに追加し、root app の `methods: {` を `methods: Object.assign({}, window.Dabimas.app.methods, {` に、閉じ側の `},` を `}),` に変更（全メソッドはこの時点では全部インラインのまま）。検証: 更新後のverify-index-expがBOM仕込みファイルで失敗・スニペット欠落ファイルで失敗・vue/app配下に該当スニペットがあれば成功、という3パターンを手動テストで確認。実アプリはverify-index-exp OK、コンソールエラー0件、S1がベースラインと完全一致。**次に着手すべきは Phase 4-1（methodsスライス: ui-viewport）。**
 
 
 

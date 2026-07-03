@@ -440,6 +440,11 @@
     window.Dabimas = window.Dabimas || {};
     window.Dabimas.debug = window.Dabimas.debug || false;
 
+    // Phase 4（root app 分割）の足場。methods はここへ段階的に外部化していく
+    // （vue/app/methods/*.js が Object.assign 先として使う）。
+    window.Dabimas.app = window.Dabimas.app || {};
+    window.Dabimas.app.methods = window.Dabimas.app.methods || {};
+
     // 実機デバッグ用の一時計測: 通常は捕まえていない例外/rejectionも
     // 画面上部の赤いメッセージ欄（horseDetailError）に出して、devtoolsが無い
     // 端末でも原因文言を直接読めるようにする。
@@ -741,7 +746,7 @@
         this.clearMobileViewportLayoutTimers();
       },
 
-      methods: {
+      methods: Object.assign({}, window.Dabimas.app.methods, {
         // インブリード例外ルールを読み込む
         getStableViewportHeight: function () {
           const docEl = document.documentElement || {};
@@ -2738,7 +2743,7 @@
           // 最後に配列に馬リストの配列にセットする
           this.horseDataLists = [this.horses, this.stallions, this.broodmares];
         },
-      },
+      }),
     });
   </script>
 </html>
