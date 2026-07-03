@@ -50,188 +50,19 @@
     <!-- 非同期処理が完了した後に表示するコンテンツ -->
     <v-app id="app" :class="{ 'exp-mobile-layout': isCompactMobileLayout }">
       <header ref="appHeader">
-        <table width="100%" style="border-collapse: collapse">
-          <tbody v-if="$vuetify.breakpoint.mdAndUp">
-            <tr>
-              <th rowspan="3" class="f00_nitro_space"></th>
-              <th width="1%" rowspan="3" class="f00_nitro">
-                <span>ニトロ</span>
-              </th>
-              <th colspan="14" class="f00_nitro_header"></th>
-              <th rowspan="3" class="f00_inbreed_space"></th>
-              <th width="1%" rowspan="3" class="f00_inbreed" @click="handleClick()">
-                <span>クロス</span>
-              </th>
-              <th colspan="14" class="f00_inbreed_header"></th>
-              <th v-if="dispCategory % 2 === 0" rowspan="2" class="table_footer_TH_theory">理論</th>
-              <th v-else rowspan="2" class="table_footer_TH_theory">子系統数</th>
-              <th
-                rowspan="3"
-                width="3%"
-                :style="combinationCellStyle"
-                @click="handleCombinationCellClick"
-              >
-                <v-icon size="x-large" color="white">mdi-horse-variant</v-icon>
-              </th>
-              <th
-                rowspan="3"
-                width="3%"
-                @click="initializer()"
-                style="background-color: #aa0000; cursor: pointer"
-              >
-                <v-icon size="x-large" color="white">mdi-reload</v-icon>
-              </th>
-            </tr>
-            <tr class="f00">
-              <th width="1%" class="f01">短</th>
-              <th class="f02">速</th>
-              <th class="f03">底</th>
-              <th class="f04">長</th>
-              <th class="f11">走</th>
-              <th class="f12">中</th>
-              <th class="f13">強</th>
-              <th class="f14">雷</th>
-              <th class="f09">堅</th>
-              <th class="f10">難</th>
-              <th class="f05">適</th>
-              <th class="f06">丈</th>
-              <th class="f07">早</th>
-              <th class="f08">晩</th>
-              <th class="f01">短</th>
-              <th class="f02">速</th>
-              <th class="f03">底</th>
-              <th class="f04">長</th>
-              <th class="f11">走</th>
-              <th class="f12">中</th>
-              <th class="f13">強</th>
-              <th class="f14">雷</th>
-              <th class="f09">堅</th>
-              <th class="f10">難</th>
-              <th class="f05">適</th>
-              <th class="f06">丈</th>
-              <th class="f07">早</th>
-              <th class="f08">晩</th>
-            </tr>
-            <tr>
-              <th class="factorNumCell">{{factorNumtoString[0]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[1]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[2]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[3]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[10]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[11]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[12]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[13]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[8]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[9]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[4]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[5]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[6]}}</th>
-              <th class="factorNumCell">{{factorNumtoString[7]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[0]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[1]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[2]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[3]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[10]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[11]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[12]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[13]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[8]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[9]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[4]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[5]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[6]}}</th>
-              <th class="factorNumCell">{{inbreedFactorNumtoString[7]}}</th>
-              <th v-if="dispCategory % 2 === 0" :class="styleThoeryClass"></th>
-              <th v-else >{{categoryNumtoString}}</th>
-            </tr>
-          </tbody>
-
-          <tbody v-if="$vuetify.breakpoint.smAndDown">
-            <tr>
-              <td colspan="2" class="exp-mobile-screenshot-cell">
-                <button
-                  type="button"
-                  class="exp-mobile-screenshot-button"
-                  :disabled="isCapturingScreenshot"
-                  aria-label="Save screenshot"
-                  title="Save screenshot"
-                  data-html2canvas-ignore="true"
-                  @click.stop.prevent="captureMobileScreenshot"
-                >
-                  <v-icon small color="white">mdi-camera</v-icon>
-                </button>
-              </td>
-              <td class="f01">短</td>
-              <td class="f02">速</td>
-              <td class="f03">底</td>
-              <td class="f04">長</td>
-              <td class="f11">走</td>
-              <td class="f12">中</td>
-              <td class="f13">強</td>
-              <td class="f14">雷</td>
-              <td class="f09">堅</td>
-              <td class="f10">難</td>
-              <td class="f05">適</td>
-              <td class="f06">丈</td>
-              <td class="f07">早</td>
-              <td class="f08">晩</td>
-              <th v-if="dispCategory % 2 === 0" class="f00_theory">理論</th>
-              <th v-else class="f00_theory">子系統</th>
-            </tr>
-            <tr class="mobile-nitro-header-row">
-              <td colspan="16" class="f00_nitro_header"></td>
-              <td v-if="dispCategory % 2 === 0" rowspan="2" :class="['mobile-nitro-rowspan', styleThoeryClass]" align="center"></td>
-              <td v-else rowspan="2" align="center" class="mobile-nitro-rowspan">{{categoryNumtoString}}</td>
-
-            </tr>
-            <tr class="mobile-nitro-value-row">
-              <td class="f00_nitro" colspan="2">ニトロ</td>
-              <td class="factorNumCell">{{factorNumtoString[0]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[1]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[2]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[3]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[10]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[11]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[12]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[13]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[8]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[9]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[4]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[5]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[6]}}</td>
-              <td class="factorNumCell">{{factorNumtoString[7]}}</td>
-            </tr>
-            <tr class="mobile-cross-header-row">
-              <td colspan="16" class="f00_inbreed_header"></td>
-              <td v-if="dispCategory % 2 === 0" rowspan="2" @click="initializer()" class="mobile-cross-rowspan" style="background-color: #aa0000" align="center"><v-icon size="large" color="white">mdi-reload</v-icon></td>
-              <td
-                v-else
-                rowspan="2"
-                :style="combinationCellStyle"
-                align="center"
-                class="mobile-cross-rowspan"
-                @click="handleCombinationCellClick"
-              ><v-icon size="large" color="white">mdi-horse-variant</v-icon></td>
-            </tr>
-            <tr class="mobile-cross-value-row">
-              <td colspan="2" class="f00_inbreed">クロス</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[0]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[1]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[2]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[3]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[10]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[11]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[12]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[13]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[8]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[9]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[4]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[5]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[6]}}</td>
-              <td class="factorNumCell">{{inbreedFactorNumtoString[7]}}</td>
-            </tr>            <!-- ここから下がいらない -->
-          </tbody>
-        </table>
+        <factor-summary-header
+          :factor-nums="factorNumtoString"
+          :inbreed-factor-nums="inbreedFactorNumtoString"
+          :category-num="categoryNumtoString"
+          :theory-class="styleThoeryClass"
+          :disp-category="dispCategory"
+          :combination-cell-style="combinationCellStyle"
+          :is-capturing-screenshot="isCapturingScreenshot"
+          @toggle-category="handleClick"
+          @combination-open="handleCombinationCellClick"
+          @reset="initializer"
+          @capture-screenshot="captureMobileScreenshot"
+        ></factor-summary-header>
       </header>
 
       <!-- 配合保存ダイアログ -->
@@ -319,6 +150,7 @@
   <script src="./vue/components/pedigree/pedigree-row.js"></script>
   <script src="./vue/components/pedigree/pedigree-table.js"></script>
   <script src="./vue/components/pedigree/pedigree-card.js"></script>
+  <script src="./vue/components/header/factor-summary-header.js"></script>
 
   <script src="./vue/app/app-state.js"></script>
   <script src="./vue/app/app-computed.js"></script>

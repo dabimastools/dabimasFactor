@@ -1,5 +1,5 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260703-24';
+var CACHE_NAME = 'dabimas-factor-v20260703-25';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
 var APP_SHELL_URL = BASE_PATH + 'index.html';
 // プリキャッシュは「実行時に実際に使われるもの」だけに絞る。
@@ -8,7 +8,7 @@ var APP_SHELL_URL = BASE_PATH + 'index.html';
 // - source map（*.map）と未リンクの vuetify.min.css は実行時に不要なので除外。
 // - js/css は cache-first（後述）で初回アクセス時に runtime cache されるため、
 //   ここに載せていないもの（factor-dialog.css 等）もオフライン対応される。
-// - vue/**/*.js は index.html が読み込む全ファイル（39本、index-split-completion-plan.md
+// - vue/**/*.js は index.html が読み込む全ファイル（42本、index-split-completion-plan.md
 //   Phase 5-1 の棚卸しで index.html の <script src> と Glob vue/**/*.js が完全一致することを
 //   確認済み）を index.html の読み込み順（＝依存順）のまま列挙する。
 var urlsToCache = [
@@ -56,6 +56,7 @@ var urlsToCache = [
   BASE_PATH + 'vue/components/pedigree/pedigree-row.js',
   BASE_PATH + 'vue/components/pedigree/pedigree-table.js',
   BASE_PATH + 'vue/components/pedigree/pedigree-card.js',
+  BASE_PATH + 'vue/components/header/factor-summary-header.js',
   BASE_PATH + 'vue/app/app-state.js',
   BASE_PATH + 'vue/app/app-computed.js',
   BASE_PATH + 'vue/app/app-lifecycle.js',
