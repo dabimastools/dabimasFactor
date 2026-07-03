@@ -43,7 +43,7 @@
 | 4-8 | app-state.js（data 外部化） | **完了**（2026-07-03） |
 | 4-9 | app-computed.js（computed / watch 外部化） | **完了**（2026-07-03） |
 | 4-10 | app-lifecycle.js（created / mounted / beforeDestroy） | **完了**（2026-07-03） |
-| 4-11 | app-options.js + main.js（new Vue の外部化） | 未着手 |
+| 4-11 | app-options.js + main.js（new Vue の外部化） | **完了**（2026-07-03。Phase 4 の総合検証ポイント） |
 | 4-12 | boot.js（初期ローダ・SW 登録・iOS viewport）※任意 | 未着手 |
 | 5-1 | service worker precache 整合＋総合検証 | 未着手 |
 | 5-2 | ドキュメント更新・統合版向け対応表の確定 | 未着手 |
@@ -85,6 +85,7 @@
 - **2026-07-03**: Phase 4-8 完了。`data()` の戻り値オブジェクト（105行）を `window.Dabimas.app.createInitialState()` として `vue/app/app-state.js` へ外部化。モジュールスコープ定数 `INDEX_GENERATION_ASSIGNMENTS` をIIFE先頭で再宣言。「rowConfigsをあえて宣言しない」等の非リアクティブプロパティに関する注意コメントもファイル冒頭に引き継いだ（data には追加していない）。index.html側は `data() { return window.Dabimas.app.createInitialState(); },` の3行になった。scriptタグをmethods/*.jsより前に追加。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、S6（`initializer()`によるリセット）も正常動作を確認。**次に着手すべきは Phase 4-9（app-computed.js。computed/watchの外部化）。**
 - **2026-07-03**: Phase 4-9 完了。computed（rowConfigsOptimized〜rowDisplayOptions、8件）とwatch（dispCategory）を `window.Dabimas.app.computed` / `window.Dabimas.app.watch` として `vue/app/app-computed.js` へ外部化。モジュールスコープ定数への依存なし（`this.INDEX_GENERATION_ASSIGNMENTS`はdataプロパティ経由で参照済み）。index.html側は `computed: window.Dabimas.app.computed, watch: window.Dabimas.app.watch,` の2行になった。Phase 4-0のguard緩和（`"watch: {"` → `"watch:"`）がここで実際に効くことを確認（`watch: window.Dabimas.app.watch,`でもverify-index-exp OK）。検証: S1完全一致、コンソールエラー0件、`dispCategory`切替による`dispButtonName`（"子系統"⇔"因　子"）のwatch動作を確認。**次に着手すべきは Phase 4-10（app-lifecycle.js。created/mounted/beforeDestroyの外部化）。**
 - **2026-07-03**: Phase 4-10 完了。created / mounted / beforeDestroyを `window.Dabimas.app.lifecycle = { created, mounted, beforeDestroy }` として `vue/app/app-lifecycle.js` へ外部化。**逐語移動の唯一の例外**として、mounted内のbareな`scheduleInitialLoaderHide()`呼び出し（2箇所）をboot script側で公開した `window.Dabimas.boot.scheduleInitialLoaderHide()` に置換（計画書§8.5で明示されていた対応）。boot script側には `window.Dabimas.boot.scheduleInitialLoaderHide = scheduleInitialLoaderHide;` を追加。index.html側は `created: window.Dabimas.app.lifecycle.created, mounted: ..., beforeDestroy: ...,` の3行になった。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、初期ローダが正しく非表示になること（`#loader`要素に`loaded`クラス付与）、モバイルリサイズ時のイベントリスナ（onViewportGeometryChangeHandler等）が正常動作しレイアウトも崩れないことを確認。**次に着手すべきは Phase 4-11（app-options.js + main.js。new Vueの外部化）。**
+- **2026-07-03**: Phase 4-11 完了。`vue/app/app-options.js`（`window.Dabimas.app.createAppOptions()`がdata/computed/watch/lifecycle/methodsを束ねるだけのオプション組み立て）と `vue/app/main.js`（グローバルエラーハンドラ＋`new Vue(...)`本体）を作成。`var __debugAppInstance` → `window.__debugAppInstance`への明示代入に変更（検証ハーネス互換）。index.htmlから`new Vue({...})`とエラーハンドラを削除し、scriptタグ（app-options.jsはpedigree-cells.jsの後、main.jsはインラインscriptの最後）を追加。guardスクリプトはPhase 4-0のクロスファイル検査のままで対応（追加変更不要、verify-index-exp OKで確認）。**この時点がPhase 4の総合検証ポイント**: S1(基本クロス)〜S6(リセット)全シナリオ、PC/モバイル画面表示、モバイルIMEシミュレーション（候補80件）、配合保存ダイアログ、初期ローダ非表示、リサイズ時イベントリスナ、全てコンソールエラー0件でベースラインと完全一致することを確認。**次に着手すべきは Phase 4-12（boot.js。任意）または Phase 5-1（service worker precache整合＋総合検証）。**
 
 
 

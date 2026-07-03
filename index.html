@@ -330,6 +330,7 @@
   <script src="./vue/app/methods/selection.js"></script>
   <script src="./vue/app/methods/inbreed-ui.js"></script>
   <script src="./vue/app/methods/pedigree-cells.js"></script>
+  <script src="./vue/app/app-options.js"></script>
 
   <script>
     //loadingAnimation
@@ -463,43 +464,8 @@
     window.Dabimas.app = window.Dabimas.app || {};
     window.Dabimas.app.methods = window.Dabimas.app.methods || {};
 
-    // 実機デバッグ用の一時計測: 通常は捕まえていない例外/rejectionも
-    // 画面上部の赤いメッセージ欄（horseDetailError）に出して、devtoolsが無い
-    // 端末でも原因文言を直接読めるようにする。
-    var __debugAppInstance = null;
-    window.addEventListener("error", function (event) {
-      if (__debugAppInstance && typeof __debugAppInstance.notifyHorseDetailError === "function") {
-        __debugAppInstance.notifyHorseDetailError(
-          "DEBUG error: " + (event.message || "unknown") + " @ " + (event.filename || "") + ":" + (event.lineno || "")
-        );
-      }
-    });
-    window.addEventListener("unhandledrejection", function (event) {
-      if (__debugAppInstance && typeof __debugAppInstance.notifyHorseDetailError === "function") {
-        var reason = event.reason;
-        var msg = reason && reason.message ? reason.message : String(reason);
-        __debugAppInstance.notifyHorseDetailError("DEBUG rejection: " + msg);
-      }
-    });
-
-    __debugAppInstance = new Vue({
-      el: "#app",
-      vuetify: new Vuetify(),
-
-      data() {
-        return window.Dabimas.app.createInitialState();
-      },
-      computed: window.Dabimas.app.computed,
-      watch: window.Dabimas.app.watch,
-
-      created: window.Dabimas.app.lifecycle.created,
-      mounted: window.Dabimas.app.lifecycle.mounted,
-      beforeDestroy: window.Dabimas.app.lifecycle.beforeDestroy,
-
-      methods: Object.assign({}, window.Dabimas.app.methods, {
-      }),
-    });
   </script>
+  <script src="./vue/app/main.js"></script>
 </html>
 <!--
 【最適化のまとめ】
