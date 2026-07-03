@@ -198,8 +198,7 @@ Vue.component('factor-dialog', {
       if (!label) {
         return '';
       }
-      // factorMapはグローバルスコープにあると想定
-      const code = factorMap.get(label) || '';
+      const code = window.Dabimas.logic.factor.factorMap.get(label) || '';
       return code && code !== '00' ? `f${code}` : '';
     },
     isManualFactorSelected(value) {

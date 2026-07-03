@@ -1,5 +1,5 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260703-25';
+var CACHE_NAME = 'dabimas-factor-v20260704-07';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
 var APP_SHELL_URL = BASE_PATH + 'index.html';
 // プリキャッシュは「実行時に実際に使われるもの」だけに絞る。
@@ -121,12 +121,20 @@ function createNetworkRequest(request) {
 }
 
 // install cache
+// cache: 'reload' で明示的にブラウザのHTTPキャッシュをバイパスする。
+// これがないと、CACHE_NAME を bump してもブラウザ側が古いレスポンスを
+// ヒューリスティックにキャッシュしていた場合、そのまま新しいキャッシュに
+// 古い内容が入ってしまい、デプロイしても更新が反映されないことがある。
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then(function (cache) {
-        return cache.addAll(urlsToCache);
+        return cache.addAll(
+          urlsToCache.map(function (url) {
+            return new Request(url, { cache: 'reload' });
+          })
+        );
       })
       .then(function () {
         return self.skipWaiting();
@@ -152,7 +160,11 @@ self.addEventListener('fetch', function (event) {
           if (cachedResponse) {
             return cachedResponse;
           }
-          return fetch(event.request).then(function (networkResponse) {
+          // urlsToCache に載っていない静的アセット（factor-dialog.css 等）は
+          // ここで初めて実際にfetchされる。cache:'reload' を指定しないと
+          // ブラウザのHTTPキャッシュ（ヒューリスティック鮮度）から古い応答を
+          // 拾ってしまい、CACHE_NAME を bump しても更新が反映されないことがある。
+          return fetch(new Request(event.request, { cache: 'reload' })).then(function (networkResponse) {
             return updateCache(cache, event.request, networkResponse).then(function () {
               return networkResponse;
             });

@@ -655,3 +655,35 @@
   font-size: 12px;
   color: #607282;
 }
+
+/* ===== 因子選択ダイアログ（vue/factor-dialog.js）モバイル調整 ===== */
+/* Vuetifyの .v-dialog { margin: 24px; width: 100% } はflexアイテムとして
+   margin込みで縮められるため、width/max-widthだけ広げても効かない。
+   marginを削って実際の表示幅を広げる。max-widthはinline style優先のため!important。 */
+.exp-mobile-layout .refined-factor-dialog {
+  margin: 8px !important;
+  max-width: calc(100vw - 16px) !important;
+}
+
+.exp-mobile-layout .refined-factor-dialog .dialog-header {
+  padding: 14px 18px;
+}
+
+.exp-mobile-layout .refined-factor-dialog .horse-name-display {
+  margin-bottom: 4px;
+}
+
+.exp-mobile-layout .refined-factor-dialog .horse-name {
+  font-size: 16px;
+}
+
+.exp-mobile-layout .refined-factor-dialog .dialog-subtitle {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* select本体とヒントテキストの間隔を広げ、開いたドロップダウンとの被りを防ぐ */
+.exp-mobile-layout .refined-factor-dialog .selection-info {
+  margin-top: 20px;
+}
+
