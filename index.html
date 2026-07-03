@@ -263,114 +263,27 @@
           <v-row class="mx-1" align-content="center">
             <!-- <v-spacer class="my-1 px-0 mx-0 my-0" /> -->
             <!-- xsを設定できないので↓のようなカンジで -->
-            <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
-              <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
-                <div class="pedigree-card-table-wrap">
-                  <table class="table_main">
-                    <colgroup>
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-horse-col" />
-                      <col class="exp-mobile-generation-col" />
-                      <col class="exp-mobile-parentline-col" />
-                      <col class="exp-mobile-inbreed-col" />
-                      <col class="exp-mobile-factor-col" />
-                      <col class="exp-mobile-factor-col" />
-                      <col class="exp-mobile-factor-col" />
-                    </colgroup>
-                    <tbody>
-                    <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
-                    <tr
-                      is="pedigree-row"
-                      v-for="config in rowConfigs"
-                      :key="config.index"
-                      :config="config"
-                      :disp-color="dispColor"
-                      :selected="selected"
-                      :horse-data-lists="horseDataLists"
-                      :on-change="onChange"
-                      :disp-category="dispCategory"
-                      :category="category"
-                      :inputed="inputed"
-                      :memo-change="memoChange"
-                      :get-css="getCss"
-                      :index-generation-assignments="INDEX_GENERATION_ASSIGNMENTS"
-                      :style-parent-line-classes="styleParentLineClasses"
-                      :parent-lines="parentLines"
-                      :style-inbreed-button-classes="styleInbreedButtonClasses"
-                      :is-inbreed-button-clicked="isInbreedButtonClicked"
-                      :reload="reload"
-                      :handle-inbreed-button-click="handleInbreedButtonClick"
-                      :size="size"
-                      :style-factor-classes="styleFactorClasses"
-                      :factor-name="factorName"
-                      :on-manual-factor-update="applyManualFactors"
-                      :disp-button-name="dispButtonName"
-                      :on-toggle-category="handleClick"
-                    ></tr>
-                    </tbody>
-                  </table>
-                </div>
-                <v-spacer class="my-1 px-0 mx-0 my-0" />
-              </v-card>
-            </v-col>
+            <pedigree-card
+              side="stallion"
+              :rows="rowConfigs"
+              :row-states="stallionRowStates"
+              :horse-options="horseSelectionOptions"
+              :display-options="rowDisplayOptions"
+              @inbreed-toggle="onRowInbreedToggle"
+              @manual-factor-update="onRowManualFactorUpdate"
+              @toggle-category="handleClick"
+            ></pedigree-card>
             <!-- xsを設定できないので↓のようなカンジで -->
-            <v-col sm="12" md="6" lg="6" xl="6" cols="12" class="pedigree-card-col">
-              <v-card elevation="3" align-content="center" class="custom-card pedigree-card-shell">
-                <!-- 繫殖牝馬側 -->
-                <div class="pedigree-card-table-wrap">
-                  <table class="table_main">
-                    <colgroup>
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-label-col" />
-                      <col class="exp-mobile-horse-col" />
-                      <col class="exp-mobile-generation-col" />
-                      <col class="exp-mobile-parentline-col" />
-                      <col class="exp-mobile-inbreed-col" />
-                      <col class="exp-mobile-factor-col" />
-                      <col class="exp-mobile-factor-col" />
-                      <col class="exp-mobile-factor-col" />
-                    </colgroup>
-                    <tbody>
-                    <!-- 最適化: rowConfigsは変更されないためv-onceの代わりにキーを使用 -->
-                    <tr
-                      is="pedigree-row"
-                      v-for="config in rowConfigsBloodmare"
-                      :key="config.index"
-                      :config="config"
-                      :disp-color="dispColor"
-                      :selected="selected"
-                      :horse-data-lists="horseDataLists"
-                      :on-change="onChange"
-                      :disp-category="dispCategory"
-                      :category="category"
-                      :inputed="inputed"
-                      :memo-change="memoChange"
-                      :get-css="getCss"
-                      :index-generation-assignments="INDEX_GENERATION_ASSIGNMENTS"
-                      :style-parent-line-classes="styleParentLineClasses"
-                      :parent-lines="parentLines"
-                      :style-inbreed-button-classes="styleInbreedButtonClasses"
-                      :is-inbreed-button-clicked="isInbreedButtonClicked"
-                      :reload="reload"
-                      :handle-inbreed-button-click="handleInbreedButtonClick"
-                      :size="size"
-                      :style-factor-classes="styleFactorClasses"
-                      :factor-name="factorName"
-                      :on-manual-factor-update="applyManualFactors"
-                      :disp-button-name="dispButtonName"
-                      :on-toggle-category="handleClick"
-                    ></tr>
-                    </tbody>
-                  </table>
-                </div>
-                <!-- <v-spacer class="my-1 px-0 mx-0 my-0" /> -->
-              </v-card>
-            </v-col>
+            <pedigree-card
+              side="broodmare"
+              :rows="rowConfigsBloodmare"
+              :row-states="broodmareRowStates"
+              :horse-options="horseSelectionOptions"
+              :display-options="rowDisplayOptions"
+              @inbreed-toggle="onRowInbreedToggle"
+              @manual-factor-update="onRowManualFactorUpdate"
+              @toggle-category="handleClick"
+            ></pedigree-card>
           </v-row>
         </v-container>
       </main>
@@ -378,14 +291,31 @@
   </body>
 
   <script src="./vue/vue.min.js"></script>
+  <script src="./vue/logic/storage/combination-storage.js"></script>
   <script src="./vue/CombinationDialog.js"></script>
   <script src="./vue/vuetify.js"></script>
   <script src="./vue/factor-dialog.js"></script>
 
+  <script src="./vue/constants/pedigree-indexes.js"></script>
+  <script src="./vue/constants/parent-lines.js"></script>
+  <script src="./vue/constants/factor-definitions.js"></script>
+  <script src="./vue/logic/pedigree/pedigree-css.js"></script>
+  <script src="./vue/logic/factor/factor-map.js"></script>
+  <script src="./vue/logic/factor/factor-counts.js"></script>
+  <script src="./vue/logic/factor/manual-factors.js"></script>
+  <script src="./vue/logic/pedigree/row-configs.js"></script>
+  <script src="./vue/logic/pedigree/pedigree-selection.js"></script>
+  <script src="./vue/logic/horses/horse-search.js"></script>
+  <script src="./vue/logic/storage/local-storage.js"></script>
+  <script src="./vue/logic/theory/compatibility.js"></script>
+  <script src="./vue/logic/pedigree/pedigree-builder.js"></script>
+  <script src="./vue/components/pedigree/pedigree-table.js"></script>
+  <script src="./vue/components/pedigree/pedigree-card.js"></script>
+
   <!-- index.html 内、</table> の前あたり etc. -->
   <script type="text/x-template" id="pedigree-row-template">
     <tr>
-      <template v-for="cell in config.headCells" :key="cell.key">
+      <template v-for="cell in row.headCells" :key="cell.key">
         <td
           :class="cell.class"
           :rowspan="cell.rowspan"
@@ -395,43 +325,43 @@
         >{{ cell.text }}</td>
       </template>
 
-      <td :class="config.autoClass" :colspan="config.autoColspan">
+      <td :class="row.autoClass" :colspan="row.autoColspan">
         <common-autocomplete
-          :class="rowDispColor"
-          :index="config.index"
-          :selected="selected"
-          :horses="horseDataLists"
-          :on-change="onChange"
-          :disp-category="dispCategory"
-          :category="category"
-          :inputed="inputed"
-          :memo-change="memoChange"
+          :class="rowState.rowColorClass"
+          :index="row.index"
+          :selected="horseOptions.selected"
+          :horses="horseOptions.lists"
+          :on-change="horseOptions.onChange"
+          :disp-category="horseOptions.dispCategory"
+          :category="horseOptions.category"
+          :inputed="horseOptions.inputed"
+          :memo-change="horseOptions.memoChange"
         />
       </td>
 
-      <td :class="[getCss(config.index), 'styleFactorClassMain']">
-        {{ generationLabel }}
+      <td :class="rowState.generationCellClass">
+        {{ rowState.generationLabel }}
       </td>
 
-      <td :class="parentLineClass">
+      <td :class="rowState.parentLineClass">
         <span class="styleParentLineText">
-          {{ config.showParentLine ? parentLineText : '' }}
+          {{ row.showParentLine ? rowState.parentLineText : '' }}
         </span>
       </td>
 
-      <td :class="inbreedButtonClass">
+      <td :class="rowState.inbreedButtonClass">
         <template v-if="$vuetify.breakpoint.smAndDown">
           <button
-            v-if="btnState === -1"
+            v-if="rowState.inbreedButtonState === -1"
             type="button"
             class="exp-mobile-icon-btn"
-            @click="handleInbreedButtonClick(config.index)"
+            @click="onInbreedButtonClick"
           ><i class="mdi mdi-heart-outline"></i></button>
           <button
-            v-else-if="btnState === 1"
+            v-else-if="rowState.inbreedButtonState === 1"
             type="button"
             class="exp-mobile-icon-btn exp-mobile-icon-btn--active"
-            @click="handleInbreedButtonClick(config.index)"
+            @click="onInbreedButtonClick"
           ><i class="mdi mdi-heart"></i></button>
           <button
             v-else
@@ -442,27 +372,27 @@
         </template>
         <template v-else>
           <v-btn
-            v-if="btnState === -1"
-            :key="reload"
-            @click="handleInbreedButtonClick(config.index)"
+            v-if="rowState.inbreedButtonState === -1"
+            :key="displayOptions.reload"
+            @click="onInbreedButtonClick"
             icon
-            v-bind="size"
+            v-bind="displayOptions.size"
           ><v-icon>mdi-heart-outline</v-icon></v-btn>
           <v-btn
-            v-else-if="btnState === 1"
-            :key="reload"
-            @click="handleInbreedButtonClick(config.index)"
+            v-else-if="rowState.inbreedButtonState === 1"
+            :key="displayOptions.reload"
+            @click="onInbreedButtonClick"
             icon
             color="pink"
-            v-bind="size"
+            v-bind="displayOptions.size"
           ><v-icon>mdi-heart</v-icon></v-btn>
           <v-btn
             v-else
-            :key="reload"
+            :key="displayOptions.reload"
             icon
             color="pink"
             disabled
-            v-bind="size"
+            v-bind="displayOptions.size"
           ><v-icon>mdi-heart</v-icon></v-btn>
         </template>
       </td>
@@ -470,20 +400,20 @@
       <template v-if="rowIndex === 16">
         <td
           colspan="3"
-          :class="(styleFactorClasses[rowIndex] && styleFactorClasses[rowIndex][0]) || factorClasses[0]"
+          :class="rowState.factorClasses[0]"
         >
           <button
             v-if="$vuetify.breakpoint.smAndDown"
             type="button"
             class="exp-mobile-text-btn"
             @click="handleToggleCategory"
-          >{{ dispButtonName || '' }}</button>
-          <v-btn v-else variant="outlined" block @click="handleToggleCategory">{{ dispButtonName || '' }}</v-btn>
+          >{{ displayOptions.dispButtonName || '' }}</button>
+          <v-btn v-else variant="outlined" block @click="handleToggleCategory">{{ displayOptions.dispButtonName || '' }}</v-btn>
         </td>
       </template>
       <template v-else>
         <td
-          :class="factorClasses[0]"
+          :class="rowState.factorClasses[0]"
           :colspan="shouldCollapseFactors ? 3 : null"
         >
           <template v-if="shouldCollapseFactors">
@@ -512,7 +442,7 @@
               </v-btn>
             </template>
             <template v-else>
-              {{ factorTexts[0] }}
+              {{ rowState.factorTexts[0] }}
             </template>
           </template>
 
@@ -525,19 +455,19 @@
           ></factor-dialog>
         </td>
         <template v-if="!shouldCollapseFactors">
-          <td 
-            :class="factorClasses[1]"
+          <td
+            :class="rowState.factorClasses[1]"
             :style="isStarSelection ? 'cursor: pointer' : ''"
             @click.stop.prevent="isStarSelection ? openFactorDialog() : null"
           >
-            {{ factorTexts[1] }}
+            {{ rowState.factorTexts[1] }}
           </td>
-          <td 
-            :class="factorClasses[2]"
+          <td
+            :class="rowState.factorClasses[2]"
             :style="isStarSelection ? 'cursor: pointer' : ''"
             @click.stop.prevent="isStarSelection ? openFactorDialog() : null"
           >
-            {{ factorTexts[2] }}
+            {{ rowState.factorTexts[2] }}
           </td>
         </template>
       </template>
@@ -637,80 +567,20 @@
       }
     }
 
-    const INDEX_GENERATION_ASSIGNMENTS = [
-      '①',' ②',' ③',' ③',' ④',' ④',' ④',' ④',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',
-      '①',' ②',' ③',' ③',' ④',' ④',' ④',' ④',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',' ⑤',
-    ];
-    Object.freeze(INDEX_GENERATION_ASSIGNMENTS);
+    // 血統表の行位置に関する定数は vue/constants/pedigree-indexes.js に外部化済み。
+    const INDEX_GENERATION_ASSIGNMENTS = window.Dabimas.constants.pedigreeIndexes.INDEX_GENERATION_ASSIGNMENTS;
+    const INDEX_TO_ROW_NUMBER = window.Dabimas.constants.pedigreeIndexes.INDEX_TO_ROW_NUMBER;
+    const ROWS_PER_SIDE = window.Dabimas.constants.pedigreeIndexes.ROWS_PER_SIDE;
 
-    // 上から①〜⑯の連番をindex番号にマッピング
-    // rowConfigs の表示順: [0, 1, 2, 4, 8, 9, 5, 10, 11, 3, 6, 12, 13, 7, 14, 15]
-    const INDEX_TO_ROW_NUMBER = [
-      '①', '②', '③', '⑩', '④', '⑦', '⑪', '⑭', '⑤', '⑥', '⑧', '⑨', '⑫', '⑬', '⑮', '⑯',
-      '①', '②', '③', '⑩', '④', '⑦', '⑪', '⑭', '⑤', '⑥', '⑧', '⑨', '⑫', '⑬', '⑮', '⑯',
-    ];
-    Object.freeze(INDEX_TO_ROW_NUMBER);
-
-    // 始祖
-    const founder = [
-      {key:"Intent" ,value:"インテント系"},
-      {key:"エタン" ,value:"エタン系"},
-      {key:"Owen Tudor" ,value:"オーエンテューダー系"},
-      {key:"Aureole" ,value:"オリオール系"},
-      {key:"Khaled" ,value:"カーレッド系"},
-      {key:"Clarion" ,value:"クラリオン系"},
-      {key:"Grey Sovereign" ,value:"グレイソヴリン系"},
-      {key:"Sir Gaylord" ,value:"サーゲイロード系"},
-      {key:"Son-in-Law" ,value:"サンインロー系"},
-      {key:"Swynford" ,value:"スインフォード系"},
-      {key:"ゼダーン" ,value:"ゼダーン系"},
-      {key:"St.Simon" ,value:"セントサイモン系"},
-      {key:"Sovereign Path" ,value:"ソヴリンパス系"},
-      {key:"ダンテ" ,value:"ダンテ系"},
-      {key:"Teddy" ,value:"テディ系"},
-      {key:"Tourbillon" ,value:"トウルビヨン系"},
-      {key:"Tom Fool" ,value:"トムフール系"},
-      {key:"Nasrullah" ,value:"ナスルーラ系"},
-      {key:"Nearctic" ,value:"ニアークティック系"},
-      {key:"ネアルコ" ,value:"ネアルコ系"},
-      {key:"ネイティヴダンサー" ,value:"ネイティヴダンサー系"},
-      {key:"Never Say Die" ,value:"ネヴァーセイダイ系"},
-      {key:"Never Bend" ,value:"ネヴァーベンド系"},
-      {key:"ノーザンダンサー" ,value:"ノーザンダンサー系"},
-      {key:"ハイペリオン" ,value:"ハイペリオン系"},
-      {key:"ハビタット" ,value:"ハビタット系"},
-      {key:"Fine Top" ,value:"ファイントップ系"},
-      {key:"Phalaris" ,value:"ファラリス系"},
-      {key:"Pharis" ,value:"ファリス系"},
-      {key:"Pharos" ,value:"ファロス系"},
-      {key:"Fairway" ,value:"フェアウェイ系"},
-      {key:"Fair Trial" ,value:"フェアトライアル系"},
-      {key:"フォルティノ" ,value:"フォルティノ系"},
-      {key:"Brantome" ,value:"ブラントーム系"},
-      {key:"Blandford" ,value:"ブランドフォード系"},
-      {key:"Princequillo" ,value:"プリンスキロ系"},
-      {key:"Prince Bio" ,value:"プリンスビオ系"},
-      {key:"Princely Gift" ,value:"プリンスリーギフト系"},
-      {key:"Prince Rose" ,value:"プリンスローズ系"},
-      {key:"Blenheim" ,value:"ブレニム系"},
-      {key:"ヘイルトゥリーズン" ,value:"ヘイルトゥリーズン系"},
-      {key:"ボールドルーラー" ,value:"ボールドルーラー系"},
-      {key:"Bois Roussel" ,value:"ボワルセル系"},
-      {key:"My Babu" ,value:"マイバブー系"},
-      {key:"Man o'War" ,value:"マンノウォー系"},
-      {key:"Mossborough" ,value:"モスボロー系"},
-      {key:"Ribot" ,value:"リボー系"},
-      {key:"Raise a Native" ,value:"レイズアネイティヴ系"},
-      {key:"Red God" ,value:"レッドゴッド系"},
-      {key:"Relic" ,value:"レリック系"},
-      {key:"Royal Charger" ,value:"ロイヤルチャージャー系"},
-      {key:"Rockefella" ,value:"ロックフェラ系"},
-      {key:"ワイルドリスク" ,value:"ワイルドリスク系"},
-    ]
-    const factorMap = new Map();
-    const manualFactorOptions = ["短", "速", "底", "長", "堅", "難"];
+    // 始祖リストは vue/constants/parent-lines.js に外部化済み（現状 index.html からは未参照）。
+    const founder = window.Dabimas.constants.parentLines.FOUNDER;
+    // 因子名→コードの変換Mapは vue/logic/factor/factor-map.js で生成済みのものを使う。
+    const factorMap = window.Dabimas.logic.factor.factorMap;
+    // 手動因子で選べる因子名一覧は vue/constants/factor-definitions.js に外部化済み。
+    const manualFactorOptions = window.Dabimas.constants.factorDefinitions.MANUAL_FACTOR_OPTIONS;
     const MANUAL_INBREED_STORAGE_KEY = "dabimasManualInbreed";
-    const horseSearchIndexCache = new WeakMap();
+    // 検索文字列の正規化・絞り込みは vue/logic/horses/horse-search.js に外部化済み
+    // （horseSearchIndexCache もそちら側に移動済み）。
     // v-forの:key用に、馬オブジェクトごとの一意で安定したキーを採番する。
     // データにはid空＋同名(キタサンブラック等)で内容が完全一致する馬が複数あり、
     // 内容ベースのkeyだとVueのkeyed diffが重複keyで破綻してリストが正しく
@@ -718,68 +588,54 @@
     const horseListKeyCache = new WeakMap();
     let horseListKeySeq = 0;
 
-    // crypto.randomUUID() は secure context（HTTPS / localhost）でしか使えない。
-    // LAN IPへの素のHTTPアクセス（実機テスト等）では crypto.randomUUID が
-    // 存在せず即例外になるため、getRandomValues（secure context不要）ベースの
-    // フォールバックを用意する。
-    function generateUuid() {
-      if (
-        typeof crypto !== "undefined" &&
-        typeof crypto.randomUUID === "function"
-      ) {
-        return crypto.randomUUID();
-      }
-      if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
-        const bytes = crypto.getRandomValues(new Uint8Array(16));
-        bytes[6] = (bytes[6] & 0x0f) | 0x40;
-        bytes[8] = (bytes[8] & 0x3f) | 0x80;
-        const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0"));
-        return (
-          hex.slice(0, 4).join("") +
-          "-" +
-          hex.slice(4, 6).join("") +
-          "-" +
-          hex.slice(6, 8).join("") +
-          "-" +
-          hex.slice(8, 10).join("") +
-          "-" +
-          hex.slice(10, 16).join("")
-        );
-      }
-      // 最終手段（crypto自体が無い極めて古い環境向け）
-      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      });
-    }
+    // generateUuid は vue/logic/pedigree/pedigree-builder.js に外部化済み
+    // （setDataForPedigree からしか使われていなかったため、一緒に移動）。
 
+    /**
+     * このコンポーネントの役割:
+     * - 血統表の1行だけを描画する。種牡馬側・繁殖牝馬側のどちらでも同じものを使う。
+     * - row（行の形。headCells・結合セル数・親系統表示可否など、行が変わらない限り
+     *   不変）と rowState（今この行に表示する値。選択馬名・因子・インブリード状態など、
+     *   root app の状態が変わるたびに作り直される）を分けて受け取る。
+     * - horseOptions は「馬を選ぶ／メモを書く」セル（common-autocomplete、Phase5で分割予定）が
+     *   必要とする、行をまたぐ情報（選択済み一覧・候補一覧・保存用コールバック等）の詰め合わせ。
+     * - displayOptions はボタンサイズ・:key用のreload値・子系統ボタンのラベルなど、
+     *   表示の微調整に使う値の詰め合わせ。
+     *
+     * このコンポーネントに置かない処理:
+     * - 保存、fetch、IndexedDB、localStorage、血統計算、インブリード判定。
+     * - 種牡馬側か繁殖牝馬側かの判定（row.index と row.showParentLine から外側で決まる）。
+     *
+     * 分けている理由:
+     * - root app の selected / factorName / styleFactorClasses などの配列名を
+     *   直接知っていると、配列の持ち方を変えるたびにこの行コンポーネントも
+     *   直す必要が出る。rowState という「完成品」だけを受け取る形にして、
+     *   将来の変更をここに波及させない。
+     */
     Vue.component('pedigree-row', {
       template: '#pedigree-row-template',
       props: {
-        config: { type: Object, required: true },
-        dispColor: Array,
-        selected: Object,
-        horseDataLists: Array,
-        onChange: Function,
-        dispCategory: Array,
-        category: Array,
-        inputed: Array,
-        memoChange: Function,
-        getCss: Function,
-        indexGenerationAssignments: Array,
-        styleParentLineClasses: Array,
-        parentLines: Array,
-        styleInbreedButtonClasses: Array,
-        isInbreedButtonClicked: Array,
-        reload: Number,
-        handleInbreedButtonClick: Function,
-        size: Object,
-        styleFactorClasses: Array,
-        factorName: Array,
-        onManualFactorUpdate: Function,
-        dispButtonName: String,
-        onToggleCategory: Function,
+        /**
+         * row は「この行の形」。例: 先頭に父母セルが何個あるか、馬名セルを何列分にするか。
+         * vue/logic/pedigree/row-configs.js が作る、行が変わらない限り変化しない値。
+         */
+        row: { type: Object, required: true },
+        /**
+         * rowState は「この行の中身」。選ばれている馬名、因子、ハートボタンの状態など。
+         * vue/logic/pedigree/pedigree-selection.js が root app の32行ぶんの配列から
+         * この行の分だけ切り出して作る。
+         */
+        rowState: { type: Object, required: true },
+        /**
+         * horseOptions は馬選択・メモ入力セル（common-autocomplete）に橋渡しする値の束。
+         * common-autocomplete 自体の分割は Phase5 で行うため、ここでは詰め替えだけを行う。
+         */
+        horseOptions: { type: Object, required: true },
+        /**
+         * displayOptions はボタンサイズ・reload（:key用）・子系統ボタンのラベルなど、
+         * 表示にだけ関わる値の束。
+         */
+        displayOptions: { type: Object, default: () => ({}) },
       },
       data() {
         return {
@@ -789,83 +645,22 @@
       computed: {
         rowIndex() {
           const value =
-            this.config && typeof this.config.index !== "undefined"
-              ? this.config.index
+            this.row && typeof this.row.index !== "undefined"
+              ? this.row.index
               : 0;
           const index = Number(value);
           return Number.isFinite(index) ? index : 0;
         },
-        btnState() {
-          const states = this.isInbreedButtonClicked || [];
-          const value = states[this.rowIndex];
-          return typeof value === "number" ? value : 0;
-        },
-        rowDispColor() {
-          const colors = this.dispColor || [];
-          return colors[this.rowIndex] || "";
-        },
-        parentLineClass() {
-          const classes = this.styleParentLineClasses || [];
-          const current = classes[this.rowIndex];
-          if (current && current.trim() !== "") {
-            return current;
-          }
-          return this.defaultParentLineClass;
-        },
-        parentLineText() {
-          const lines = this.parentLines || [];
-          return lines[this.rowIndex] || "";
-        },
-        inbreedButtonClass() {
-          const classes = this.styleInbreedButtonClasses || [];
-          const current = classes[this.rowIndex];
-          if (current && current.trim() !== "") {
-            return current;
-          }
-          return this.defaultInbreedButtonClass;
-        },
-        factorClasses() {
-          const classes =
-            (this.styleFactorClasses && this.styleFactorClasses[this.rowIndex]) ||
-            [];
-          const fallbackClass = this.defaultFactorClass;
-          return [
-            classes[0] && classes[0] !== "00" ? classes[0] : fallbackClass,
-            classes[1] && classes[1] !== "00" ? classes[1] : fallbackClass,
-            classes[2] && classes[2] !== "00" ? classes[2] : fallbackClass,
-          ];
-        },
-        factorTexts() {
-          const names =
-            (this.factorName && this.factorName[this.rowIndex]) || [];
-          return [
-            names[0] || "",
-            names[1] || "",
-            names[2] || "",
-          ];
-        },
         selectedHorseName() {
-          const selectedList = Array.isArray(this.selected)
-            ? this.selected
-            : [];
-          const item = selectedList[this.rowIndex];
-          const name = typeof item?.name === "string" ? item.name : "";
-          return name.trim();
+          return (this.rowState && this.rowState.selectedHorseName) || "";
         },
         isStarSelection() {
           const name = this.selectedHorseName;
           return !!name && name.startsWith("★");
         },
         hasConfiguredFactorClasses() {
-          if (
-            !Array.isArray(this.styleFactorClasses) ||
-            !Array.isArray(this.styleFactorClasses[this.rowIndex])
-          ) {
-            return false;
-          }
-          return this.styleFactorClasses[this.rowIndex].some((value) =>
-            /^f\d{2}/.test((value || "").trim())
-          );
+          const classes = (this.rowState && this.rowState.factorClasses) || [];
+          return classes.some((value) => /^f\d{2}/.test((value || "").trim()));
         },
         shouldCollapseFactors() {
           return this.isStarSelection && !this.hasConfiguredFactorClasses;
@@ -873,33 +668,14 @@
         shouldShowFirstFactorButton() {
           return this.isStarSelection && this.hasConfiguredFactorClasses;
         },
-        defaultFactorClass() {
-          if (typeof this.getCss !== "function") {
-            return "styleFactorClassMain";
-          }
-          const baseClass = this.getCss(this.rowIndex) || "";
-          return `${baseClass} styleFactorClassMain`.trim();
-        },
-        defaultParentLineClass() {
-          if (typeof this.getCss !== "function") {
-            return "styleParentLine";
-          }
-          const baseClass = this.getCss(this.rowIndex) || "";
-          return `${baseClass} styleParentLine`.trim();
-        },
-        defaultInbreedButtonClass() {
-          if (typeof this.getCss !== "function") {
-            return "styleInbreedButton";
-          }
-          const baseClass = this.getCss(this.rowIndex) || "";
-          return `${baseClass} styleInbreedButton`.trim();
-        },
-        generationLabel() {
-          const assignments = this.indexGenerationAssignments || [];
-          return assignments[this.rowIndex] || "";
-        },
       },
       methods: {
+        // ハートボタンを押した後の再集計・保存は親（root app）の仕事。
+        // この部品で全部やると種牡馬側・繁殖牝馬側で使い回せなくなるため、
+        // ここでは「何行目が押されたか」だけを親に伝える。
+        onInbreedButtonClick() {
+          this.$emit("inbreed-toggle", { index: this.rowIndex });
+        },
         openFactorDialog() {
           if (!this.isStarSelection) {
             return;
@@ -907,22 +683,23 @@
           this.factorDialogVisible = true;
         },
         handleFactorConfirm(selectedFactors) {
-          if (typeof this.onManualFactorUpdate === "function") {
-            this.onManualFactorUpdate(
-              this.rowIndex,
-              selectedFactors
-            );
-          }
+          // dialog は「選んだ結果」を返すだけ。どの行のどの状態に反映するかは
+          // root app の仕事なので、行番号とセットで返す。
+          this.$emit("manual-factor-update", {
+            index: this.rowIndex,
+            factors: selectedFactors,
+          });
         },
         handleToggleCategory() {
-          if (typeof this.onToggleCategory === "function") {
-            this.onToggleCategory();
-          }
+          this.$emit("toggle-category");
         },
         extractCurrentManualFactors() {
-          return [this.factorTexts[1], this.factorTexts[2]]
+          const manualFactorOptions =
+            window.Dabimas.constants.factorDefinitions.MANUAL_FACTOR_OPTIONS;
+          const texts = (this.rowState && this.rowState.factorTexts) || [];
+          return [texts[1], texts[2]]
             .map((value) => (typeof value === "string" ? value.trim() : ""))
-            .filter((value) => value && ['短', '速', '底', '長', '堅', '難'].includes(value));
+            .filter((value) => value && manualFactorOptions.includes(value));
         },
       },
     });
@@ -1128,400 +905,16 @@
       beforeDestroy() {
         this.clearMobileQuerySyncTimer();
       },
+      // 注意: 以前ここに getStableViewportHeight / applyMobileViewportLayout /
+      // captureMobileScreenshot 等（root app 側と同名の重複コード、約369行）があったが、
+      // このコンポーネントのテンプレート・他メソッドのどこからも呼ばれていない
+      // 到達不能コードだったため削除した（実際に使われているのは root app 側のみ）。
       methods: {
-        getStableViewportHeight: function () {
-          const docEl = document.documentElement || {};
-          const body = document.body || {};
-          const candidates = [
-            Number(window.innerHeight) || 0,
-            Number(docEl.clientHeight) || 0,
-            Number(body.clientHeight) || 0,
-          ];
-          if (window.visualViewport) {
-            candidates.push(Number(window.visualViewport.height) || 0);
-          }
-          return Math.max(
-            0,
-            ...candidates
-              .filter((value) => Number.isFinite(value) && value > 0)
-              .map((value) => Math.floor(value))
-          );
-        },
-        getStableViewportWidth: function () {
-          const docEl = document.documentElement || {};
-          const body = document.body || {};
-          const candidates = [
-            Number(window.innerWidth) || 0,
-            Number(docEl.clientWidth) || 0,
-            Number(body.clientWidth) || 0,
-          ];
-          if (window.visualViewport) {
-            candidates.push(Number(window.visualViewport.width) || 0);
-          }
-          return Math.max(
-            0,
-            ...candidates
-              .filter((value) => Number.isFinite(value) && value > 0)
-              .map((value) => Math.floor(value))
-          );
-        },
-        buildScreenshotFileName: function () {
-          const now = new Date();
-          const pad = (value) => String(value).padStart(2, "0");
-          return [
-            "dabimas",
-            now.getFullYear(),
-            pad(now.getMonth() + 1),
-            pad(now.getDate()),
-            "-",
-            pad(now.getHours()),
-            pad(now.getMinutes()),
-            pad(now.getSeconds()),
-            ".png",
-          ].join("");
-        },
-        canvasToPngBlob: function (canvas) {
-          return new Promise((resolve) => {
-            canvas.toBlob((blob) => resolve(blob), "image/png");
-          });
-        },
-        downloadScreenshotBlob: function (blob, filename) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = filename;
-          link.rel = "noopener";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(url), 30000);
-        },
-        saveScreenshotBlob: async function (blob, filename) {
-          if (
-            typeof File === "function" &&
-            navigator.share &&
-            navigator.canShare
-          ) {
-            const file = new File([blob], filename, { type: "image/png" });
-            if (navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                files: [file],
-                title: "dabimas",
-              });
-              return;
-            }
-          }
-          this.downloadScreenshotBlob(blob, filename);
-        },
-        loadHtml2Canvas: function () {
-          if (typeof window.html2canvas === "function") {
-            return Promise.resolve(window.html2canvas);
-          }
-          if (this.html2CanvasLoadPromise) {
-            return this.html2CanvasLoadPromise;
-          }
-
-          this.html2CanvasLoadPromise = new Promise((resolve, reject) => {
-            const script = document.createElement("script");
-            script.src = "./cdn/html2canvas.min.js";
-            script.async = true;
-            script.onload = () => {
-              if (typeof window.html2canvas === "function") {
-                resolve(window.html2canvas);
-              } else {
-                this.html2CanvasLoadPromise = null;
-                reject(new Error("html2canvas is not available"));
-              }
-            };
-            script.onerror = () => {
-              this.html2CanvasLoadPromise = null;
-              reject(new Error("Failed to load html2canvas"));
-            };
-            document.head.appendChild(script);
-          });
-
-          return this.html2CanvasLoadPromise;
-        },
-        captureMobileScreenshot: async function () {
-          if (!this.$vuetify.breakpoint.smAndDown || this.isCapturingScreenshot) {
-            return;
-          }
-
-          this.isCapturingScreenshot = true;
-          try {
-            const html2canvas = await this.loadHtml2Canvas();
-            this.applyMobileViewportLayout();
-            await this.$nextTick();
-            await new Promise((resolve) => {
-              requestAnimationFrame(() => requestAnimationFrame(resolve));
-            });
-
-            const target = this.$el;
-            const rect = target.getBoundingClientRect();
-            const width = Math.ceil(rect.width);
-            const height = Math.ceil(rect.height);
-            const scale = Math.min(window.devicePixelRatio || 1, 3);
-            const canvas = await html2canvas(target, {
-              backgroundColor: "#ffffff",
-              scale,
-              width,
-              height,
-              windowWidth: Math.max(document.documentElement.clientWidth, width),
-              windowHeight: Math.max(document.documentElement.clientHeight, height),
-              scrollX: -window.scrollX,
-              scrollY: -window.scrollY,
-              ignoreElements: (element) =>
-                element.hasAttribute("data-html2canvas-ignore"),
-            });
-            const blob = await this.canvasToPngBlob(canvas);
-            if (!blob) {
-              throw new Error("Failed to create screenshot blob");
-            }
-            await this.saveScreenshotBlob(blob, this.buildScreenshotFileName());
-          } catch (error) {
-            if (!error || error.name !== "AbortError") {
-              console.error("Screenshot capture failed:", error);
-              alert("Failed to save screenshot.");
-            }
-          } finally {
-            this.isCapturingScreenshot = false;
-          }
-        },
-        clearMobileViewportGeometryTimer: function () {
-          if (this.mobileViewportGeometryTimerId !== null) {
-            clearTimeout(this.mobileViewportGeometryTimerId);
-            this.mobileViewportGeometryTimerId = null;
-          }
-        },
-        isEditableElement: function (element) {
-          if (!element) {
-            return false;
-          }
-          if (element.isContentEditable) {
-            return true;
-          }
-          const tagName = typeof element.tagName === "string"
-            ? element.tagName.toLowerCase()
-            : "";
-          return tagName === "input" || tagName === "textarea";
-        },
-        shouldForceResetMobileViewportLock: function (viewportHeight) {
-          if (!(viewportHeight > 0)) {
-            return false;
-          }
-          if (!this.lockedMobileAppHeight || viewportHeight >= this.lockedMobileAppHeight) {
-            return true;
-          }
-          const shrinkAmount = this.lockedMobileAppHeight - viewportHeight;
-          if (shrinkAmount <= 140) {
-            return true;
-          }
-          const activeElement = typeof document !== "undefined"
-            ? document.activeElement
-            : null;
-          return !this.isEditableElement(activeElement);
-        },
-        clearMobileViewportLayoutTimers: function () {
-          if (!Array.isArray(this.mobileViewportLockTimerIds)) {
-            this.mobileViewportLockTimerIds = [];
-            return;
-          }
-          this.mobileViewportLockTimerIds.forEach((timerId) => {
-            clearTimeout(timerId);
-          });
-          this.mobileViewportLockTimerIds = [];
-        },
-        queueMobileViewportLayoutRetry: function (delay) {
-          if (!this.$vuetify.breakpoint.smAndDown) {
-            return;
-          }
-          const timerId = setTimeout(() => {
-            this.applyMobileViewportLayout();
-          }, delay);
-          this.mobileViewportLockTimerIds.push(timerId);
-        },
-        scheduleInitialMobileViewportLayout: function () {
-          if (!this.$vuetify.breakpoint.smAndDown) {
-            return;
-          }
-          this.clearMobileViewportLayoutTimers();
-          [0, 160, 480, 960, 1600, 2400].forEach((delay) => {
-            const timerId = setTimeout(() => {
-              this.refreshMobileViewportLock(delay === 0);
-            }, delay);
-            this.mobileViewportLockTimerIds.push(timerId);
-          });
-        },
-        refreshMobileViewportLock: function (forceReset) {
-          if (!this.$vuetify.breakpoint.smAndDown) {
-            return;
-          }
-          const viewportHeight = this.getStableViewportHeight();
-          if (!(viewportHeight > 0)) {
-            return;
-          }
-          const shouldForceReset =
-            forceReset || this.shouldForceResetMobileViewportLock(viewportHeight);
-          if (shouldForceReset || !this.lockedMobileAppHeight) {
-            this.lockedMobileAppHeight = viewportHeight;
-          } else {
-            this.lockedMobileAppHeight = Math.max(
-              this.lockedMobileAppHeight,
-              viewportHeight
-            );
-          }
-          this.windowSize = this.getStableViewportHeight();
-          this.$nextTick(() => {
-            this.applyMobileViewportLayout();
-          });
-        },
-        applyMobileViewportLayout: function () {
-          const app = this.$el;
-          if (!app) {
-            return;
-          }
-          const rowEl =
-            app.querySelector("main .container > .spacer > .row.mx-1") ||
-            app.querySelector("main .container > .row.mx-1");
-          const cardCols = Array.from(
-            app.querySelectorAll(".pedigree-card-col")
-          );
-
-          if (!this.$vuetify.breakpoint.smAndDown) {
-            if (rowEl) {
-              rowEl.style.removeProperty("grid-template-rows");
-            }
-            cardCols.forEach((col) => {
-              col.style.removeProperty("height");
-              const card = col.querySelector(".pedigree-card-shell");
-              if (card) {
-                card.style.removeProperty("height");
-              }
-            });
-            return;
-          }
-          if (!rowEl || cardCols.length !== 2) {
-            this.queueMobileViewportLayoutRetry(120);
-            return;
-          }
-          if (!this.lockedMobileAppHeight) {
-            this.lockedMobileAppHeight = this.getStableViewportHeight();
-          }
-          const viewportHeight = this.lockedMobileAppHeight;
-          const headerEl = this.$refs.appHeader;
-          const headerHeight = headerEl
-            ? Math.ceil(headerEl.getBoundingClientRect().height)
-            : 0;
-          const mainHeight = Math.max(120, viewportHeight - headerHeight);
-
-          app.style.setProperty("--exp-mobile-app-height", `${viewportHeight}px`);
-          app.style.setProperty("--exp-mobile-main-height", `${mainHeight}px`);
-
-          void app.offsetHeight;
-
-          const container = app.querySelector("main .container");
-          const containerStyle = container
-            ? window.getComputedStyle(container)
-            : null;
-          const containerPaddingHeight =
-            containerStyle
-              ? (parseFloat(containerStyle.paddingTop) || 0) +
-                (parseFloat(containerStyle.paddingBottom) || 0)
-              : 0;
-          const rowStyle = rowEl ? window.getComputedStyle(rowEl) : null;
-          const rowGap = rowStyle ? parseFloat(rowStyle.rowGap) || 0 : 0;
-          const safetyPerCard = 8;
-          const layoutSafety = 12;
-
-          const measuredCards = cardCols
-            .map((col) => {
-              const card = col.querySelector(".pedigree-card-shell");
-              if (!card) {
-                return null;
-              }
-              const toolbar = card.querySelector(".pedigree-card-toolbar");
-              const tableWrap = card.querySelector(".pedigree-card-table-wrap");
-              const toolbarRect = toolbar
-                ? toolbar.getBoundingClientRect()
-                : { height: 0 };
-              const tableRect = tableWrap
-                ? tableWrap.getBoundingClientRect()
-                : { height: 0 };
-              const cardStyle = window.getComputedStyle(card);
-              const toolbarHeight = Math.ceil(toolbarRect.height || 0);
-              const tableHeight = Math.ceil(tableRect.height || 0);
-              const borderHeight =
-                (parseFloat(cardStyle.borderTopWidth) || 0) +
-                (parseFloat(cardStyle.borderBottomWidth) || 0) +
-                safetyPerCard;
-              return {
-                col,
-                card,
-                toolbarHeight,
-                tableHeight,
-                borderHeight,
-              };
-            })
-            .filter(Boolean);
-          if (
-            measuredCards.length !== cardCols.length ||
-            measuredCards.some((value) => value.tableHeight <= 0)
-          ) {
-            this.queueMobileViewportLayoutRetry(120);
-            return;
-          }
-
-          const fixedHeight =
-            containerPaddingHeight +
-            rowGap +
-            layoutSafety +
-            measuredCards.reduce(
-              (sum, value) => sum + value.toolbarHeight + value.borderHeight,
-              0
-            );
-          const rowHeight = Math.max(8, (mainHeight - fixedHeight) / 32);
-          const cardHeights = measuredCards.map(
-            (value) => rowHeight * 16 + value.toolbarHeight + value.borderHeight
-          );
-
-          if (rowEl && cardHeights.length === measuredCards.length) {
-            rowEl.style.gridTemplateRows = cardHeights
-              .map((height) => `${height}px`)
-              .join(" ");
-          }
-          measuredCards.forEach((value, index) => {
-            const height = cardHeights[index];
-            value.col.style.height = `${height}px`;
-            value.card.style.height = `${height}px`;
-          });
-
-          this.mobileRowHeight = rowHeight;
-          app.style.setProperty("--exp-mobile-row-height", `${rowHeight}px`);
-        },
         normalizeSearchText(text) {
-          if (typeof text !== "string") {
-            return "";
-          }
-
-          return text
-            .normalize("NFKC")
-            .trim()
-            .toLowerCase()
-            .replace(/[\u3000\s]+/g, "")
-            .replace(/[\u30A1-\u30F6]/g, (char) =>
-              String.fromCharCode(char.charCodeAt(0) - 0x60)
-            );
+          return window.Dabimas.logic.horses.normalizeSearchText(text);
         },
         getHorseKey(horse) {
-          if (!horse) {
-            return "";
-          }
-          return [
-            horse.id || "",
-            horse.name || "",
-            horse.subName || "",
-            horse.ruby || "",
-          ].join("|");
+          return window.Dabimas.logic.horses.getHorseKey(horse);
         },
         // v-forの:key専用。馬オブジェクトのinstance単位で一意かつ安定なキーを返す。
         // （内容一致の重複馬でもkeyが衝突しないようにし、keyed diffの破綻を防ぐ）
@@ -1537,68 +930,19 @@
           return key;
         },
         getHorseBaseText(horse) {
-          if (!horse) {
-            return "";
-          }
-          const natureTag = horse.nature ? `[${horse.nature.charAt(0)}]` : "";
-          return [natureTag, horse.name || "", horse.subName || ""]
-            .filter(Boolean)
-            .join("");
+          return window.Dabimas.logic.horses.getHorseBaseText(horse);
         },
         getHorseSelectedText(horse) {
           return this.getHorseBaseText(horse);
         },
         getHorseSearchIndexText(horse) {
-          if (!horse || typeof horse !== "object") {
-            return "";
-          }
-          const cached = horseSearchIndexCache.get(horse);
-          if (typeof cached === "string") {
-            return cached;
-          }
-          const searchText = this.normalizeSearchText(
-            [
-              this.getHorseBaseText(horse),
-              horse.name || "",
-              horse.subName || "",
-              horse.ruby || "",
-              horse.nature || "",
-            ]
-              .filter(Boolean)
-              .join("|")
-          );
-          horseSearchIndexCache.set(horse, searchText);
-          return searchText;
+          return window.Dabimas.logic.horses.getHorseSearchIndexText(horse);
         },
         getHorseFactorBadges(horse) {
-          const factors = Array.isArray(horse?.factors) ? horse.factors : [];
-          return factors
-            .map((value, index) => {
-              const text = typeof value === "string" ? value.trim() : "";
-              if (!text) {
-                return null;
-              }
-              const code = factorMap.get(text) ?? "00";
-              return {
-                key: `${code}-${text}-${index}`,
-                text,
-                className: code !== "00" ? `f${code}` : "",
-              };
-            })
-            .filter(Boolean);
+          return window.Dabimas.logic.horses.getHorseFactorBadges(horse);
         },
         filterHorse(horse, queryText, itemText) {
-          if (horse?.disabled) {
-            return false;
-          }
-
-          const normalizedQuery = this.normalizeSearchText(queryText);
-
-          if (!normalizedQuery) {
-            return true;
-          }
-
-          return this.getHorseSearchIndexText(horse).includes(normalizedQuery);
+          return window.Dabimas.logic.horses.filterHorse(horse, queryText, itemText);
         },
         getWidth(index, type) {
           let coefficient = 0;
@@ -1975,6 +1319,11 @@
     Vue.config.performance = true;
     Vue.config.productionTip = false;
 
+    // 選択のたびに走る計測ログ（onChangeMain等のconsole.time）はここで止める。
+    // 計測したい時だけ devtools から window.Dabimas.debug = true にして再実行する。
+    window.Dabimas = window.Dabimas || {};
+    window.Dabimas.debug = window.Dabimas.debug || false;
+
     // 実機デバッグ用の一時計測: 通常は捕まえていない例外/rejectionも
     // 画面上部の赤いメッセージ欄（horseDetailError）に出して、devtoolsが無い
     // 端末でも原因文言を直接読めるようにする。
@@ -2000,162 +1349,10 @@
 
       data() {
         return {
-          rowConfigs: [
-            { index: 0, autoClass: 'horse_all AliceBlue', autoColspan: 5, headCells: [], showParentLine: false },
-            { index: 1, autoClass: 'omoshiro_0', autoColspan: 4, showParentLine: true,
-              headCells: [{ key: 'r1c1', text: '父', class: 'father_0', align: 'center', width: 15 }] },
-            { index: 2, autoClass: 'horse_0', autoColspan: 3, showParentLine: true,
-              headCells: [
-                { key: 'r2c1', text: '', class: 'father_1', rowspan: 7, width: 15, align: 'center' },
-                { key: 'r2c2', text: '父', class: 'father_0', width: 15 },
-              ] },
-            { index: 4, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
-              headCells: [
-                { key: 'r4c1', text: '', class: 'father_1', rowspan: 3, width: 15, align: 'center' },
-                { key: 'r4c2', text: '父', class: 'father_0', width: 15 },
-              ] },
-            { index: 8, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r8c1', text: '', class: 'father_1', width: 15, align: 'center' },
-                { key: 'r8c2', text: '父', class: 'father', width: 15 },
-              ] },
-            { index: 9, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r9c1', text: '母', class: 'mother' },
-                { key: 'r9c2', text: '父', class: 'father' },
-              ] },
-            { index: 5, autoClass: 'omoshiro_0', autoColspan: 2, showParentLine: true,
-              headCells: [
-                { key: 'r5c1', text: '母', class: 'mother_0' },
-                { key: 'r5c2', text: '父', class: 'father_0' },
-              ] },
-            { index: 10, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r10c1', text: '', class: 'mother_1', rowspan: 2 },
-                { key: 'r10c2', text: '', class: 'father_1' },
-                { key: 'r10c3', text: '父', class: 'father' },
-              ] },
-            { index: 11, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r11c1', text: '母', class: 'mother' },
-                { key: 'r11c2', text: '父', class: 'father' },
-              ] },
-            { index: 3, autoClass: 'omoshiro_0', autoColspan: 3, showParentLine: true,
-              headCells: [
-                { key: 'r3c1', text: '母', class: 'mother_0' },
-                { key: 'r3c2', text: '父', class: 'father_0' },
-              ] },
-            { index: 6, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
-              headCells: [
-                { key: 'r6c1', text: '', class: 'mother_1', rowspan: 6 },
-                { key: 'r6c2', text: '', class: 'father_1', rowspan: 3 },
-                { key: 'r6c3', text: '父', class: 'father_0' },
-              ] },
-            { index: 12, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r12c1', text: '', class: 'father_1' },
-                { key: 'r12c2', text: '父', class: 'father' },
-              ] },
-            { index: 13, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r13c1', text: '母', class: 'mother' },
-                { key: 'r13c2', text: '父', class: 'father' },
-              ] },
-            { index: 7, autoClass: 'omoshiro_0', autoColspan: 2, showParentLine: true,
-              headCells: [
-                { key: 'r7c1', text: '母', class: 'mother_0' },
-                { key: 'r7c2', text: '父', class: 'father_0' },
-              ] },
-            { index: 14, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r14c1', text: '', class: 'mother_1', rowspan: 2 },
-                { key: 'r14c2', text: '', class: 'father_1' },
-                { key: 'r14c3', text: '父', class: 'father' },
-              ] },
-            { index: 15, autoClass: 'migoto_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r15c1', text: '母', class: 'mother' },
-                { key: 'r15c2', text: '父', class: 'father' },
-              ] },
-          ],
-          rowConfigsBloodmare: [
-            { index: 0+16, autoClass: 'horse_all SalmonPink', autoColspan: 5, headCells: [], showParentLine: false },
-            { index: 1+16, autoClass: 'horse_all Broodmare', autoColspan: 4, showParentLine: true,
-              headCells: [{ key: 'r1c1', text: '父', class: 'father_0', align: 'center', width: 15 }] },
-            { index: 2+16, autoClass: 'horse_0', autoColspan: 3, showParentLine: true,
-              headCells: [
-                { key: 'r2c1', text: '', class: 'father_1', rowspan: 7, width: 15, align: 'center' },
-                { key: 'r2c2', text: '父', class: 'father_0', width: 15 },
-              ] },
-            { index: 4+16, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
-              headCells: [
-                { key: 'r4c1', text: '', class: 'father_1', rowspan: 3, width: 15, align: 'center' },
-                { key: 'r4c2', text: '父', class: 'father_0', width: 15 },
-              ] },
-            { index: 8+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r8c1', text: '', class: 'father_1', width: 15, align: 'center' },
-                { key: 'r8c2', text: '父', class: 'father', width: 15 },
-              ] },
-            { index: 9+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r9c1', text: '母', class: 'mother' },
-                { key: 'r9c2', text: '父', class: 'father' },
-              ] },
-            { index: 5+16, autoClass: 'horse_all Broodmare', autoColspan: 2, showParentLine: true,
-              headCells: [
-                { key: 'r5c1', text: '母', class: 'mother_0' },
-                { key: 'r5c2', text: '父', class: 'father_0' },
-              ] },
-            { index: 10+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r10c1', text: '', class: 'mother_1', rowspan: 2 },
-                { key: 'r10c2', text: '', class: 'father_1' },
-                { key: 'r10c3', text: '父', class: 'father' },
-              ] },
-            { index: 11+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r11c1', text: '母', class: 'mother' },
-                { key: 'r11c2', text: '父', class: 'father' },
-              ] },
-            { index: 3+16, autoClass: 'horse_all Broodmare', autoColspan: 3, showParentLine: true,
-              headCells: [
-                { key: 'r3c1', text: '母', class: 'mother_0' },
-                { key: 'r3c2', text: '父', class: 'father_0' },
-              ] },
-            { index: 6+16, autoClass: 'horse_0', autoColspan: 2, showParentLine: false,
-              headCells: [
-                { key: 'r6c1', text: '', class: 'mother_1', rowspan: 6 },
-                { key: 'r6c2', text: '', class: 'father_1', rowspan: 3 },
-                { key: 'r6c3', text: '父', class: 'father_0' },
-              ] },
-            { index: 12+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r12c1', text: '', class: 'father_1' },
-                { key: 'r12c2', text: '父', class: 'father' },
-              ] },
-            { index: 13+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r13c1', text: '母', class: 'mother' },
-                { key: 'r13c2', text: '父', class: 'father' },
-              ] },
-            { index: 7+16, autoClass: 'horse_all Broodmare', autoColspan: 2, showParentLine: true,
-              headCells: [
-                { key: 'r7c1', text: '母', class: 'mother_0' },
-                { key: 'r7c2', text: '父', class: 'father_0' },
-              ] },
-            { index: 14+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: false,
-              headCells: [
-                { key: 'r14c1', text: '', class: 'mother_1', rowspan: 2 },
-                { key: 'r14c2', text: '', class: 'father_1' },
-                { key: 'r14c3', text: '父', class: 'father' },
-              ] },
-            { index: 15+16, autoClass: 'horse_0', autoColspan: 1, showParentLine: true,
-              headCells: [
-                { key: 'r15c1', text: '母', class: 'mother' },
-                { key: 'r15c2', text: '父', class: 'father' },
-              ] },
-          ],
+          // rowConfigs / rowConfigsBloodmare は created() で非リアクティブに設定する
+          // （vue/logic/pedigree/row-configs.js、Object.freeze 済み）。
+          // ここで data() に書くと Vue 2 が32行分の headCells まで再帰的に
+          // reactive化してしまい起動コストが増えるため、あえて宣言しない。
           INDEX_GENERATION_ASSIGNMENTS,
           windowSize: 0,
           // メモの
@@ -2279,7 +1476,60 @@
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
             cursor: "pointer",
           };
-        }
+        },
+        // pedigree-row（vue/logic/pedigree/pedigree-selection.js）が rowState を作るのに
+        // 必要な32行ぶんの配列一式をまとめる。ここで名前を1箇所に集めておくことで、
+        // 種牡馬側・繁殖牝馬側の rowState 生成が同じ入力形から作られることを保証する。
+        selectionArraysForRowState() {
+          return {
+            selected: this.selected,
+            indexGenerationAssignments: this.INDEX_GENERATION_ASSIGNMENTS,
+            parentLines: this.parentLines,
+            styleParentLineClasses: this.styleParentLineClasses,
+            isInbreedButtonClicked: this.isInbreedButtonClicked,
+            styleInbreedButtonClasses: this.styleInbreedButtonClasses,
+            dispColor: this.dispColor,
+            styleFactorClasses: this.styleFactorClasses,
+            factorName: this.factorName,
+          };
+        },
+        // 種牡馬側16行ぶんの rowState。selected 等が変わるたびに作り直される
+        // （pedigree-row 側の :key で行単位の描画コストを抑えている）。
+        stallionRowStates() {
+          return window.Dabimas.logic.pedigree.buildRowStates(
+            this.rowConfigs,
+            this.selectionArraysForRowState
+          );
+        },
+        // 繁殖牝馬側16行ぶんの rowState。
+        broodmareRowStates() {
+          return window.Dabimas.logic.pedigree.buildRowStates(
+            this.rowConfigsBloodmare,
+            this.selectionArraysForRowState
+          );
+        },
+        // 馬選択・メモ入力セル（common-autocomplete、Phase5で分割予定）へ
+        // pedigree-row 経由で橋渡しする値の詰め合わせ。
+        horseSelectionOptions() {
+          return {
+            selected: this.selected,
+            lists: this.horseDataLists,
+            onChange: this.onChange,
+            dispCategory: this.dispCategory,
+            category: this.category,
+            inputed: this.inputed,
+            memoChange: this.memoChange,
+          };
+        },
+        // pedigree-row の表示だけに関わる値（ボタンサイズ・:key用のreload・
+        // 子系統ボタンのラベル）の詰め合わせ。種牡馬側・繁殖牝馬側で共通。
+        rowDisplayOptions() {
+          return {
+            size: this.size,
+            reload: this.reload,
+            dispButtonName: this.dispButtonName,
+          };
+        },
       },
       watch: {
         dispCategory: function(value) {
@@ -2292,6 +1542,16 @@
 
       //async created () {
       created() {
+        // rowConfigs / rowConfigsBloodmare は行の形（headCells・結合セル・親系統表示可否・
+        // 背景テーマ）を表す不変データ。data() ではなくここで直接 this に代入することで
+        // Vue のリアクティブ化対象から外す（doc補足8: 起動コストと変更検知コストの削減）。
+        this.rowConfigs = Object.freeze(
+          window.Dabimas.logic.pedigree.createPedigreeRowConfigs("stallion")
+        );
+        this.rowConfigsBloodmare = Object.freeze(
+          window.Dabimas.logic.pedigree.createPedigreeRowConfigs("broodmare")
+        );
+
         const btnSize = {
           xs: "x-small",
           md: "small",
@@ -2905,26 +2165,18 @@
           await this.refreshLocalDataFromStorage();
         },
         setOrRemoveLocalStorage: function (key, value) {
-          if (value === null || value === undefined) {
-            localStorage.removeItem(key);
-          } else {
-            localStorage.setItem(key, value);
-          }
+          window.Dabimas.logic.storage.localStorage.setOrRemove(key, value);
         },
         persistManualInbreedState: function () {
           if (typeof window === "undefined" || !window.localStorage) {
             return;
           }
-          const manualIndexes = this.inbreedList
-            .map((value, index) => (value?.selfInbreed ? index : null))
-            .filter((index) => index !== null);
-          if (manualIndexes.length === 0) {
-            window.localStorage.removeItem(MANUAL_INBREED_STORAGE_KEY);
-            return;
-          }
-          window.localStorage.setItem(
-            MANUAL_INBREED_STORAGE_KEY,
-            JSON.stringify(manualIndexes)
+          const manualIndexes =
+            window.Dabimas.logic.storage.localStorage.computeManualInbreedIndexesFromList(
+              this.inbreedList
+            );
+          window.Dabimas.logic.storage.localStorage.writeManualInbreedIndexes(
+            manualIndexes
           );
         },
         clearManualInbreedForIndex: function (index) {
@@ -2935,54 +2187,27 @@
           ) {
             return;
           }
-          const rawIndexes = window.localStorage.getItem(
-            MANUAL_INBREED_STORAGE_KEY
+          const manualIndexes =
+            window.Dabimas.logic.storage.localStorage.readManualInbreedIndexes();
+          if (!manualIndexes) {
+            return;
+          }
+          const filtered =
+            window.Dabimas.logic.storage.localStorage.removeIndexFromManualInbreedIndexes(
+              manualIndexes,
+              index
+            );
+          window.Dabimas.logic.storage.localStorage.writeManualInbreedIndexes(
+            filtered
           );
-          if (!rawIndexes) {
-            return;
-          }
-          let manualIndexes = [];
-          try {
-            manualIndexes = JSON.parse(rawIndexes) || [];
-          } catch (error) {
-            console.error(error);
-            return;
-          }
-          if (!Array.isArray(manualIndexes)) {
-            return;
-          }
-          const filtered = manualIndexes
-            .map((value) => Number(value))
-            .filter(
-              (value) => Number.isInteger(value) && value !== Number(index)
-            );
-          if (filtered.length === 0) {
-            window.localStorage.removeItem(MANUAL_INBREED_STORAGE_KEY);
-          } else {
-            window.localStorage.setItem(
-              MANUAL_INBREED_STORAGE_KEY,
-              JSON.stringify(filtered)
-            );
-          }
         },
         restoreManualInbreedState: function () {
           if (typeof window === "undefined" || !window.localStorage) {
             return;
           }
-          const rawIndexes = window.localStorage.getItem(
-            MANUAL_INBREED_STORAGE_KEY
-          );
-          if (!rawIndexes) {
-            return;
-          }
-          let manualIndexes = [];
-          try {
-            manualIndexes = JSON.parse(rawIndexes) || [];
-          } catch (error) {
-            console.error(error);
-            return;
-          }
-          if (!Array.isArray(manualIndexes)) {
+          const manualIndexes =
+            window.Dabimas.logic.storage.localStorage.readManualInbreedIndexes();
+          if (!manualIndexes) {
             return;
           }
           let hasUpdates = false;
@@ -3062,23 +2287,8 @@
         },
         c3: function () {
           return new Promise((resolve, reject) => {
-            // 因子を数字に変換するmapオブジェクト
-            //this.factorMap = new map();
-            factorMap.set("", "00");
-            factorMap.set("短", "01");
-            factorMap.set("速", "02");
-            factorMap.set("底", "03");
-            factorMap.set("長", "04");
-            factorMap.set("適", "05");
-            factorMap.set("丈", "06");
-            factorMap.set("早", "07");
-            factorMap.set("晩", "08");
-            factorMap.set("堅", "09");
-            factorMap.set("難", "10");
-            factorMap.set("走", "11");
-            factorMap.set("中", "12");
-            factorMap.set("強", "13");
-            factorMap.set("雷", "14");
+            // 因子名→コードの変換は vue/logic/factor/factor-map.js で
+            // スクリプト読み込み時に構築済み（ここでは何もしない）。
 
             // 因子部分のCSS設定
             for (var i = 0; i < this.styleFactorClasses.length; i++) {
@@ -3289,38 +2499,18 @@
         handleClick() {
           this.dispCategory++;
         },
+        // pedigree-row からの emit（{ index }）を、既存の handleInbreedButtonClick(index) に橋渡しする。
+        onRowInbreedToggle(payload) {
+          this.handleInbreedButtonClick(payload.index);
+        },
+        // pedigree-row からの emit（{ index, factors }）を、既存の applyManualFactors(index, factors) に橋渡しする。
+        onRowManualFactorUpdate(payload) {
+          this.applyManualFactors(payload.index, payload.factors);
+        },
+        // 行位置ごとの色テーマ判定は vue/logic/pedigree/pedigree-css.js に外部化済み。
+        // pedigree-row へ prop（Function）として渡しているため、メソッド自体は残す。
         getCss: function (i) {
-          let css = "";
-          switch (i) {
-            case 0:
-              css = "factor_AliceBlue";
-              break;
-            // （+ 16）は牝馬のほう
-            case 0 + 16:
-              css = "factor_SalmonPink";
-              break;
-            // （+ 16）は牝馬のほう
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 1 + 16:
-            case 3 + 16:
-            case 5 + 16:
-            case 7 + 16:
-              css = "factor_omoshiro";
-              break;
-            case 9:
-            case 11:
-            case 13:
-            case 15:
-              css = "factor_migoto";
-              break;
-            default:
-              css = "factor_horse";
-              break;
-          }
-          return css;
+          return window.Dabimas.logic.pedigree.getCss(i);
         },
 
         // ===== JSON 分割ロード（summary + detail chunk）=====
@@ -3546,41 +2736,18 @@
           }
         },
         // ===== 自家製馬 detail（IndexedDB customHorses）=====
-        // CombinationDialog と同じスキーマ（version 2）で DB を開く。接続は使い回す。
+        // DB open処理は vue/logic/storage/combination-storage.js に集約済み。
+        // 接続はこのプロパティで使い回す。
         ensureCustomHorseDb() {
           if (this.customHorseDb) {
             return Promise.resolve(this.customHorseDb);
           }
-          return new Promise((resolve, reject) => {
-            if (!window.indexedDB) {
-              reject(new Error("IndexedDB unsupported"));
-              return;
-            }
-            const request = window.indexedDB.open("DabifacCombinationDB", 2);
-            request.onerror = () => reject(request.error);
-            request.onupgradeneeded = (event) => {
-              const db = event.target.result;
-              if (!db.objectStoreNames.contains("configs")) {
-                const store = db.createObjectStore("configs", {
-                  keyPath: "id",
-                  autoIncrement: true,
-                });
-                store.createIndex("savedAt", "savedAt", { unique: false });
-              }
-              if (!db.objectStoreNames.contains("customHorses")) {
-                const customStore = db.createObjectStore("customHorses", {
-                  keyPath: "id",
-                });
-                customStore.createIndex("createdAt", "createdAt", {
-                  unique: false,
-                });
-              }
-            };
-            request.onsuccess = () => {
-              this.customHorseDb = request.result;
-              resolve(request.result);
-            };
-          });
+          return window.Dabimas.logic.storage.combinationStorage
+            .openDB()
+            .then((db) => {
+              this.customHorseDb = db;
+              return db;
+            });
         },
         // customHorses store から 1 件取得（再選択時の detail 解決）。
         getCustomHorseDetail(customHorseId) {
@@ -3755,7 +2922,8 @@
 
         // 選択時のメイン処理
         onChangeMain: async function (sex, id, horseData) {
-          const targetIndex = Number(id) + Number(sex) * 16;
+          // 16 は「片側の行数」＝ ROWS_PER_SIDE（vue/constants/pedigree-indexes.js）。
+          const targetIndex = Number(id) + Number(sex) * ROWS_PER_SIDE;
 
           // state を壊す前に detail（descendants 15 件）を確定させる（指摘 F）。
           // 取得に失敗した場合は何も変更せず return（既存セルを保持）。
@@ -3794,36 +2962,42 @@
           if (hydratedHorseData) {
             // リストにセットされた場合
             // 血統表データセット用に詰め替える
-            console.time('setDataForPedigree');
-            const dataForPedigree = this.setDataForPedigree(sex, id, hydratedHorseData);
-            console.timeEnd('setDataForPedigree');
+            if (window.Dabimas.debug) console.time('setDataForPedigree');
+            this.selectedSex = hydratedHorseData.sex;
+            const dataForPedigree = window.Dabimas.logic.pedigree.setDataForPedigree(
+              sex,
+              id,
+              hydratedHorseData,
+              this.brosData
+            );
+            if (window.Dabimas.debug) console.timeEnd('setDataForPedigree');
             // 血統表にデータをセットする
-            console.time('setPedigree');
+            if (window.Dabimas.debug) console.time('setPedigree');
             this.setPedigree(sex, id, dataForPedigree);
-            console.timeEnd('setPedigree');
+            if (window.Dabimas.debug) console.timeEnd('setPedigree');
           } else {
             // リストを空にした場合（削除モード）
             this.deleteHorses(sex, id);
           }
 
-          console.time('画面表示');
+          if (window.Dabimas.debug) console.time('画面表示');
           // カウントした画面に表示させる
           this.factorNumtoString = this.dispFactorCounts(this.factorCd);
           // カウントした子系統数を表示させる
           this.categoryNumtoString = this.dispCategoryCount();
-          console.timeEnd('画面表示');
+          if (window.Dabimas.debug) console.timeEnd('画面表示');
 
-          console.time('クロス');
+          if (window.Dabimas.debug) console.time('クロス');
           // クロスを判定して表示させる
           await this.dispInbreed();
-          console.timeEnd('クロス');
+          if (window.Dabimas.debug) console.timeEnd('クロス');
 
           this.restoreManualInbreedState();
 
-          console.time('理論');
+          if (window.Dabimas.debug) console.time('理論');
           // 配合理論を求めて画面に表示させる
           this.dispTheory();
-          console.timeEnd('理論');
+          if (window.Dabimas.debug) console.timeEnd('理論');
 
           // 内容をローカルに保存する（descendants を含まない軽量 snapshot）
           this.persistSelectedToStorage();
@@ -3929,9 +3103,9 @@
             // インブリードの色も初期化
             this.dispColor = Array.from(new Array(32).fill(""));
             // インブリード判定処理のメイン
-            console.time('インブリード判定');
+            if (window.Dabimas.debug) console.time('インブリード判定');
             retInbreedCount = this.judgeInbreed();
-            console.timeEnd('インブリード判定');
+            if (window.Dabimas.debug) console.timeEnd('インブリード判定');
           } else {
             // インブリードボタンクリック済フラグを非活性モードに設定
             this.isInbreedButtonClicked = Array.from(new Array(32).fill(0));
@@ -3958,12 +3132,12 @@
             );
           }
 
-          console.time('インブリード表示');
+          if (window.Dabimas.debug) console.time('インブリード表示');
           // インブリードが発生した場合
           if (retInbreedCount > 0) {
             await this.dispInbreedFactorCounts();
           }
-          console.timeEnd('インブリード表示');
+          if (window.Dabimas.debug) console.timeEnd('インブリード表示');
         },
 
         // インブリード本数表示
@@ -5005,125 +4179,17 @@
           const flattenedS = S.flat();
           const flattenedD = D.flat();
 
-          // 血統表全部が埋まっている場合に理論判定
+          // 血統表全部が埋まっている場合に理論判定（判定ロジックは vue/logic/theory/compatibility.js に外部化済み）。
           if (this.selected.every((e) => e)) {
             if (this.sameNameSpecialChecks)
-            this.styleThoeryClass = this.compatibility(S, D);
+            this.styleThoeryClass = window.Dabimas.logic.theory.compatibility(S, D, {
+              sameNameSpecialChecks: this.sameNameSpecialChecks,
+              selected: this.selected,
+            });
           } else {
             // 理論系統が埋まっていない場合は、空白を設定
             this.styleThoeryClass = "";
           }
-        },
-
-        countCommonElements: function (A, B) {
-          // AとBに共通する要素を取得する
-          const uniqueCommonElements = [
-            ...new Set(A.filter((element) => B.includes(element))),
-          ];
-
-          // Aに含まれるuniqueCommonElementsの要素数をカウントする
-          const countA = uniqueCommonElements.reduce((count, element) => {
-            return count + A.filter((a) => a === element).length;
-          }, 0);
-
-          // Bに含まれるuniqueCommonElementsの要素数をカウントする
-          const countB = uniqueCommonElements.reduce((count, element) => {
-            return count + B.filter((b) => b === element).length;
-          }, 0);
-
-          // countAとcountBのうち最小値を取得する
-          const minCount = Math.min(countA, countB);
-
-          return minCount;
-        },
-
-        countUniqueElements: function (A, B) {
-          // AとBを結合して和集合を作成
-          const union = [...A, ...B];
-
-          // 和集合から重複を除いた集合Dを取得する
-          const uniqueElements = [...new Set(union)];
-
-          // 集合Dの要素数を返す
-          return uniqueElements.length;
-        },
-
-        // Sire, Damは[[面白系統]，[見事系統]]の書式
-        // 面白内，見事内は順不同
-        // 例えば，ドゥラメンテなら[["Na","Ne","Ro","Ns"],["Ne","He","Te","Ne"]]
-        compatibility: function (Sire, Dam) {
-          //面白配合判定
-          const omoshiro_count = this.countUniqueElements(Sire[0], Dam[0]);
-          const omoshiro_flag = omoshiro_count >= 7;
-
-          //共通要素数の算出
-          const common_elms = this.countCommonElements(Sire[1], Dam[0]);
-
-          // 理論なし
-          result = "";
-
-          // 至高判定
-          // const hasSameNameSpecial =
-          //   Array.isArray(this.sameNameSpecialChecks) &&
-          //   this.sameNameSpecialChecks.some((flag) => Boolean(flag));
-
-          // 至高判定OKなら至高
-          if (this.sameNameSpecialChecks.length > 0) {
-            return "theory_07";
-          }
-
-          if (omoshiro_flag) {
-            // 面白＋よくでき
-            if (common_elms == 3) {
-              result = "theory_03";
-            }
-            // 完璧
-            if (common_elms == 4) {
-              // 牝馬の3代目
-              const mother3 = this.selected[3 + 16].name;
-              // 牡馬の4代目
-              const father4 = [
-                this.selected[4].name,
-                this.selected[5].name,
-                this.selected[6].name,
-                this.selected[7].name,
-              ];
-
-              let includesNum = father4.filter(function (value) {
-                // 牝馬の3代目に合致する種牡馬を配列で取得
-                return value === mother3;
-              });
-
-              // 4×3のみ奇跡になる。4×4×3は奇跡にならない。
-              if (includesNum.length === 1) {
-                // 奇跡
-                result = "theory_06";
-              } else {
-                if (omoshiro_count == 8) {
-                  // 超完璧
-                  result = "theory_05";
-                } else {
-                  // 普通の完璧
-                  result = "theory_04";
-                }
-              }
-            }
-            // 面白
-            if (common_elms < 3) {
-              result = "theory_01";
-            }
-          } else {
-            // よくでき
-            if (common_elms == 3) {
-              result = "theory_03";
-            }
-            // 見事
-            if (common_elms == 4) {
-              result = "theory_02";
-            }
-          }
-
-          return result;
         },
 
         // カウントした因子数を画面に表示させる
@@ -5137,23 +4203,9 @@
             return;
           }
 
-          const picked = Array.isArray(factors) ? factors : [];
-          const normalized = [];
-          picked.forEach((value) => {
-            const text = typeof value === "string" ? value.trim() : "";
-            if (
-              text &&
-              manualFactorOptions.includes(text) &&
-              !normalized.includes(text)
-            ) {
-              normalized.push(text);
-            }
-          });
-
-          const sanitized = normalized.slice(0, 2);
-          while (sanitized.length < 2) {
-            sanitized.push("");
-          }
+          // 有効な因子名のみ・重複なし・最大2個への整形は
+          // vue/logic/factor/manual-factors.js に外部化済み。
+          const sanitized = window.Dabimas.logic.factor.sanitizeManualFactors(factors);
 
           sanitized.forEach((value, index) => {
             const columnIndex = index + 1;
@@ -5194,804 +4246,22 @@
           this.persistSelectedToStorage();
         },
 
+        // 因子数の集計ロジックは vue/logic/factor/factor-counts.js に外部化済み。
         dispFactorCounts: function (factorCdArray) {
-          // 配列の中にある因子数をカウントする
-          let count = {};
-          for (var i = 0; i < factorCdArray.length; i++) {
-            for (var j = 0; j < factorCdArray[i].length; j++) {
-              var elm = factorCdArray[i][j];
-              count[elm] = (count[elm] || 0) + 1;
-            }
-          }
-
-          let factorNumtoString = Array.from(new Array(14).fill("00"));
-          //ソートされたものを
-          for (var i = 0; i < factorNumtoString.length; i++) {
-            var ret = ("00" + (i + 1)).slice(-2);
-            if (count[ret]) {
-              factorNumtoString[i] = ("00" + count[ret]).slice(-2);
-            } else {
-              factorNumtoString[i] = "00";
-            }
-          }
-          return factorNumtoString;
+          return window.Dabimas.logic.factor.dispFactorCounts(factorCdArray);
         },
 
-        // Keyに該当する項目を取得する
-        getValueByKey : function (data,name) {
-          return data.filter(obj => obj.key === name).map(obj => obj.bros);
-        },
+        // getValueByKey は vue/logic/pedigree/pedigree-builder.js に外部化済み。
         // カウントした子系統数を画面に表示させる
         dispCategoryCount: function () {
           const allSet = this.selected.every((e) => e) ? 0 : -1;
           return (new Set(this.category).size + allSet).toString();
         },
-        // 配列を入れ替えたデータをセットする共通関数
+        // 血統表に埋めるために配列を入れ替える処理は
+        // vue/logic/pedigree/pedigree-builder.js に外部化済み
+        // （呼び出しは onChangeMain から window.Dabimas.logic.pedigree.setDataForPedigree を直接使う）。
 
-
-        //血統表に埋めるために配列を入れ替える
-        setDataForPedigree: function (sex, id, horseData) {
-          const retDataForPedigree = Array.from(new Array(16).fill(null));
-
-          if (horseData) {
-            // detail（先祖 15 件）が確定していることを前提にする（指摘 F）。
-            // onChangeMain が ensureHorseDetail で補完済みのはずだが、念のため防御する。
-            if (
-              !Array.isArray(horseData.descendants) ||
-              horseData.descendants.length !== 15
-            ) {
-              throw new Error("Horse detail is not loaded.");
-            }
-            let bros;
-            const myId = generateUuid();
-            // リストで選択した性別（種牡馬 or 繁殖牝馬）をセット
-            this.selectedSex = horseData.sex;
-            // 空以外を選択した場合
-            if (horseData.sex === "0" || (horseData.sex === "1" && id === 0)) {
-              //牡馬を選択した場合 か 牝馬でも赤いところで牝馬を選択した場合
-              // 0番目はデータそのものをセットする
-              // retDataForPedigree[0] = {
-              //   ...horseData,
-              //   selectedHorse: horseData.name,
-              //   uuid: myId,
-              // };
-              bros = this.getValueByKey(this.brosData, horseData.name);
-              retDataForPedigree[0] = {
-                ...horseData,
-                selectedHorse: horseData.name,
-                uuid: myId,
-                selfSelected: true,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              // 0番目以降は祖全データ＋subName''＋使用不可フラグを設定（因子配列も念のためコピー）
-              bros = this.getValueByKey(this.brosData, horseData.descendants[0].name);
-              retDataForPedigree[1] = {
-                ...horseData.descendants[0],
-                subName: "",
-                factors: [...horseData.descendants[0].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[1].name);
-              retDataForPedigree[2] = {
-                ...horseData.descendants[1],
-                subName: "",
-                factors: [...horseData.descendants[1].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[0].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[8].name);
-              retDataForPedigree[3] = {
-                ...horseData.descendants[8],
-                subName: "",
-                factors: [...horseData.descendants[8].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[8].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[2].name);
-              retDataForPedigree[4] = {
-                ...horseData.descendants[2],
-                subName: "",
-                factors: [...horseData.descendants[2].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[1].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[5].name);
-              retDataForPedigree[5] = {
-                ...horseData.descendants[5],
-                subName: "",
-                factors: [...horseData.descendants[5].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[9].name);
-              retDataForPedigree[6] = {
-                ...horseData.descendants[9],
-                subName: "",
-                factors: [...horseData.descendants[9].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[8].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[8].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[12].name);
-              retDataForPedigree[7] = {
-                ...horseData.descendants[12],
-                subName: "",
-                factors: [...horseData.descendants[12].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[12].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[3].name);
-              retDataForPedigree[8] = {
-                ...horseData.descendants[3],
-                subName: "",
-                factors: [...horseData.descendants[3].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[2].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[4].name);
-              retDataForPedigree[9] = {
-                ...horseData.descendants[4],
-                subName: "",
-                factors: [...horseData.descendants[4].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[6].name);
-              retDataForPedigree[10] = {
-                ...horseData.descendants[6],
-                subName: "",
-                factors: [...horseData.descendants[6].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[5].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[7].name);
-              retDataForPedigree[11] = {
-                ...horseData.descendants[7],
-                subName: "",
-                factors: [...horseData.descendants[7].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[0].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[10].name);
-              retDataForPedigree[12] = {
-                ...horseData.descendants[10],
-                subName: "",
-                factors: [...horseData.descendants[10].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[8].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[9].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[11].name);
-              retDataForPedigree[13] = {
-                ...horseData.descendants[11],
-                subName: "",
-                factors: [...horseData.descendants[11].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[8].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[13].name);
-              retDataForPedigree[14] = {
-                ...horseData.descendants[13],
-                subName: "",
-                factors: [...horseData.descendants[13].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[12].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[12].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[14].name);
-              retDataForPedigree[15] = {
-                ...horseData.descendants[14],
-                subName: "",
-                factors: [...horseData.descendants[14].factors],
-                disabled: true,
-                selectedHorse:
-                  horseData.sex === "0"
-                    ? horseData.name
-                    : horseData.descendants[14].name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-            } else {
-              //牝馬を選択した場合
-              brosHead = this.getValueByKey(this.brosData, horseData.name);
-              bros = this.getValueByKey(this.brosData, horseData.descendants[0].name);
-              retDataForPedigree[0] = {
-                ...horseData.descendants[0],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[0].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  brosHead.length != 0
-                    ? brosHead[0].fullSisters
-                    : ["",""],
-                childName:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[1].name);
-              retDataForPedigree[1] = {
-                ...horseData.descendants[1],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[1].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[0].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[8].name);
-              retDataForPedigree[2] = {
-                ...horseData.descendants[8],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[8].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[2].name);
-              retDataForPedigree[3] = {
-                ...horseData.descendants[2],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[2].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[1].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[5].name);
-              retDataForPedigree[4] = {
-                ...horseData.descendants[5],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[5].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[9].name);
-              retDataForPedigree[5] = {
-                ...horseData.descendants[9],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[9].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[8].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[12].name);
-              retDataForPedigree[6] = {
-                ...horseData.descendants[12],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[12].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[3].name);
-              retDataForPedigree[7] = {
-                ...horseData.descendants[3],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[3].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[2].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[4].name);
-              retDataForPedigree[8] = {
-                ...horseData.descendants[4],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[4].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[6].name);
-              retDataForPedigree[9] = {
-                ...horseData.descendants[6],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[6].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[5].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[7].name);
-              retDataForPedigree[10] = {
-                ...horseData.descendants[7],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[7].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[10].name);
-              retDataForPedigree[11] = {
-                ...horseData.descendants[10],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[10].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[11].name);
-              retDataForPedigree[12] = {
-                ...horseData.descendants[11],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[11].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[13].name);
-              retDataForPedigree[13] = {
-                ...horseData.descendants[13],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[13].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: horseData.descendants[12].name,
-              };
-
-              bros = this.getValueByKey(this.brosData, horseData.descendants[14].name);
-              retDataForPedigree[14] = {
-                ...horseData.descendants[14],
-                subName: `(${horseData.name})`,
-                factors: [...horseData.descendants[14].factors],
-                disabled: true,
-                selectedHorse:
-                  brosHead.length != 0
-                    ? brosHead[0].fullBrothers[0]
-                    : horseData.name,
-                uuid: myId,
-                selfSelected: false,
-                fullBrothers:
-                  bros.length != 0
-                    ? bros[0].fullBrothers
-                    : ["",""],
-                fullSisters:
-                  bros.length != 0
-                    ? bros[0].fullSisters
-                    : ["",""],
-                childName: null
-              };
-              retDataForPedigree[15] = "broodmares";
-            }
-          }
-          return retDataForPedigree;
-        },
-
-        //偶数であることを確認する
-        //0は例外でFalseを返す
-        //1は例外でTrueを返す
-        isEven: function (cellNumber) {
-          switch (cellNumber) {
-            case 0:
-              return false;
-            case 1:
-              return true;
-            default:
-              return cellNumber % 2 === 0;
-          }
-        },
-
-        // 半角→全角(英数字)
-        replaceHalfToFull: function (str) {
-          return str.replace(/[!-~]/g, function (s) {
-            return String.fromCharCode(s.charCodeAt(0) + 0xfee0);
-          });
-        },
+        // isEven / replaceHalfToFull は vue/logic/pedigree/pedigree-builder.js に外部化済み。
 
         // 親系統配列に詰めるかの判定をする
         judgeSetParentLine: function (str, cell_id) {
@@ -6021,14 +4291,9 @@
           return ParentLine;
         },
 
-        // セルに因子CSSを詰める
+        // セルに因子CSSを詰める（ロジックは vue/logic/factor/factor-counts.js に外部化済み）。
         fillInFactorCells: function (str, cell_id) {
-          if (str == "00") {
-            // nullのときはデフォルトのCSSを返す
-            return `${this.getCss(cell_id)} styleFactorClassMain`;
-          } else {
-            return `f${str} styleFactorClassMain`;
-          }
+          return window.Dabimas.logic.factor.fillInFactorCells(str, cell_id);
         },
 
         // セルに因子CSSを詰める
@@ -6041,82 +4306,7 @@
           }
         },
 
-        getCellIdQue: function (cellNo, horseDataList) {
-          // 設定するセルの最大値を決める
-          var max_cell_id = cellNo;
-          while (true) {
-            if (max_cell_id * 2 >= 16) {
-              max_cell_id = max_cell_id + 1;
-              break;
-            }
-
-            max_cell_id = max_cell_id * 2 + 1;
-            if (max_cell_id * 2 > 16) {
-              break;
-            }
-
-            // if (Object.keys(horseDataList[15]).length === 0) {
-            if (
-              horseDataList[15] === "broodmares" ||
-              horseDataList[cellNo]?.subName.substring(0, 1) === "("
-            ) {
-              // 選択したのが繫殖牝馬だった or インブリードしたのが牝馬（赤色のところはのぞく場合）はこっちのルートに入る broodmares
-              // 繫殖牝馬だった（赤色のところはのぞく場合）は16番目にNULLを設定しているので
-              max_cell_id = (max_cell_id + 1) * 2;
-            } else {
-              max_cell_id = max_cell_id * 2;
-            }
-            if (max_cell_id * 2 > 16) {
-              break;
-            }
-
-            while (true) {
-              max_cell_id = max_cell_id * 2;
-              if (max_cell_id * 2 > 16) {
-                break;
-              }
-            }
-            break;
-          }
-
-          //格納するドロップダウンリストの配列作成（初期値は選択したセル）
-          var cell_id_que = [cellNo];
-          var is_checked = [false];
-
-          var i = 1;
-          // 【最適化】indexOfの結果をキャッシュして、毎回の検索を回避
-          var index = is_checked.indexOf(false);
-          while (index !== -1) {
-            is_checked[index] = true;
-
-            if (2 * cell_id_que[index] < max_cell_id) {
-              if (
-                i === 1 &&
-                horseDataList[15] != "broodmares" &&
-                horseDataList[cellNo]?.subName.substring(0, 1) != "("
-              ) {
-                // 初回でかつ 繫殖牝馬だった（赤色のところはのぞく場合）はこちらのルートに
-                if (cellNo === 0) {
-                  // 0のときだけ例外
-                  cell_id_que.push(1);
-                } else {
-                  cell_id_que.push(2 * cell_id_que[index]);
-                }
-                is_checked.push(false);
-              } else {
-                cell_id_que.push(2 * cell_id_que[index]);
-                cell_id_que.push(2 * cell_id_que[index] + 1);
-                is_checked.push(false);
-                is_checked.push(false);
-              }
-              i++;
-            }
-            // 【最適化】次のfalseを検索
-            index = is_checked.indexOf(false);
-          }
-
-          return cell_id_que;
-        },
+        // getCellIdQue は vue/logic/pedigree/pedigree-builder.js に外部化済み。
 
         // 因子名を詰め込む
         setFactorName: function (row, col, factorName) {
@@ -6171,7 +4361,7 @@
         // 選択したセルを起点に血統データを入れる関数
         setPedigree: function (sex, cellNo, horseDataList) {
           // 詰めるためのキューを取得する
-          const cell_id_que = this.getCellIdQue(cellNo, horseDataList);
+          const cell_id_que = window.Dabimas.logic.pedigree.getCellIdQue(cellNo, horseDataList);
           // 配列の先頭1件
           let isFirst = true;
           
@@ -6292,7 +4482,7 @@
           const emptyFactors = ["", "", ""];
           const emptyFullSiblings = ["", ""];
           
-          while (this.isEven(reverseNum)) {
+          while (window.Dabimas.logic.pedigree.isEven(reverseNum)) {
             // 2で割る
             reverseNum = Math.floor(reverseNum / 2);
             
@@ -6303,7 +4493,7 @@
               // 追加モード
               reverseCnt++;
               // 自家製種牡馬名
-              const handMadeName = `★${this.replaceHalfToFull(
+              const handMadeName = `★${window.Dabimas.logic.pedigree.replaceHalfToFull(
                 reverseCnt.toString(10)
               )}薄め${name.trim()}${subName.trim()}`;
               if (reverseNum === 0 && sex === 1) {

@@ -68,47 +68,10 @@ Vue.component('combination-dialog', {
       }
     },
 
+    // DB open処理は vue/logic/storage/combination-storage.js に集約済み
+    // （version・ストア構成の単一の定義元。ここでの二重定義はやめて委譲する）。
     openDB() {
-      return new Promise((resolve, reject) => {
-        if (!window.indexedDB) {
-          reject(new Error('IndexedDBに対応していません'));
-          return;
-        }
-
-        // v2: customHorses ストアを追加。combinationDB.js と version / スキーマを揃える。
-        // どちらかが低い version で open すると VersionError になるため一致させること。
-        const request = indexedDB.open('DabifacCombinationDB', 2);
-
-        request.onerror = () => {
-          reject(request.error);
-        };
-
-        request.onsuccess = () => {
-          resolve(request.result);
-        };
-
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-
-          if (!db.objectStoreNames.contains('configs')) {
-            const objectStore = db.createObjectStore('configs', {
-              keyPath: 'id',
-              autoIncrement: true
-            });
-
-            objectStore.createIndex('savedAt', 'savedAt', { unique: false });
-          }
-
-          // 自家製馬ライブラリ（keyPath は安定 id "custom-..."）。
-          if (!db.objectStoreNames.contains('customHorses')) {
-            const customStore = db.createObjectStore('customHorses', {
-              keyPath: 'id'
-            });
-
-            customStore.createIndex('createdAt', 'createdAt', { unique: false });
-          }
-        };
-      });
+      return window.Dabimas.logic.storage.combinationStorage.openDB();
     },
 
     close() {
