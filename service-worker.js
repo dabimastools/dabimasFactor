@@ -1,5 +1,5 @@
 // cache name, cache files
-var CACHE_NAME = 'dabimas-factor-v20260703-23';
+var CACHE_NAME = 'dabimas-factor-v20260703-24';
 var BASE_PATH = self.location.pathname.replace(/\/service-worker\.js$/, '/');
 var APP_SHELL_URL = BASE_PATH + 'index.html';
 // プリキャッシュは「実行時に実際に使われるもの」だけに絞る。
@@ -8,6 +8,9 @@ var APP_SHELL_URL = BASE_PATH + 'index.html';
 // - source map（*.map）と未リンクの vuetify.min.css は実行時に不要なので除外。
 // - js/css は cache-first（後述）で初回アクセス時に runtime cache されるため、
 //   ここに載せていないもの（factor-dialog.css 等）もオフライン対応される。
+// - vue/**/*.js は index.html が読み込む全ファイル（39本、index-split-completion-plan.md
+//   Phase 5-1 の棚卸しで index.html の <script src> と Glob vue/**/*.js が完全一致することを
+//   確認済み）を index.html の読み込み順（＝依存順）のまま列挙する。
 var urlsToCache = [
   APP_SHELL_URL,
   // 初期表示用の軽量 summary を install cache する（案 B）。
@@ -26,7 +29,46 @@ var urlsToCache = [
   BASE_PATH + 'css/notosansjapanese.css',
   BASE_PATH + 'css/vuetify_compact.min.css',
   BASE_PATH + 'vue/vue.min.js',
+  BASE_PATH + 'vue/logic/storage/combination-storage.js',
+  BASE_PATH + 'vue/CombinationDialog.js',
   BASE_PATH + 'vue/vuetify.js',
+  BASE_PATH + 'vue/factor-dialog.js',
+  BASE_PATH + 'vue/constants/pedigree-indexes.js',
+  BASE_PATH + 'vue/constants/parent-lines.js',
+  BASE_PATH + 'vue/constants/factor-definitions.js',
+  BASE_PATH + 'vue/logic/pedigree/pedigree-css.js',
+  BASE_PATH + 'vue/logic/factor/factor-map.js',
+  BASE_PATH + 'vue/logic/factor/factor-counts.js',
+  BASE_PATH + 'vue/logic/factor/manual-factors.js',
+  BASE_PATH + 'vue/logic/pedigree/row-configs.js',
+  BASE_PATH + 'vue/logic/pedigree/pedigree-selection.js',
+  BASE_PATH + 'vue/logic/horses/horse-search.js',
+  BASE_PATH + 'vue/logic/storage/local-storage.js',
+  BASE_PATH + 'vue/logic/theory/compatibility.js',
+  BASE_PATH + 'vue/logic/pedigree/pedigree-builder.js',
+  BASE_PATH + 'vue/logic/inbreed/inbreed-exceptions.js',
+  BASE_PATH + 'vue/logic/inbreed/inbreed-detector.js',
+  BASE_PATH + 'vue/logic/inbreed/inbreed-counts.js',
+  BASE_PATH + 'vue/components/pedigree/memo-cell.js',
+  BASE_PATH + 'vue/components/pedigree/desktop-horse-autocomplete.js',
+  BASE_PATH + 'vue/components/pedigree/mobile-horse-picker.js',
+  BASE_PATH + 'vue/components/pedigree/horse-cell.js',
+  BASE_PATH + 'vue/components/pedigree/pedigree-row.js',
+  BASE_PATH + 'vue/components/pedigree/pedigree-table.js',
+  BASE_PATH + 'vue/components/pedigree/pedigree-card.js',
+  BASE_PATH + 'vue/app/app-state.js',
+  BASE_PATH + 'vue/app/app-computed.js',
+  BASE_PATH + 'vue/app/app-lifecycle.js',
+  BASE_PATH + 'vue/app/methods/ui-viewport.js',
+  BASE_PATH + 'vue/app/methods/combination.js',
+  BASE_PATH + 'vue/app/methods/horse-loading.js',
+  BASE_PATH + 'vue/app/methods/bootstrap.js',
+  BASE_PATH + 'vue/app/methods/selection.js',
+  BASE_PATH + 'vue/app/methods/inbreed-ui.js',
+  BASE_PATH + 'vue/app/methods/pedigree-cells.js',
+  BASE_PATH + 'vue/app/app-options.js',
+  BASE_PATH + 'vue/app/boot.js',
+  BASE_PATH + 'vue/app/main.js',
   BASE_PATH + 'cdn/html2canvas.min.js',
   BASE_PATH + 'fonts/materialdesignicons-webfont.woff2',
   BASE_PATH + 'fonts/NotoSansJP-Black.woff2',

@@ -45,7 +45,7 @@
 | 4-10 | app-lifecycle.js（created / mounted / beforeDestroy） | **完了**（2026-07-03） |
 | 4-11 | app-options.js + main.js（new Vue の外部化） | **完了**（2026-07-03。Phase 4 の総合検証ポイント） |
 | 4-12 | boot.js（初期ローダ・SW 登録・iOS viewport）※任意 | **完了**（2026-07-03） |
-| 5-1 | service worker precache 整合＋総合検証 | 未着手 |
+| 5-1 | service worker precache 整合＋総合検証 | **完了**（2026-07-03） |
 | 5-2 | ドキュメント更新・統合版向け対応表の確定 | 未着手 |
 
 ### 1.1 進捗ログ（中断・再開用。作業のたびに追記する）
@@ -87,6 +87,7 @@
 - **2026-07-03**: Phase 4-10 完了。created / mounted / beforeDestroyを `window.Dabimas.app.lifecycle = { created, mounted, beforeDestroy }` として `vue/app/app-lifecycle.js` へ外部化。**逐語移動の唯一の例外**として、mounted内のbareな`scheduleInitialLoaderHide()`呼び出し（2箇所）をboot script側で公開した `window.Dabimas.boot.scheduleInitialLoaderHide()` に置換（計画書§8.5で明示されていた対応）。boot script側には `window.Dabimas.boot.scheduleInitialLoaderHide = scheduleInitialLoaderHide;` を追加。index.html側は `created: window.Dabimas.app.lifecycle.created, mounted: ..., beforeDestroy: ...,` の3行になった。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、初期ローダが正しく非表示になること（`#loader`要素に`loaded`クラス付与）、モバイルリサイズ時のイベントリスナ（onViewportGeometryChangeHandler等）が正常動作しレイアウトも崩れないことを確認。**次に着手すべきは Phase 4-11（app-options.js + main.js。new Vueの外部化）。**
 - **2026-07-03**: Phase 4-11 完了。`vue/app/app-options.js`（`window.Dabimas.app.createAppOptions()`がdata/computed/watch/lifecycle/methodsを束ねるだけのオプション組み立て）と `vue/app/main.js`（グローバルエラーハンドラ＋`new Vue(...)`本体）を作成。`var __debugAppInstance` → `window.__debugAppInstance`への明示代入に変更（検証ハーネス互換）。index.htmlから`new Vue({...})`とエラーハンドラを削除し、scriptタグ（app-options.jsはpedigree-cells.jsの後、main.jsはインラインscriptの最後）を追加。guardスクリプトはPhase 4-0のクロスファイル検査のままで対応（追加変更不要、verify-index-exp OKで確認）。**この時点がPhase 4の総合検証ポイント**: S1(基本クロス)〜S6(リセット)全シナリオ、PC/モバイル画面表示、モバイルIMEシミュレーション（候補80件）、配合保存ダイアログ、初期ローダ非表示、リサイズ時イベントリスナ、全てコンソールエラー0件でベースラインと完全一致することを確認。**次に着手すべきは Phase 4-12（boot.js。任意）または Phase 5-1（service worker precache整合＋総合検証）。**
 - **2026-07-03**: Phase 4-12（任意）完了。index.html末尾に残っていたインラインboot script（初期ローダ制御 / service worker登録 / iOS viewport調整 / `Vue.config` / `window.Dabimas.debug` / `window.Dabimas.app.methods`足場、133行）を `vue/app/boot.js` へ外部化。IIFEは `(function (window, Vue) { ... })(window, window.Vue);` として`Vue.config`参照のため`Vue`を明示的に受け取る形にした。**発見・クリーンアップ**: index.htmlに残っていたモジュールスコープ定数 `INDEX_GENERATION_ASSIGNMENTS` / `INDEX_TO_ROW_NUMBER` / `ROWS_PER_SIDE` / `founder` / `factorMap` / `manualFactorOptions` / `MANUAL_INBREED_STORAGE_KEY` の宣言は、Phase 1〜4でroot appの全コードが外部ファイル化され各ファイルが`window.Dabimas.constants.*`/`window.Dabimas.logic.*`から自分自身の同名定数を再宣言するようになった結果、参照ゼロの完全なデッドコードになっていたことを確認し削除した（boot.js冒頭のコメントに記録）。scriptタグは`app-options.js`の後・`main.js`の前に配置（boot.jsの読み込み時依存は`window.Vue`のみで`vue.min.js`読み込み後なら順序は問題にならないことを確認）。index.htmlは494行→**362行**（当初4,611行からの削減）。検証: verify-index-exp OK、`node --check vue/app/boot.js` OK、service worker CACHE_NAMEを`v20260703-23`へbump、キャッシュ全削除＋2回リロードでコンソールエラー0件・SW登録成功・初期ローダの`loaded`クラス付与を確認、S1シナリオ（`initializer()`→`onChangeMain(0,0,stallion)`→`onChangeMain(1,0,broodmare)`）を再実行しuuid以外の全フィールド（factorCd/inbreedFactorNumtoString/categoryNumtoString/sameNameGroups等）がベースラインと完全一致することを確認。**追加発見**: `localStorageFingerprint.factor.hash`はbaseline記録時と一致しなかったが、同一セッション内で同じ手順をもう一度実行しただけでもhashが変わる（lengthは8981で一致）ことを確認済み——`selected`配列の各エントリに含まれる`uuid`が選択の都度ランダム生成され`dabimasFactor`保存内容に含まれるため、これは分割による回帰ではなく既存の非決定的挙動（新規発見メモ）。これでPhase 4（root app分割）が全サブフェーズ完了。**次に着手すべきは Phase 5-1（service worker precache整合＋S1〜S7総合検証）。**
+- **2026-07-03**: Phase 5-1 完了。`Glob vue/**/*.js`（39ファイル）と index.html の `<script src>` タグを突き合わせ、完全一致することを確認（`vue/combinationDB.js` のような dead code ファイルは実在しなかった）。この39ファイル全てを `service-worker.js` の `urlsToCache` へ index.html の読み込み順のまま追加（従来は `vue/vue.min.js` / `vue/vuetify.js` の2本のみ precache、残りは runtime cache 頼みだった）。`CACHE_NAME` を `v20260703-24` へ bump。総合検証: キャッシュ全削除→2回リロードでコンソールエラー0件・SW登録成功・`caches.open` で39本全てのvue/*.jsがinstall cacheされていることを確認（`totalCached: 84`）。`preview_network` の全リクエスト一覧で `dabimasFactor.json`（4.8MB フル JSON）への言及が0件であることを確認（`dabimasFactor.summary.json` のみが通常経路で使われる設計を維持）。S1（基本クロス）〜S6（リセット）を全て実機相当の呼び出し（`initializer`→`onChangeMain`→`handleInbreedButtonClick`→`memoChange`系→`window.location.reload()`）で再実行し、ベースラインと完全一致することを確認。**この過程で見つけたテスト手法上の注意点**（コードの問題ではない）: S3「途中セル上書き→削除」の削除操作は `deleteHorses(sex, id)` ではなく `onChangeMain(sex, id, null)` で行う必要がある（計画書 §4 の記述どおり）。前者を使うと「新しく作られたサブツリーのuuidだけ」を消してしまい、`categoryNumtoString` が `"11"`（上書き後のまま）に留まってしまう。`onChangeMain(sex,id,null)` に修正して再実行した結果は `S3_cleared.json`（`categoryNumtoString: "10"`, `factorNumtoString` 等）と完全一致した。PC（1280×800）・モバイル（375×812）双方のスクリーンショットで血統表の階段状レイアウト・色分け・ハートアイコンが正しく表示されることも確認。§10 の統合版メソッド対応表（実績列）も全10メソッドについて実ファイル・行番号で埋め、計画どおりの移動先と完全一致することを確認。**次に着手すべきは Phase 5-2（ドキュメント更新・最終報告）。**
 
 
 
@@ -811,16 +812,16 @@ index.html に残る boot スクリプト（初期ローダ、SW 登録、iOS vi
 
 | メソッド | 移動先（計画） | 移動先（実績） |
 |---|---|---|
-| `persistSelectedToStorage()` | `vue/app/methods/horse-loading.js` | |
-| `memoChange()` | `vue/app/methods/selection.js` | |
-| `memoChangeStallion()` | `vue/app/methods/selection.js` | |
-| `memoChangeBroodmare()` | `vue/app/methods/selection.js` | |
-| `persistManualInbreedState()` | `vue/app/methods/combination.js` | |
-| `clearManualInbreedForIndex()` | `vue/app/methods/combination.js` | |
-| `initializer()` | `vue/app/methods/bootstrap.js` | |
-| `onCombinationRestore()` | `vue/app/methods/combination.js` | |
-| （参考）`refreshLocalDataFromStorage()` | `vue/app/methods/combination.js` | |
-| （参考）`applySavedCombination()` | `vue/app/methods/combination.js` | |
+| `persistSelectedToStorage()` | `vue/app/methods/horse-loading.js` | `vue/app/methods/horse-loading.js:325`（実績どおり） |
+| `memoChange()` | `vue/app/methods/selection.js` | `vue/app/methods/selection.js:68`（実績どおり） |
+| `memoChangeStallion()` | `vue/app/methods/selection.js` | `vue/app/methods/selection.js:72`（実績どおり） |
+| `memoChangeBroodmare()` | `vue/app/methods/selection.js` | `vue/app/methods/selection.js:76`（実績どおり） |
+| `persistManualInbreedState()` | `vue/app/methods/combination.js` | `vue/app/methods/combination.js:154`（実績どおり） |
+| `clearManualInbreedForIndex()` | `vue/app/methods/combination.js` | `vue/app/methods/combination.js:166`（実績どおり） |
+| `initializer()` | `vue/app/methods/bootstrap.js` | `vue/app/methods/bootstrap.js:151`（実績どおり） |
+| `onCombinationRestore()` | `vue/app/methods/combination.js` | `vue/app/methods/combination.js:48`（実績どおり） |
+| （参考）`refreshLocalDataFromStorage()` | `vue/app/methods/combination.js` | `vue/app/methods/combination.js:219`（実績どおり） |
+| （参考）`applySavedCombination()` | `vue/app/methods/combination.js` | `vue/app/methods/combination.js:126`（実績どおり） |
 
 ## 11. やらないこと（本計画のスコープ外）
 
