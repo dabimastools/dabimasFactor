@@ -310,6 +310,7 @@
   <script src="./vue/logic/theory/compatibility.js"></script>
   <script src="./vue/logic/pedigree/pedigree-builder.js"></script>
   <script src="./vue/logic/inbreed/inbreed-exceptions.js"></script>
+  <script src="./vue/logic/inbreed/inbreed-detector.js"></script>
   <script src="./vue/components/pedigree/pedigree-table.js"></script>
   <script src="./vue/components/pedigree/pedigree-card.js"></script>
 
@@ -3259,6 +3260,50 @@
 
         // インブリード判定
         judgeInbreed: function () {
+          // 逐語移動した純関数（vue/logic/inbreed/inbreed-detector.js）を呼ぶ。
+          const result = window.Dabimas.logic.inbreed.judgeInbreed(
+            this.selected,
+            this.inbreedExceptions
+          );
+
+          // 移行検証用 shadow 比較: 旧実装（judgeInbreedLegacy）を先に走らせて
+          // state を作らせ、純関数の結果と一致するか確認する。純関数の結果で
+          // 上書きするため、最終 state は必ず新経路のものになる。
+          // Phase 1-3 でこのブロックごと削除する。
+          if (window.Dabimas.debug) {
+            const legacyCount = this.judgeInbreedLegacy();
+            const mismatch = [];
+            if (legacyCount !== result.count) mismatch.push("count");
+            if (JSON.stringify(this.sameNameGroups) !== JSON.stringify(result.sameNameGroups)) mismatch.push("sameNameGroups");
+            if (JSON.stringify(this.siblingGroups) !== JSON.stringify(result.siblingGroups)) mismatch.push("siblingGroups");
+            if (JSON.stringify(this.sameNameSpecialChecks) !== JSON.stringify(result.sameNameSpecialChecks)) mismatch.push("sameNameSpecialChecks");
+            if (JSON.stringify(this.sameNameSpecialChecksByIndex) !== JSON.stringify(result.sameNameSpecialChecksByIndex)) mismatch.push("sameNameSpecialChecksByIndex");
+            const legacyColorIndexes = this.dispColor
+              .map((v, i) => (v === "inbreed" ? i : -1))
+              .filter((i) => i >= 0)
+              .sort((a, b) => a - b);
+            const resultColorIndexesSorted = result.inbreedColorIndexes.slice().sort((a, b) => a - b);
+            if (JSON.stringify(legacyColorIndexes) !== JSON.stringify(resultColorIndexesSorted)) mismatch.push("dispColor");
+            if (mismatch.length) console.error("judgeInbreed shadow mismatch:", mismatch);
+          }
+
+          // 結果を Vue state へ反映する（旧実装が this へ直接代入していた分）。
+          // debug モードで judgeInbreedLegacy を先に走らせた場合でも、最終 state は
+          // 必ず新経路（result）のものになるよう dispColor を一旦リセットしてから適用する。
+          this.dispColor = Array.from(new Array(32).fill(""));
+          this.sameNameGroups = result.sameNameGroups;
+          this.siblingGroups = result.siblingGroups;
+          this.sameNameSpecialChecks = result.sameNameSpecialChecks;
+          this.sameNameSpecialChecksByIndex = result.sameNameSpecialChecksByIndex;
+          result.inbreedColorIndexes.forEach((index) => {
+            this.$set(this.dispColor, index, "inbreed");
+          });
+          return result.count;
+        },
+
+        // 逐語移動元（vue/logic/inbreed/inbreed-detector.js）。shadow 比較用に
+        // 一時的に残している。Phase 1-3 でこのメソッドごと削除する。
+        judgeInbreedLegacy: function () {
           const isInbreedExcludedHorse = (horse) => {
             const horseName = horse?.name;
             if (typeof horseName !== "string") {

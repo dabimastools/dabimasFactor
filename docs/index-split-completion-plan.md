@@ -22,8 +22,8 @@
 |---|---|---|
 | 0-1 | 回帰ベースライン整備（スナップショット採取） | **完了**（2026-07-03。`tests/fixtures/split-baseline/README.md` 参照。S1〜S6 採取済み、S7 は★馬なし環境のためスキップ） |
 | 0-2 | IME シミュレーションスクリプト整備 | **完了**（2026-07-03。`tests/fixtures/split-baseline/README.md` の「IME シミュレーション」節に基準値記録済み） |
-| 1-1 | `inbreed-exceptions.js`（例外ルールローダ）外部化 | 未着手 |
-| 1-2 | `inbreed-detector.js`（judgeInbreed 純関数化）＋ shadow 比較 | 未着手 |
+| 1-1 | `inbreed-exceptions.js`（例外ルールローダ）外部化 | **完了**（2026-07-03。コミット `107352c`） |
+| 1-2 | `inbreed-detector.js`（judgeInbreed 純関数化）＋ shadow 比較 | **完了**（2026-07-03） |
 | 1-3 | shadow 比較の撤去（legacy 削除） | 未着手 |
 | 1-4 | `inbreed-counts.js`（クロス因子集計の純粋部分）外部化 | 未着手 |
 | 2-1 | `pedigree-row.js` 外部化（x-template → テンプレート文字列） | 未着手 |
@@ -52,7 +52,9 @@
 
 このセクションは「使用量制限などで途中で中断した場合に、次の担当者（人間または別セッションの Sonnet 5）が § 1 の表を見なくても一目で現在地を把握できる」ことだけを目的にした短いログ。詳細は § 1 の表と各 Phase の本文、コミット履歴を参照する。
 
-- **2026-07-03**: 作業ブランチ `feature/index-split-completion` を `feature/json-split-initial-load` から作成。Phase 0-1 / 0-2 完了（`tests/fixtures/split-baseline/` にベースライン一式をコミット）。**次に着手すべきは Phase 1-1（`vue/logic/inbreed/inbreed-exceptions.js` の外部化）。**
+- **2026-07-03**: 作業ブランチ `feature/index-split-completion` を `feature/json-split-initial-load` から作成。Phase 0-1 / 0-2 完了（`tests/fixtures/split-baseline/` にベースライン一式をコミット）。
+- **2026-07-03**: Phase 1-1 完了（`vue/logic/inbreed/inbreed-exceptions.js` 外部化、コミット `107352c`）。
+- **2026-07-03**: Phase 1-2 完了（`vue/logic/inbreed/inbreed-detector.js` へ `judgeInbreed` を純関数として外部化。index.html 側に `judgeInbreedLegacy`（旧実装、逐語のまま）＋ shadow 比較付き新 `judgeInbreed` ラッパーを追加。`window.Dabimas.debug=true` で S1〜S3 を再実行し shadow mismatch 0 件を確認済み）。**次に着手すべきは Phase 1-3（shadow 比較の撤去。`judgeInbreedLegacy` と shadow 比較ブロックを削除）。**
 
 
 
