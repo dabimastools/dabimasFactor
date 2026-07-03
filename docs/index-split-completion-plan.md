@@ -29,7 +29,7 @@
 | 2-1 | `pedigree-row.js` 外部化（x-template → テンプレート文字列） | **完了**（2026-07-03） |
 | 3-1 | `common-autocomplete` を無変更で `horse-cell.js` へファイル移動 | **完了**（2026-07-03） |
 | 3-2 | `memo-cell.js` 分離 | **完了**（2026-07-03） |
-| 3-3 | `desktop-horse-autocomplete.js` 分離 | 未着手 |
+| 3-3 | `desktop-horse-autocomplete.js` 分離 | **完了**（2026-07-03） |
 | 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | 未着手 |
 | 3-5 | `horse-cell` へのリネーム（任意: emit 化） | 未着手 |
 | 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | 未着手 |
@@ -60,6 +60,7 @@
 - **2026-07-03**: Phase 2-1 完了・Phase 2 全体完了（x-template `#pedigree-row-template` をテンプレート文字列化し `vue/components/pedigree/pedigree-row.js` へ移動。index.html から x-template ブロックと `Vue.component('pedigree-row', {...})` を削除、index.htmlはさらに約277行減。S1・S2がベースラインと完全一致、PC/モバイルのスクリーンショットが目視一致、子系統トグル・ハートボタンのUIクリック操作（emit経由）も正常動作を確認）。
 - **2026-07-03**: Phase 3-1 完了（`Vue.component("common-autocomplete", {...})` 一式（テンプレート・props・data・computed・watch・methods・beforeDestroy、610行）を無変更で `vue/components/pedigree/horse-cell.js` へ移動。`horseListKeyCache`/`horseListKeySeq` もIIFEスコープへ一緒に移動。コンポーネント登録名は `common-autocomplete` のまま。**気づき**: preview環境の「PC」既定ビューポートは実際には約628px幅で Vuetify の `sm` ブレークポイント（モバイルレイアウト）になっていたため、真の PC（`v-autocomplete`）経路は明示的に 1280×800 にリサイズしないと検証できない。以後の Phase 3 検証では PC 確認時に明示的な width/height 指定が必要。検証: verify-index-exp OK、コンソールエラー0件、S1・S2・S4がベースラインと完全一致、**真のPC幅(1280×800)**でのv-autocomplete検索→選択（オグリキャップへ変更→祖先ツリー再構築を確認）、モバイルのIMEシミュレーション（候補80件・タップ選択・ダイアログクローズ・クエリクリア）が全てベースラインと一致することを確認。**次に着手すべきは Phase 3-2（`memo-cell.js` 分離）。**
 - **2026-07-03**: Phase 3-2 完了（`common-autocomplete` の `v-else` 分岐（子系統表示＋メモ入力の `v-row`）と `getWidth` メソッドを `vue/components/pedigree/memo-cell.js` へ分離。メモ確定は `memo-change` イベントを emit し、horse-cell 側で `this.memoChange(index, $event)` を呼ぶ経路にした。検証: verify-index-exp OK、コンソールエラー0件、S1・S4（メモ）がベースラインと完全一致。`dispCategory` を奇数にして子系統＋メモ表示への切り替わりをスクリーンショットで確認、メモ欄の値・placeholder・レイアウト幅もベースラインと目視一致。UIのfill+blur/dispatchEventでは`window.event`が自動設定されずmemoChangeが発火しなかった（既知のwindow.event依存の挙動、Phase 0発見メモの通り）が、memo-cellインスタンスの`handleMemoChange`を`window.event`をセットした状態で直接呼ぶと正しくroot.memoChange→localStorage保存まで動作することを確認し、emit配線自体は正しいことを検証。**次に着手すべきは Phase 3-3（`desktop-horse-autocomplete.js` 分離）。**
+- **2026-07-03**: Phase 3-3 完了（`v-autocomplete` 分岐と PC 専用ヘルパー `getHorse`/`getFactor`/`filterHorse` を `vue/components/pedigree/desktop-horse-autocomplete.js` へ分離。選択確定は `horse-change`（`{index, sex, localIndex, horse}`）を emit し、horse-cell 側で `onChange(sex, $event.localIndex, $event.horse)` を呼ぶ。`sex`/`lists`/`placeholderText` は horse-cell 側の computed のまま props で渡す設計にした（モバイル側もまだ同じ computed を使うため horse-cell に残す必要があった）。**気づき**: horse-cell.js の computed に `sex` と `placeholderText` が2重定義されていた（JS オブジェクトリテラルの仕様で後勝ちになり、前者は常に無効。前者の `sex(newValue)`/`placeholderText(newValue)` は computed が引数を受け取らない Vue の仕様上そもそも呼ばれても壊れる書き方で、恐らく過去のリファクタの残骸）。今回のスコープ外のため修正はせず記録のみ（Phase 5-2 の最終報告で改めて触れる）。検証: verify-index-exp OK、コンソールエラー0件、真のPC幅(1280×800)でv-autocomplete検索→選択が正常動作、モバイルIMEシミュレーション（候補80件）もベースライン一致。**次に着手すべきは Phase 3-4（`mobile-horse-picker.js` 分離。★実機確認の停止ポイント）。**
 
 
 

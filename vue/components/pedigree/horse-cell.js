@@ -145,27 +145,15 @@
             </v-dialog>
           </template>
 
-          <v-autocomplete
+          <desktop-horse-autocomplete
             v-else
-        :value="selected[index]"
-        :items="lists"
-        :item-text="horse => [horse.nature ? '[' + horse.nature.charAt(0) + ']' : '', horse.name, horse.subName].filter(Boolean).join('')"
-        :filter="filterHorse"
-        solo
-        dense
-        :placeholder="placeholderText"
-        no-data-text="該当するデータはありません"
-        @input="onChange(sex, index - (sex * 16), $event)"
-        return-object
-      >
-        <template v-slot:item="data">
-          <template >
-            <v-list-item-content>
-              <v-list-item-title v-html="getHorse(data.item)"></v-list-item-title>
-            </v-list-item-content>
-          </template>
-        </template>
-          </v-autocomplete>
+            :index="index"
+            :sex="sex"
+            :selected="selected"
+            :lists="lists"
+            :placeholder-text="placeholderText"
+            @horse-change="onChange(sex, $event.localIndex, $event.horse)"
+          ></desktop-horse-autocomplete>
         </template>
       <memo-cell
         v-else
@@ -257,29 +245,9 @@
         getHorseFactorBadges(horse) {
           return window.Dabimas.logic.horses.getHorseFactorBadges(horse);
         },
-        filterHorse(horse, queryText, itemText) {
-          return window.Dabimas.logic.horses.filterHorse(horse, queryText, itemText);
-        },
         // getWidth は vue/components/pedigree/memo-cell.js に外部化済み。
-        getHorse(horse) {
-          if (!horse?.disabled) {
-            const natureTag = horse.nature ? `[${horse.nature.charAt(0)}]` : '';
-            return natureTag + horse.name + horse.subName + this.getFactor(horse.factors);
-          }
-        },
-        getFactor(factors) {
-          let retFactor = "";
-          if (factors[2] != "") {
-            retFactor = "(";
-            for (const factor in factors) {
-              if (factor) {
-                retFactor += factors[factor];
-              }
-            }
-            retFactor += ")";
-          }
-          return retFactor;
-        },
+        // filterHorse / getHorse / getFactor は
+        // vue/components/pedigree/desktop-horse-autocomplete.js に外部化済み。
         clearMobileQuerySyncTimer() {
           if (this.mobileQuerySyncTimer) {
             clearTimeout(this.mobileQuerySyncTimer);
