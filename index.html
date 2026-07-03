@@ -309,6 +309,7 @@
   <script src="./vue/logic/storage/local-storage.js"></script>
   <script src="./vue/logic/theory/compatibility.js"></script>
   <script src="./vue/logic/pedigree/pedigree-builder.js"></script>
+  <script src="./vue/logic/inbreed/inbreed-exceptions.js"></script>
   <script src="./vue/components/pedigree/pedigree-table.js"></script>
   <script src="./vue/components/pedigree/pedigree-card.js"></script>
 
@@ -2035,14 +2036,8 @@
           });
         },
         loadInbreedExceptions: function () {
-          return fetch('./json/inbreed-exceptions.json')
-            .then(response => {
-              if (!response.ok) {
-                console.warn('inbreed-exceptions.json not found, using empty rules');
-                return [];
-              }
-              return response.json();
-            })
+          // fetch本体は vue/logic/inbreed/inbreed-exceptions.js に外部化済み。
+          return window.Dabimas.logic.inbreed.loadInbreedExceptions()
             .then(data => {
               this.inbreedExceptions = data;
               console.log('Loaded inbreed exceptions:', this.inbreedExceptions);
