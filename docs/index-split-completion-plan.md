@@ -30,7 +30,7 @@
 | 3-1 | `common-autocomplete` を無変更で `horse-cell.js` へファイル移動 | **完了**（2026-07-03） |
 | 3-2 | `memo-cell.js` 分離 | **完了**（2026-07-03） |
 | 3-3 | `desktop-horse-autocomplete.js` 分離 | **完了**（2026-07-03） |
-| 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | 未着手 |
+| 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | **実装・自動検証完了。実機確認待ち**（2026-07-03） |
 | 3-5 | `horse-cell` へのリネーム（任意: emit 化） | 未着手 |
 | 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | 未着手 |
 | 4-1 | methods スライス: ui-viewport | 未着手 |
@@ -61,6 +61,13 @@
 - **2026-07-03**: Phase 3-1 完了（`Vue.component("common-autocomplete", {...})` 一式（テンプレート・props・data・computed・watch・methods・beforeDestroy、610行）を無変更で `vue/components/pedigree/horse-cell.js` へ移動。`horseListKeyCache`/`horseListKeySeq` もIIFEスコープへ一緒に移動。コンポーネント登録名は `common-autocomplete` のまま。**気づき**: preview環境の「PC」既定ビューポートは実際には約628px幅で Vuetify の `sm` ブレークポイント（モバイルレイアウト）になっていたため、真の PC（`v-autocomplete`）経路は明示的に 1280×800 にリサイズしないと検証できない。以後の Phase 3 検証では PC 確認時に明示的な width/height 指定が必要。検証: verify-index-exp OK、コンソールエラー0件、S1・S2・S4がベースラインと完全一致、**真のPC幅(1280×800)**でのv-autocomplete検索→選択（オグリキャップへ変更→祖先ツリー再構築を確認）、モバイルのIMEシミュレーション（候補80件・タップ選択・ダイアログクローズ・クエリクリア）が全てベースラインと一致することを確認。**次に着手すべきは Phase 3-2（`memo-cell.js` 分離）。**
 - **2026-07-03**: Phase 3-2 完了（`common-autocomplete` の `v-else` 分岐（子系統表示＋メモ入力の `v-row`）と `getWidth` メソッドを `vue/components/pedigree/memo-cell.js` へ分離。メモ確定は `memo-change` イベントを emit し、horse-cell 側で `this.memoChange(index, $event)` を呼ぶ経路にした。検証: verify-index-exp OK、コンソールエラー0件、S1・S4（メモ）がベースラインと完全一致。`dispCategory` を奇数にして子系統＋メモ表示への切り替わりをスクリーンショットで確認、メモ欄の値・placeholder・レイアウト幅もベースラインと目視一致。UIのfill+blur/dispatchEventでは`window.event`が自動設定されずmemoChangeが発火しなかった（既知のwindow.event依存の挙動、Phase 0発見メモの通り）が、memo-cellインスタンスの`handleMemoChange`を`window.event`をセットした状態で直接呼ぶと正しくroot.memoChange→localStorage保存まで動作することを確認し、emit配線自体は正しいことを検証。**次に着手すべきは Phase 3-3（`desktop-horse-autocomplete.js` 分離）。**
 - **2026-07-03**: Phase 3-3 完了（`v-autocomplete` 分岐と PC 専用ヘルパー `getHorse`/`getFactor`/`filterHorse` を `vue/components/pedigree/desktop-horse-autocomplete.js` へ分離。選択確定は `horse-change`（`{index, sex, localIndex, horse}`）を emit し、horse-cell 側で `onChange(sex, $event.localIndex, $event.horse)` を呼ぶ。`sex`/`lists`/`placeholderText` は horse-cell 側の computed のまま props で渡す設計にした（モバイル側もまだ同じ computed を使うため horse-cell に残す必要があった）。**気づき**: horse-cell.js の computed に `sex` と `placeholderText` が2重定義されていた（JS オブジェクトリテラルの仕様で後勝ちになり、前者は常に無効。前者の `sex(newValue)`/`placeholderText(newValue)` は computed が引数を受け取らない Vue の仕様上そもそも呼ばれても壊れる書き方で、恐らく過去のリファクタの残骸）。今回のスコープ外のため修正はせず記録のみ（Phase 5-2 の最終報告で改めて触れる）。検証: verify-index-exp OK、コンソールエラー0件、真のPC幅(1280×800)でv-autocomplete検索→選択が正常動作、モバイルIMEシミュレーション（候補80件）もベースライン一致。**次に着手すべきは Phase 3-4（`mobile-horse-picker.js` 分離。★実機確認の停止ポイント）。**
+- **2026-07-03**: Phase 3-4 実装完了。モバイルダイアログ一式（data: mobileDialogVisible等5件、methods: clearMobileQuerySyncTimer〜isSelectedHorseの一式、computed: mobileDialogTitle/mobileDialogContextLabel/mobileCurrentSelectionLabel/mobileInputId/filteredMobileLists、horseListKeyCache/horseListKeySeq）を `vue/components/pedigree/mobile-horse-picker.js` へ分離。選択・クリアは `horse-change`（`{index, sex, localIndex, horse}`）をemit。
+
+  **計画書からの意図的な変更点（重要）**: §7.4 は「`exp-mobile-horse-trigger` ボタンと `v-dialog` ブロック全体」を丸ごと mobile-horse-picker へ移す想定だったが、実装時に `css/mobile.css` の `.exp-mobile-autocomplete-root.inbreed > .exp-mobile-horse-trigger` 等が**直下（direct child）セレクタ**であることを発見。Vue 2 のコンポーネントは単一ルート要素が必須なため、ボタン+v-dialog の両方を新コンポーネントのルートにするには何らかの要素で包む必要があり、それをやると直下関係が崩れてクロス発生時の赤字装飾（`color: #ff1744`）が効かなくなる。そのため **v-dialog 自体を mobile-horse-picker の単一ルートにし、トリガーボタンは horse-cell 側に残して `$refs.mobilePicker.openMobileEditor()` で開く**設計に変更した。`mobileTriggerLabel`/`mobilePlaceholderText`（トリガー文言算出に必要）も horse-cell 側に残した。実機確認前に必ずこの設計変更点を把握しておくこと。
+
+  検証: verify-index-exp OK、コンソールエラー0件。モバイル(375×812)で: S1完全一致、`.exp-mobile-autocomplete-root.inbreed .exp-mobile-horse-text` の実算出色が `rgb(255, 23, 68)`（#ff1744）であることを`preview_inspect`で確認（直下セレクタが機能している証拠）、IMEシミュレーション（候補80件・クエリ"き"）がベースライン一致、候補タップ選択・「クリア」ボタンともに動作（クリア確定は`runAfterMobileDialogClose`のrequestAnimationFrame待ちのため反映に最大600ms程度かかることがあるが、これは元実装から変わらない既存の遅延特性であり退行ではない）。真のPC幅(1280×800)でも通しでエラー0件。
+
+  **★停止ポイント: このコミット完了後、ユーザーに実機（iPhone + flick IME）での検索動作確認を依頼し、OK が出るまで Phase 3-5 以降に進まない。** 確認してほしい操作: ダイアログを開く→flickで2文字以上入力→候補が絞り込まれる→候補タップで反映されダイアログが閉じる→クリア→閉じる。加えて、クロス発生セル（バックパサー等）のモバイル表示で馬名が赤字太字になっていることも見た目で確認してほしい（今回の設計変更点の実地検証）。
 
 
 
