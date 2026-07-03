@@ -325,6 +325,7 @@
   <script src="./vue/app/methods/horse-loading.js"></script>
   <script src="./vue/app/methods/bootstrap.js"></script>
   <script src="./vue/app/methods/selection.js"></script>
+  <script src="./vue/app/methods/inbreed-ui.js"></script>
 
   <script>
     //loadingAnimation
@@ -758,109 +759,6 @@
         // pedigree-row へ prop（Function）として渡しているため、メソッド自体は残す。
         getCss: function (i) {
           return window.Dabimas.logic.pedigree.getCss(i);
-        },
-
-        // インブリード表示
-        dispInbreed: async function () {
-          //
-          // let retInbreedArray = [];
-          let retInbreedCount = 0;
-          // 血統表が全部埋まっている場合に判定処理を行う
-          if (this.selected.every((e) => e)) {
-            // インブリードボタンクリック済フラグを未クリックに設定
-            this.isInbreedButtonClicked = Array.from(new Array(32).fill(-1));
-            // インブリードされているところを格納する変数
-            this.inbreedList = Array.from(new Array(32).fill(null));
-            // インブリードの色も初期化
-            this.dispColor = Array.from(new Array(32).fill(""));
-            // インブリード判定処理のメイン
-            if (window.Dabimas.debug) console.time('インブリード判定');
-            retInbreedCount = this.judgeInbreed();
-            if (window.Dabimas.debug) console.timeEnd('インブリード判定');
-          } else {
-            // インブリードボタンクリック済フラグを非活性モードに設定
-            this.isInbreedButtonClicked = Array.from(new Array(32).fill(0));
-            this.reload++;
-            // インブリードの色も初期化
-            this.dispColor = Array.from(new Array(32).fill(""));
-            // インブリード因子数表示（中長強雷因子も）
-            this.inbreedFactorNumtoString = Array.from(new Array(14).fill("00"));
-            // インブリードされているところを格納する変数
-            this.inbreedList = Array.from(new Array(32).fill(null));
-            this.sameNameGroups = {
-              byIndex: [[], []],
-              indexes: [],
-              special: {
-                sameName: {
-                  byGroup: [],
-                  byIndex: [],
-                },
-              },
-            };
-            this.sameNameSpecialChecks = [];
-            this.sameNameSpecialChecksByIndex = Array.from(
-              new Array(32).fill(false)
-            );
-          }
-
-          if (window.Dabimas.debug) console.time('インブリード表示');
-          // インブリードが発生した場合
-          if (retInbreedCount > 0) {
-            await this.dispInbreedFactorCounts();
-          }
-          if (window.Dabimas.debug) console.timeEnd('インブリード表示');
-        },
-
-        // インブリード本数表示
-        dispInbreedFactorCounts: function () {
-          if (this.deferInbreedCount) {
-            this.deferredInbreedCountRequested = true;
-            return;
-          }
-          this.performInbreedFactorCounts();
-        },
-        performInbreedFactorCounts: function () {
-          // マージ・集計本体は vue/logic/inbreed/inbreed-counts.js に外部化済み。
-          const result = window.Dabimas.logic.inbreed.buildInbreedFactorCounts(
-            this.sameNameGroups,
-            this.siblingGroups,
-            this.inbreedList
-          );
-
-          // 自動クロスされたところのボタンを非活性化させる
-          result.disabledIndexes.forEach(element => {
-            this.$set(this.isInbreedButtonClicked, element, 0);
-          });
-
-          // inbreedListへ反映（元実装と同じ非リアクティブな直接代入のまま）
-          result.inbreedEntries.forEach(({ index, element }) => {
-            this.inbreedList[index] = element;
-          });
-
-          // インブリードした因子数をカウントする
-          this.inbreedFactorNumtoString = this.dispFactorCounts(result.factorCd);
-
-          if (window.Dabimas.debug) console.log(this.inbreedFactorNumtoString);
-        },
-
-        // インブリード判定
-        judgeInbreed: function () {
-          // 逐語移動した純関数（vue/logic/inbreed/inbreed-detector.js）を呼ぶ。
-          const result = window.Dabimas.logic.inbreed.judgeInbreed(
-            this.selected,
-            this.inbreedExceptions
-          );
-
-          // 結果を Vue state へ反映する（旧実装が this へ直接代入していた分）。
-          this.dispColor = Array.from(new Array(32).fill(""));
-          this.sameNameGroups = result.sameNameGroups;
-          this.siblingGroups = result.siblingGroups;
-          this.sameNameSpecialChecks = result.sameNameSpecialChecks;
-          this.sameNameSpecialChecksByIndex = result.sameNameSpecialChecksByIndex;
-          result.inbreedColorIndexes.forEach((index) => {
-            this.$set(this.dispColor, index, "inbreed");
-          });
-          return result.count;
         },
 
         // 配合理論を求めて画面に表示させる

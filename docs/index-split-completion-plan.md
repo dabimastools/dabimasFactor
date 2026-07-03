@@ -38,7 +38,7 @@
 | 4-3 | methods スライス: horse-loading | **完了**（2026-07-03） |
 | 4-4 | methods スライス: bootstrap | **完了**（2026-07-03） |
 | 4-5 | methods スライス: selection | **完了**（2026-07-03） |
-| 4-6 | methods スライス: inbreed-ui | 未着手 |
+| 4-6 | methods スライス: inbreed-ui | **完了**（2026-07-03） |
 | 4-7 | methods スライス: pedigree-cells | 未着手 |
 | 4-8 | app-state.js（data 外部化） | 未着手 |
 | 4-9 | app-computed.js（computed / watch 外部化） | 未着手 |
@@ -80,6 +80,7 @@
 - **2026-07-03**: Phase 4-3 完了。JSON分割ロード（summary + detail chunk）関連15メソッド（normalizeHorseSummary〜dbinitializer、389行、モジュールスコープ定数への依存なし）を逐語コピーで `vue/app/methods/horse-loading.js` へ外部化。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、Networkログで初期ロードが `dabimasFactor.summary.json` 経由であり4.8MBの `dabimasFactor.json` を取得していないことを確認、選択時のdetail chunk取得（`dabimasFactor-details/*.json`）も正常動作、メモ入力→`persistSelectedToStorage`経由のlocalStorage保存も正常動作。**次に着手すべきは Phase 4-4（methodsスライス: bootstrap）。**
 - **2026-07-03**: Phase 4-4 完了。起動シーケンス・復元・リセット関連8メソッド（loadInbreedExceptions, c1, c2, c3, c4, restoreInputData, initializer, handleClick）を `vue/app/methods/bootstrap.js` へ外部化。**この回だけindex.html内で非連続**（handleInbreedButtonClick等の選択系メソッドが間に挟まっていたため）だったので、8つの範囲を個別に検証してから一括削除。モジュールスコープ定数 `factorMap`（restoreInputData用）・`MANUAL_INBREED_STORAGE_KEY`（initializer用）をIIFE先頭で再宣言。**気づき（軽微・その場で解消）**: `methods: Object.assign({}, window.Dabimas.app.methods, {` の直後にあった「// インブリード例外ルールを読み込む」コメントは、実は歴代のPhase 4-1〜4-3のたびに次の外部化で隣接メソッドが変わり続けた結果、本来説明すべき対象（loadInbreedExceptions）から浮いてしまっていた。今回loadInbreedExceptions自体を外部化するタイミングで、このコメントをbootstrap.js側のloadInbreedExceptionsの直前に付け直し、index.html側の孤立コメントは削除した（コメントのみの整理で、コードの意味は一切変えていない）。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、S4（メモ）→S5（リロード復元、メモ・選択とも正しく復元）→S6（`initializer()`によるリセット。`dabimasFactorCategory`だけクリアされない既知の挙動も含め再現）を順番に確認。**次に着手すべきは Phase 4-5（methodsスライス: selection）。**
 - **2026-07-03**: Phase 4-5 完了。セル選択・削除・メモ関連9メソッド（memoChange系3つ, onChange, onChangeMain, deleteHorses, onRowInbreedToggle, onRowManualFactorUpdate, handleInbreedButtonClick）を `vue/app/methods/selection.js` へ外部化。index.html内でgetCssが間に挟まっていた（Phase 4-7候補、そのまま残置）ため2つの非連続範囲として抽出。モジュールスコープ定数 `ROWS_PER_SIDE`（onChangeMain用）をIIFE先頭で再宣言。検証: verify-index-exp OK、コンソールエラー0件、S1（基本クロス）・S2（手動クロス押下/解除）・S3（途中セル上書き・削除、categoryNumtoStringの"11"/"10"変化も含め既知のuuid巻き込み挙動を再現）・S4（メモ3種）が全てベースラインと完全一致。**次に着手すべきは Phase 4-6（methodsスライス: inbreed-ui）。**
+- **2026-07-03**: Phase 4-6 完了。インブリード表示の入口4メソッド（dispInbreed, dispInbreedFactorCounts, performInbreedFactorCounts, judgeInbreed（Phase 1純関数への薄いラッパ）、102行、連続ブロック）を逐語コピーで `vue/app/methods/inbreed-ui.js` へ外部化。モジュールスコープ定数への依存なし。検証: verify-index-exp OK、コンソールエラー0件、S1・S2（手動クロス押下/解除）がベースラインと完全一致。**次に着手すべきは Phase 4-7（methodsスライス: pedigree-cells）。**
 
 
 
