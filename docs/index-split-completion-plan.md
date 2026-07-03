@@ -36,7 +36,7 @@
 | 4-1 | methods スライス: ui-viewport | **完了**（2026-07-03） |
 | 4-2 | methods スライス: combination / storage | **完了**（2026-07-03） |
 | 4-3 | methods スライス: horse-loading | **完了**（2026-07-03） |
-| 4-4 | methods スライス: bootstrap | 未着手 |
+| 4-4 | methods スライス: bootstrap | **完了**（2026-07-03） |
 | 4-5 | methods スライス: selection | 未着手 |
 | 4-6 | methods スライス: inbreed-ui | 未着手 |
 | 4-7 | methods スライス: pedigree-cells | 未着手 |
@@ -78,6 +78,7 @@
 - **2026-07-03**: Phase 4-1 完了。ビューポート計算・レイアウト固定・スクリーンショット関連17メソッド（getStableViewportHeight〜markPedigreeStairEdges、408行、モジュールスコープ定数への依存なし）を逐語コピーで `vue/app/methods/ui-viewport.js` へ外部化し、`Object.assign(window.Dabimas.app.methods, {...})` として登録。index.htmlからは該当ブロックを削除（コメント「インブリード例外ルールを読み込む」はloadInbreedExceptionsの直前コメントとして元々あった位置に残置、ui-viewport側には持っていかない：このコメントはui-viewportではなくloadInbreedExceptionsの説明だったため）。scriptタグをpedigree-card.jsの後・inline bootスクリプトの前に追加。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、モバイルで`applyMobileViewportLayout()`・画面表示・スクリーンショット撮影（html2canvas経由、PNG生成まで）が正常動作することを確認。**次に着手すべきは Phase 4-2（methodsスライス: combination / storage）。**
 - **2026-07-03**: Phase 4-2 完了。配合保存ダイアログ・手動クロス永続化関連11メソッド（combinationDialog〜refreshLocalDataFromStorage、218行）を逐語コピーで `vue/app/methods/combination.js` へ外部化。モジュールスコープ定数 `MANUAL_INBREED_STORAGE_KEY`（"dabimasManualInbreed"）をIIFE先頭で再宣言。**発見メモ**: `fetchSavedCombinations`/`enforceCombinationLimit` が `COMBINATION_STORE_NAME` という index.html のどこにも宣言されていない変数を参照している（未定義参照。呼ばれればReferenceError）が、両メソッドともコードベースのどこからも呼び出されていない到達不能コードのため実害なし。逐語移動原則によりそのまま移した（修正しない）。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、手動クロス（`handleInbreedButtonClick`→`persistManualInbreedState`→`dabimasManualInbreed`保存）とリロード後の復元（`restoreInputData`/`restoreManualInbreedState`経由）が正常動作、配合保存ダイアログ（`handleCombinationCellClick`）が正常に開くことを確認。**次に着手すべきは Phase 4-3（methodsスライス: horse-loading）。**
 - **2026-07-03**: Phase 4-3 完了。JSON分割ロード（summary + detail chunk）関連15メソッド（normalizeHorseSummary〜dbinitializer、389行、モジュールスコープ定数への依存なし）を逐語コピーで `vue/app/methods/horse-loading.js` へ外部化。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、Networkログで初期ロードが `dabimasFactor.summary.json` 経由であり4.8MBの `dabimasFactor.json` を取得していないことを確認、選択時のdetail chunk取得（`dabimasFactor-details/*.json`）も正常動作、メモ入力→`persistSelectedToStorage`経由のlocalStorage保存も正常動作。**次に着手すべきは Phase 4-4（methodsスライス: bootstrap）。**
+- **2026-07-03**: Phase 4-4 完了。起動シーケンス・復元・リセット関連8メソッド（loadInbreedExceptions, c1, c2, c3, c4, restoreInputData, initializer, handleClick）を `vue/app/methods/bootstrap.js` へ外部化。**この回だけindex.html内で非連続**（handleInbreedButtonClick等の選択系メソッドが間に挟まっていたため）だったので、8つの範囲を個別に検証してから一括削除。モジュールスコープ定数 `factorMap`（restoreInputData用）・`MANUAL_INBREED_STORAGE_KEY`（initializer用）をIIFE先頭で再宣言。**気づき（軽微・その場で解消）**: `methods: Object.assign({}, window.Dabimas.app.methods, {` の直後にあった「// インブリード例外ルールを読み込む」コメントは、実は歴代のPhase 4-1〜4-3のたびに次の外部化で隣接メソッドが変わり続けた結果、本来説明すべき対象（loadInbreedExceptions）から浮いてしまっていた。今回loadInbreedExceptions自体を外部化するタイミングで、このコメントをbootstrap.js側のloadInbreedExceptionsの直前に付け直し、index.html側の孤立コメントは削除した（コメントのみの整理で、コードの意味は一切変えていない）。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、S4（メモ）→S5（リロード復元、メモ・選択とも正しく復元）→S6（`initializer()`によるリセット。`dabimasFactorCategory`だけクリアされない既知の挙動も含め再現）を順番に確認。**次に着手すべきは Phase 4-5（methodsスライス: selection）。**
 
 
 
