@@ -20,8 +20,8 @@
 
 | Phase | 内容 | 状態 |
 |---|---|---|
-| 0-1 | 回帰ベースライン整備（スナップショット採取） | 未着手 |
-| 0-2 | IME シミュレーションスクリプト整備 | 未着手 |
+| 0-1 | 回帰ベースライン整備（スナップショット採取） | **完了**（2026-07-03。`tests/fixtures/split-baseline/README.md` 参照。S1〜S6 採取済み、S7 は★馬なし環境のためスキップ） |
+| 0-2 | IME シミュレーションスクリプト整備 | **完了**（2026-07-03。`tests/fixtures/split-baseline/README.md` の「IME シミュレーション」節に基準値記録済み） |
 | 1-1 | `inbreed-exceptions.js`（例外ルールローダ）外部化 | 未着手 |
 | 1-2 | `inbreed-detector.js`（judgeInbreed 純関数化）＋ shadow 比較 | 未着手 |
 | 1-3 | shadow 比較の撤去（legacy 削除） | 未着手 |
@@ -48,7 +48,13 @@
 | 5-1 | service worker precache 整合＋総合検証 | 未着手 |
 | 5-2 | ドキュメント更新・統合版向け対応表の確定 | 未着手 |
 
-## 2. 現状の起点（2026-07-03 時点）
+### 1.1 進捗ログ（中断・再開用。作業のたびに追記する）
+
+このセクションは「使用量制限などで途中で中断した場合に、次の担当者（人間または別セッションの Sonnet 5）が § 1 の表を見なくても一目で現在地を把握できる」ことだけを目的にした短いログ。詳細は § 1 の表と各 Phase の本文、コミット履歴を参照する。
+
+- **2026-07-03**: 作業ブランチ `feature/index-split-completion` を `feature/json-split-initial-load` から作成。Phase 0-1 / 0-2 完了（`tests/fixtures/split-baseline/` にベースライン一式をコミット）。**次に着手すべきは Phase 1-1（`vue/logic/inbreed/inbreed-exceptions.js` の外部化）。**
+
+
 
 ### 2.1 行数と構造
 

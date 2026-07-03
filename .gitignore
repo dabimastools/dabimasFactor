@@ -4,4 +4,8 @@ node_modules
 
 f/
 
-tests/
+tests/*
+!tests/fixtures
+!tests/fixtures/*
+!tests/fixtures/split-baseline
+!tests/fixtures/split-baseline/*
