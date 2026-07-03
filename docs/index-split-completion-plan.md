@@ -33,7 +33,7 @@
 | 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | **実装・自動検証完了。実機確認待ち**（2026-07-03） |
 | 3-5 | `horse-cell` へのリネーム（任意: emit 化） | **完了**（2026-07-03。emit化は任意のため未実施） |
 | 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | **完了**（2026-07-03） |
-| 4-1 | methods スライス: ui-viewport | 未着手 |
+| 4-1 | methods スライス: ui-viewport | **完了**（2026-07-03） |
 | 4-2 | methods スライス: combination / storage | 未着手 |
 | 4-3 | methods スライス: horse-loading | 未着手 |
 | 4-4 | methods スライス: bootstrap | 未着手 |
@@ -75,6 +75,7 @@
   **重大な落とし穴（要記録）**: guardスクリプトへ追加した日本語コメント入りの新コードを保存した直後、`verify-index-exp` が `The variable '$projectRoot' cannot be retrieved because it has not been set.` という一見無関係なエラーで毎回失敗するようになった。原因はコード自体のバグではなく、`codex-powershell.ps1` が UTF-8 (BOMなし) で日本語コメントを含むように変更されたため、Windows PowerShell 5.1 (`powershell.exe`、pwsh.exe ではない) がこのファイルをシステム既定コードページで読み込み、マルチバイト文字列を誤読して以降のパース位置がずれたこと。**対処**: このファイル（`.ps1`）に追加するコメントは日本語を避け英語で書く（既存の英語オンリーの規約に合わせる）ことで解消した。**今後 `scripts/*.ps1` に手を入れる際は、BOMなしUTF-8で日本語コメントを追加すると同様の現象が再発しうるので、英語コメントを使うか事前にBOM付きで保存すること。**
 
   index.html 側は `window.Dabimas.app = window.Dabimas.app || {}; window.Dabimas.app.methods = window.Dabimas.app.methods || {};` を boot スクリプトに追加し、root app の `methods: {` を `methods: Object.assign({}, window.Dabimas.app.methods, {` に、閉じ側の `},` を `}),` に変更（全メソッドはこの時点では全部インラインのまま）。検証: 更新後のverify-index-expがBOM仕込みファイルで失敗・スニペット欠落ファイルで失敗・vue/app配下に該当スニペットがあれば成功、という3パターンを手動テストで確認。実アプリはverify-index-exp OK、コンソールエラー0件、S1がベースラインと完全一致。**次に着手すべきは Phase 4-1（methodsスライス: ui-viewport）。**
+- **2026-07-03**: Phase 4-1 完了。ビューポート計算・レイアウト固定・スクリーンショット関連17メソッド（getStableViewportHeight〜markPedigreeStairEdges、408行、モジュールスコープ定数への依存なし）を逐語コピーで `vue/app/methods/ui-viewport.js` へ外部化し、`Object.assign(window.Dabimas.app.methods, {...})` として登録。index.htmlからは該当ブロックを削除（コメント「インブリード例外ルールを読み込む」はloadInbreedExceptionsの直前コメントとして元々あった位置に残置、ui-viewport側には持っていかない：このコメントはui-viewportではなくloadInbreedExceptionsの説明だったため）。scriptタグをpedigree-card.jsの後・inline bootスクリプトの前に追加。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、モバイルで`applyMobileViewportLayout()`・画面表示・スクリーンショット撮影（html2canvas経由、PNG生成まで）が正常動作することを確認。**次に着手すべきは Phase 4-2（methodsスライス: combination / storage）。**
 
 
 
