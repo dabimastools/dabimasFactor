@@ -311,6 +311,7 @@
   <script src="./vue/logic/pedigree/pedigree-builder.js"></script>
   <script src="./vue/logic/inbreed/inbreed-exceptions.js"></script>
   <script src="./vue/logic/inbreed/inbreed-detector.js"></script>
+  <script src="./vue/logic/inbreed/inbreed-counts.js"></script>
   <script src="./vue/components/pedigree/pedigree-table.js"></script>
   <script src="./vue/components/pedigree/pedigree-card.js"></script>
 
@@ -3145,117 +3146,27 @@
           this.performInbreedFactorCounts();
         },
         performInbreedFactorCounts: function () {
-          
-          const indexSet = new Set();
-
-          this.sameNameGroups.forEach(group => {
-            group.forEach(node => {
-              if (node && node.index !== undefined) {
-                indexSet.add(node.index);
-              }
-            });
-          });
-          this.siblingGroups.forEach(group => {
-            group.forEach(node => {
-              if (node && node.index !== undefined) {
-                indexSet.add(node.index);
-              }
-            });
-          });
-          const allIndexes = Array.from(indexSet);
+          // マージ・集計本体は vue/logic/inbreed/inbreed-counts.js に外部化済み。
+          const result = window.Dabimas.logic.inbreed.buildInbreedFactorCounts(
+            this.sameNameGroups,
+            this.siblingGroups,
+            this.inbreedList
+          );
 
           // 自動クロスされたところのボタンを非活性化させる
-          allIndexes.forEach(element => {
+          result.disabledIndexes.forEach(element => {
             this.$set(this.isInbreedButtonClicked, element, 0);
           });
 
-          const mergedGroupsByName = new Map();
-
-          // sameNameGroupsを追加
-          this.sameNameGroups.forEach(group => {
-            if (group.length > 0 && group[0]?.name) {
-              const name = group[0].name;
-              if (!mergedGroupsByName.has(name)) {
-                mergedGroupsByName.set(name, []);
-              }
-              const existingIndexes = mergedGroupsByName.get(name).map(n => n.index);
-              group.forEach(node => {
-                if (node && node.index !== undefined && !existingIndexes.includes(node.index)) {
-                  mergedGroupsByName.get(name).push(node);
-                  existingIndexes.push(node.index);
-                }
-              });
-            }
+          // inbreedListへ反映（元実装と同じ非リアクティブな直接代入のまま）
+          result.inbreedEntries.forEach(({ index, element }) => {
+            this.inbreedList[index] = element;
           });
-
-          // siblingGroupsを追加
-          this.siblingGroups.forEach(group => {
-            if (group.length > 0 && group[0]?.name) {
-              const name = group[0].name;
-              if (!mergedGroupsByName.has(name)) {
-                mergedGroupsByName.set(name, []);
-              }
-              const existingIndexes = mergedGroupsByName.get(name).map(n => n.index);
-              group.forEach(node => {
-                if (node && node.index !== undefined && !existingIndexes.includes(node.index)) {
-                  mergedGroupsByName.get(name).push(node);
-                  existingIndexes.push(node.index);
-                }
-              });
-            }
-          });
-
-          // Map → 配列に変換
-          const mergedGroups = Array.from(mergedGroupsByName.values());
-
-          // 空欄、数字、(で始まるものを除外する
-          const excludeString = /^$|^\d*$|^\(.+?\)/;
-          let inbreedArray = [];
-          mergedGroups.flat().flat().forEach(element => {
-            if (element) {
-              this.inbreedList[element.index] = element;
-            }
-          });
-
-          this.inbreedList.map((value) => {
-            if (value) {
-              // subNameが(で始まる場合(繫殖牝馬選択時)や数字の因名被りなのでそれは削除する
-              inbreedArray.push({
-                name: value.name,
-                subName: excludeString.test(value.subName)
-                  ? "dummy"
-                  : value.subName,
-                factors: value.factors,
-                selfInbreed: false,
-              });
-            }
-          });
-
-          const factorCd = Array.from(new Array(32), () =>
-            new Array(3).fill("00")
-          );
-          // 重複を削除する
-          const inbreedArraySimple = inbreedArray.filter(
-            ({ name, subName }, i) =>
-              i ===
-              inbreedArray.findIndex(
-                (e) => e?.name === name && e?.subName === subName
-              )
-          );
-
-          // 因子をコード変換する。Ex.速→02にさせる
-          if (inbreedArraySimple) {
-            inbreedArraySimple.map((element, index) => {
-              factorCd[index][0] = factorMap.get(element?.factors[0]) ?? "00";
-              factorCd[index][1] = factorMap.get(element?.factors[1]) ?? "00";
-              factorCd[index][2] = factorMap.get(element?.factors[2]) ?? "00";
-            });
-          }
 
           // インブリードした因子数をカウントする
-          this.inbreedFactorNumtoString = this.dispFactorCounts(factorCd);
+          this.inbreedFactorNumtoString = this.dispFactorCounts(result.factorCd);
 
-          console.log(this.inbreedFactorNumtoString);
+          if (window.Dabimas.debug) console.log(this.inbreedFactorNumtoString);
         },
 
         // インブリード判定
