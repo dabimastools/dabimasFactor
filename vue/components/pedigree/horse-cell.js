@@ -1,11 +1,10 @@
 /**
  * このファイルの役割:
- * - 血統表の1セル分の「馬を選ぶ／メモを書く」部品（common-autocomplete）。
- * - PC ではオートコンプリート、モバイルではダイアログ式の検索・選択 UI を
- *   同じコンポーネント内で出し分ける（isMobileLayout）。
- * - Phase 3（docs/index-split-completion-plan.md）でさらに
- *   memo-cell / desktop-horse-autocomplete / mobile-horse-picker へ
- *   分割していく前提の、無変更のファイル移動（Phase 3-1）。
+ * - 血統表の1セル分の「馬を選ぶ／メモを書く」部品（horse-cell）。
+ * - PC 向け選択は desktop-horse-autocomplete、モバイル向け選択・検索は
+ *   mobile-horse-picker、子系統＋メモ表示は memo-cell に委譲し、
+ *   isMobileLayout / dispCategory で出し分けるだけの薄い親になっている
+ *   （docs/index-split-completion-plan.md Phase 3）。
  *
  * このファイルに置かない処理:
  * - 保存、fetch、IndexedDB、血統計算、インブリード判定。
@@ -27,7 +26,7 @@
   var INDEX_TO_ROW_NUMBER = window.Dabimas.constants.pedigreeIndexes.INDEX_TO_ROW_NUMBER;
 
   // カスタムコンポーネント定義（コンボボックス）
-  Vue.component("common-autocomplete", {
+  Vue.component("horse-cell", {
       template: `
       <div class="exp-mobile-autocomplete-root">
         <template v-if="dispCategory%2 === 0">

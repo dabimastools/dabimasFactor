@@ -13,7 +13,7 @@
  * - 馬選択・検索（horse-cell / mobile-horse-picker / desktop-horse-autocomplete の仕事）。
  *
  * 分けている理由:
- * - common-autocomplete（horse-cell）が「馬選択」と「子系統＋メモ表示」の
+ * - horse-cell（旧 common-autocomplete）が「馬選択」と「子系統＋メモ表示」の
  *   2つの役割を1ファイルに持っていたため、表示だけのこちらを切り出す。
  */
 (function (window, Vue) {

@@ -624,8 +624,9 @@
             this.selectionArraysForRowState
           );
         },
-        // 馬選択・メモ入力セル（common-autocomplete、Phase5で分割予定）へ
-        // pedigree-row 経由で橋渡しする値の詰め合わせ。
+        // 馬選択・メモ入力セル（horse-cell、旧 common-autocomplete。
+        // memo-cell / desktop-horse-autocomplete / mobile-horse-picker に
+        // 分割済み）へ pedigree-row 経由で橋渡しする値の詰め合わせ。
         horseSelectionOptions() {
           return {
             selected: this.selected,

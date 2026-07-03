@@ -4,7 +4,7 @@
  * - row（行の形。headCells・結合セル数・親系統表示可否など、行が変わらない限り
  *   不変）と rowState（今この行に表示する値。選択馬名・因子・インブリード状態など、
  *   root app の状態が変わるたびに作り直される）を分けて受け取る。
- * - horseOptions は「馬を選ぶ／メモを書く」セル（common-autocomplete、Phase5で分割予定）が
+ * - horseOptions は「馬を選ぶ／メモを書く」セル（horse-cell）が
  *   必要とする、行をまたぐ情報（選択済み一覧・候補一覧・保存用コールバック等）の詰め合わせ。
  * - displayOptions はボタンサイズ・:key用のreload値・子系統ボタンのラベルなど、
  *   表示の微調整に使う値の詰め合わせ。
@@ -37,7 +37,7 @@
       </template>
 
       <td :class="row.autoClass" :colspan="row.autoColspan">
-        <common-autocomplete
+        <horse-cell
           :class="rowState.rowColorClass"
           :index="row.index"
           :selected="horseOptions.selected"
@@ -197,8 +197,9 @@
          */
         rowState: { type: Object, required: true },
         /**
-         * horseOptions は馬選択・メモ入力セル（common-autocomplete）に橋渡しする値の束。
-         * common-autocomplete 自体の分割は Phase5 で行うため、ここでは詰め替えだけを行う。
+         * horseOptions は馬選択・メモ入力セル（horse-cell）に橋渡しする値の束。
+         * horse-cell 自体は memo-cell / desktop-horse-autocomplete /
+         * mobile-horse-picker にさらに分割済み（docs/index-split-completion-plan.md Phase 3）。
          */
         horseOptions: { type: Object, required: true },
         /**

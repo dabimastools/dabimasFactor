@@ -13,7 +13,7 @@
  * - 実際の選択反映（root app の onChange/onChangeMain の仕事）。
  *
  * 分けている理由:
- * - common-autocomplete（horse-cell）が PC 向けとモバイル向けの両方の
+ * - horse-cell（旧 common-autocomplete）が PC 向けとモバイル向けの両方の
  *   UI を1ファイルに持っていたため、PC 専用の v-autocomplete 分岐だけを
  *   切り出す（docs/index-split-completion-plan.md Phase 3-3）。
  */
