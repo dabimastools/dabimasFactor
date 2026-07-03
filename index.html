@@ -322,6 +322,7 @@
 
   <script src="./vue/app/app-state.js"></script>
   <script src="./vue/app/app-computed.js"></script>
+  <script src="./vue/app/app-lifecycle.js"></script>
   <script src="./vue/app/methods/ui-viewport.js"></script>
   <script src="./vue/app/methods/combination.js"></script>
   <script src="./vue/app/methods/horse-loading.js"></script>
@@ -351,6 +352,12 @@
         window.requestAnimationFrame(hideInitialLoader);
       });
     }
+
+    // vue/app/app-lifecycle.js の mounted() から、このモジュールスコープ関数を
+    // 呼べるようにする（外部ファイルからは bare 参照できないため）。
+    window.Dabimas = window.Dabimas || {};
+    window.Dabimas.boot = window.Dabimas.boot || {};
+    window.Dabimas.boot.scheduleInitialLoaderHide = scheduleInitialLoaderHide;
 
     window.addEventListener("load", () => {
       setTimeout(scheduleInitialLoaderHide, 600);
@@ -485,89 +492,9 @@
       computed: window.Dabimas.app.computed,
       watch: window.Dabimas.app.watch,
 
-      //async created () {
-      created() {
-        // rowConfigs / rowConfigsBloodmare は行の形（headCells・結合セル・親系統表示可否・
-        // 背景テーマ）を表す不変データ。data() ではなくここで直接 this に代入することで
-        // Vue のリアクティブ化対象から外す（doc補足8: 起動コストと変更検知コストの削減）。
-        this.rowConfigs = Object.freeze(
-          window.Dabimas.logic.pedigree.createPedigreeRowConfigs("stallion")
-        );
-        this.rowConfigsBloodmare = Object.freeze(
-          window.Dabimas.logic.pedigree.createPedigreeRowConfigs("broodmare")
-        );
-
-        const btnSize = {
-          xs: "x-small",
-          md: "small",
-          sm: "small",
-          lg: "small",
-          xl: "small",
-        };
-        const size = btnSize[this.$vuetify.breakpoint.name];
-        this.size = { [size]: true };
-      },
-
-      mounted: function () {
-        try {
-          // インブリード例外ルールを読み込む
-          this.loadInbreedExceptions()
-            .then(() => this.c1())
-            .then(() => this.c2())
-            .then(() => this.c3())
-            .finally(() => {
-              this.windowSize = this.getStableViewportHeight();
-              this.$nextTick(() => {
-                this.scheduleInitialMobileViewportLayout();
-              });
-            });
-          // .finally(() => this.c4());
-          this.$nextTick(() => {
-            this.scheduleInitialMobileViewportLayout();
-            scheduleInitialLoaderHide();
-          });
-          this.onOrientationChangeHandler = () => {
-            if (this.$vuetify.breakpoint.smAndDown) {
-              this.lockedMobileAppHeight = null;
-              this.scheduleInitialMobileViewportLayout();
-            }
-          };
-          window.addEventListener("orientationchange", this.onOrientationChangeHandler);
-          this.onViewportGeometryChangeHandler = () => {
-            if (!this.$vuetify.breakpoint.smAndDown) {
-              return;
-            }
-            this.clearMobileViewportGeometryTimer();
-            this.mobileViewportGeometryTimerId = setTimeout(() => {
-              this.mobileViewportGeometryTimerId = null;
-              this.refreshMobileViewportLock(false);
-            }, 48);
-          };
-          window.addEventListener("resize", this.onViewportGeometryChangeHandler);
-          if (window.visualViewport) {
-            window.visualViewport.addEventListener("resize", this.onViewportGeometryChangeHandler);
-            window.visualViewport.addEventListener("scroll", this.onViewportGeometryChangeHandler);
-          }
-        } catch (error) {
-          console.error(error);
-          scheduleInitialLoaderHide();
-        }
-      },
-
-      beforeDestroy() {
-        if (this.onOrientationChangeHandler) {
-          window.removeEventListener("orientationchange", this.onOrientationChangeHandler);
-        }
-        if (this.onViewportGeometryChangeHandler) {
-          window.removeEventListener("resize", this.onViewportGeometryChangeHandler);
-          if (window.visualViewport) {
-            window.visualViewport.removeEventListener("resize", this.onViewportGeometryChangeHandler);
-            window.visualViewport.removeEventListener("scroll", this.onViewportGeometryChangeHandler);
-          }
-        }
-        this.clearMobileViewportGeometryTimer();
-        this.clearMobileViewportLayoutTimers();
-      },
+      created: window.Dabimas.app.lifecycle.created,
+      mounted: window.Dabimas.app.lifecycle.mounted,
+      beforeDestroy: window.Dabimas.app.lifecycle.beforeDestroy,
 
       methods: Object.assign({}, window.Dabimas.app.methods, {
       }),
