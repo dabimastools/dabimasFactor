@@ -320,6 +320,7 @@
   <script src="./vue/components/pedigree/pedigree-table.js"></script>
   <script src="./vue/components/pedigree/pedigree-card.js"></script>
 
+  <script src="./vue/app/app-state.js"></script>
   <script src="./vue/app/methods/ui-viewport.js"></script>
   <script src="./vue/app/methods/combination.js"></script>
   <script src="./vue/app/methods/horse-loading.js"></script>
@@ -478,109 +479,7 @@
       vuetify: new Vuetify(),
 
       data() {
-        return {
-          // rowConfigs / rowConfigsBloodmare は created() で非リアクティブに設定する
-          // （vue/logic/pedigree/row-configs.js、Object.freeze 済み）。
-          // ここで data() に書くと Vue 2 が32行分の headCells まで再帰的に
-          // reactive化してしまい起動コストが増えるため、あえて宣言しない。
-          INDEX_GENERATION_ASSIGNMENTS,
-          windowSize: 0,
-          // メモの
-          inputed: Array.from(new Array(32).fill(null)),
-          // メモ種牡馬
-          inputedMemoStallion: null,
-          // メモ繫殖牝馬
-          inputedMemoBroodmare: null,
-          dispColor: Array.from(new Array(32).fill("")),
-          horseDataLists: [[], [], []],
-          factorCd: Array.from(new Array(32), () => new Array(3).fill("00")),
-          selected: Array.from(new Array(32).fill(null)),
-          // 親系統
-          parentLines: Array.from(new Array(32).fill("")),
-          // 子系統
-          category: Array.from(new Array(32).fill(null)),
-          stallions: [],
-          stallionsBase: [],
-          broodmares: [],
-          broodmaresBase: [],
-          theoryOmoshiro: [1, 3, 5, 7],
-          theoryMigoto: [9, 11, 13, 15],
-          // 全兄弟
-          brosData:[],
-          // JSON 分割ロード用の状態（summary + detail chunk）
-          horseDetailChunks: {},
-          horseDetailChunkPromises: {},
-          customHorseDetails: {},
-          customHorseDb: null,
-          horseSummaryLoaded: false,
-          horseSummaryChunkSize: 128,
-          horseDetailTotalChunks: 0,
-          horseDetailPreloadStarted: false,
-          horseDetailLoadingIndexes: {},
-          horseDetailError: { show: false, message: "" },
-          // インブリードボタン押下フラグを一次元配列で定義（-1：未クリック　1：クリック　0:使用不可）
-          isInbreedButtonClicked: Array.from(new Array(32).fill(0)),
-          // styleInbreedButtonClasses（インブリードさせるボタン定義）を一次元配列で定義
-          styleInbreedButtonClasses: Array.from(new Array(32).fill("")),
-          // styleFactorClassesを二次元配列で定義
-          styleFactorClasses: Array.from(new Array(32), () =>
-            new Array(3).fill("00")
-          ),
-          // factorNameを二次元配列で定義
-          factorName: Array.from(new Array(32), () => new Array(3).fill("")),
-
-          // styleParentLineClassesを一次元配列で定義
-          styleParentLineClasses: Array.from(new Array(32).fill("")),
-          // 合計因子数表示（走中強雷因子も）
-          factorNumtoString: Array.from(new Array(14).fill("00")),
-          // インブリードされた因子数表示（走中強雷因子も）
-          inbreedFactorNumtoString: Array.from(new Array(14).fill("00")),
-          // 子系統数
-          categoryNumtoString: "00",
-
-          // 配合理論
-          styleThoeryClass: "",
-
-          // リストで選択された性別
-          selectedSex: null,
-
-          // 子系統を表示させるフラグ
-          dispCategory: 0,
-          // ボタン表示名
-          dispButtonName: '子系統',
-
-          // インブリードされているところを格納する変数
-          inbreedList: Array.from(new Array(32).fill(null)),
-          // 同名・全兄妹の組み合わせ一覧
-          sameNameGroups: {
-            byIndex: [[], []],
-            indexes: [],
-            special: {
-              sameName: {
-                byGroup: [],
-                byIndex: [],
-              },
-            },
-          },
-          sameNameSpecialChecks: [],
-          sameNameSpecialChecksByIndex: Array.from(new Array(32).fill(false)),
-          reload: 0,
-          size: {},
-          combinationDialogVisible: false,
-          inbreedLogTimer: null,
-          deferInbreedCount: false,
-          deferredInbreedCountRequested: false,
-          // インブリード例外ルール
-          inbreedExceptions: [],
-          isCapturingScreenshot: false,
-          html2CanvasLoadPromise: null,
-          lockedMobileAppHeight: null,
-          mobileRowHeight: 18,
-          onOrientationChangeHandler: null,
-          onViewportGeometryChangeHandler: null,
-          mobileViewportGeometryTimerId: null,
-          mobileViewportLockTimerIds: []
-        };
+        return window.Dabimas.app.createInitialState();
       },
       computed: {
         // 頻繁に使用される計算をキャッシュ
