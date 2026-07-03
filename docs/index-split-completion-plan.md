@@ -30,7 +30,7 @@
 | 3-1 | `common-autocomplete` を無変更で `horse-cell.js` へファイル移動 | **完了**（2026-07-03） |
 | 3-2 | `memo-cell.js` 分離 | **完了**（2026-07-03） |
 | 3-3 | `desktop-horse-autocomplete.js` 分離 | **完了**（2026-07-03） |
-| 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | **実装・自動検証完了。実機確認待ち**（2026-07-03） |
+| 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | **完了**（2026-07-03。実機（iPhone + flick IME）確認OK受領済み） |
 | 3-5 | `horse-cell` へのリネーム（任意: emit 化） | **完了**（2026-07-03。emit化は任意のため未実施） |
 | 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | **完了**（2026-07-03） |
 | 4-1 | methods スライス: ui-viewport | **完了**（2026-07-03） |
@@ -46,7 +46,7 @@
 | 4-11 | app-options.js + main.js（new Vue の外部化） | **完了**（2026-07-03。Phase 4 の総合検証ポイント） |
 | 4-12 | boot.js（初期ローダ・SW 登録・iOS viewport）※任意 | **完了**（2026-07-03） |
 | 5-1 | service worker precache 整合＋総合検証 | **完了**（2026-07-03） |
-| 5-2 | ドキュメント更新・統合版向け対応表の確定 | 未着手 |
+| 5-2 | ドキュメント更新・統合版向け対応表の確定 | **完了**（2026-07-03） |
 
 ### 1.1 進捗ログ（中断・再開用。作業のたびに追記する）
 
@@ -88,6 +88,7 @@
 - **2026-07-03**: Phase 4-11 完了。`vue/app/app-options.js`（`window.Dabimas.app.createAppOptions()`がdata/computed/watch/lifecycle/methodsを束ねるだけのオプション組み立て）と `vue/app/main.js`（グローバルエラーハンドラ＋`new Vue(...)`本体）を作成。`var __debugAppInstance` → `window.__debugAppInstance`への明示代入に変更（検証ハーネス互換）。index.htmlから`new Vue({...})`とエラーハンドラを削除し、scriptタグ（app-options.jsはpedigree-cells.jsの後、main.jsはインラインscriptの最後）を追加。guardスクリプトはPhase 4-0のクロスファイル検査のままで対応（追加変更不要、verify-index-exp OKで確認）。**この時点がPhase 4の総合検証ポイント**: S1(基本クロス)〜S6(リセット)全シナリオ、PC/モバイル画面表示、モバイルIMEシミュレーション（候補80件）、配合保存ダイアログ、初期ローダ非表示、リサイズ時イベントリスナ、全てコンソールエラー0件でベースラインと完全一致することを確認。**次に着手すべきは Phase 4-12（boot.js。任意）または Phase 5-1（service worker precache整合＋総合検証）。**
 - **2026-07-03**: Phase 4-12（任意）完了。index.html末尾に残っていたインラインboot script（初期ローダ制御 / service worker登録 / iOS viewport調整 / `Vue.config` / `window.Dabimas.debug` / `window.Dabimas.app.methods`足場、133行）を `vue/app/boot.js` へ外部化。IIFEは `(function (window, Vue) { ... })(window, window.Vue);` として`Vue.config`参照のため`Vue`を明示的に受け取る形にした。**発見・クリーンアップ**: index.htmlに残っていたモジュールスコープ定数 `INDEX_GENERATION_ASSIGNMENTS` / `INDEX_TO_ROW_NUMBER` / `ROWS_PER_SIDE` / `founder` / `factorMap` / `manualFactorOptions` / `MANUAL_INBREED_STORAGE_KEY` の宣言は、Phase 1〜4でroot appの全コードが外部ファイル化され各ファイルが`window.Dabimas.constants.*`/`window.Dabimas.logic.*`から自分自身の同名定数を再宣言するようになった結果、参照ゼロの完全なデッドコードになっていたことを確認し削除した（boot.js冒頭のコメントに記録）。scriptタグは`app-options.js`の後・`main.js`の前に配置（boot.jsの読み込み時依存は`window.Vue`のみで`vue.min.js`読み込み後なら順序は問題にならないことを確認）。index.htmlは494行→**362行**（当初4,611行からの削減）。検証: verify-index-exp OK、`node --check vue/app/boot.js` OK、service worker CACHE_NAMEを`v20260703-23`へbump、キャッシュ全削除＋2回リロードでコンソールエラー0件・SW登録成功・初期ローダの`loaded`クラス付与を確認、S1シナリオ（`initializer()`→`onChangeMain(0,0,stallion)`→`onChangeMain(1,0,broodmare)`）を再実行しuuid以外の全フィールド（factorCd/inbreedFactorNumtoString/categoryNumtoString/sameNameGroups等）がベースラインと完全一致することを確認。**追加発見**: `localStorageFingerprint.factor.hash`はbaseline記録時と一致しなかったが、同一セッション内で同じ手順をもう一度実行しただけでもhashが変わる（lengthは8981で一致）ことを確認済み——`selected`配列の各エントリに含まれる`uuid`が選択の都度ランダム生成され`dabimasFactor`保存内容に含まれるため、これは分割による回帰ではなく既存の非決定的挙動（新規発見メモ）。これでPhase 4（root app分割）が全サブフェーズ完了。**次に着手すべきは Phase 5-1（service worker precache整合＋S1〜S7総合検証）。**
 - **2026-07-03**: Phase 5-1 完了。`Glob vue/**/*.js`（39ファイル）と index.html の `<script src>` タグを突き合わせ、完全一致することを確認（`vue/combinationDB.js` のような dead code ファイルは実在しなかった）。この39ファイル全てを `service-worker.js` の `urlsToCache` へ index.html の読み込み順のまま追加（従来は `vue/vue.min.js` / `vue/vuetify.js` の2本のみ precache、残りは runtime cache 頼みだった）。`CACHE_NAME` を `v20260703-24` へ bump。総合検証: キャッシュ全削除→2回リロードでコンソールエラー0件・SW登録成功・`caches.open` で39本全てのvue/*.jsがinstall cacheされていることを確認（`totalCached: 84`）。`preview_network` の全リクエスト一覧で `dabimasFactor.json`（4.8MB フル JSON）への言及が0件であることを確認（`dabimasFactor.summary.json` のみが通常経路で使われる設計を維持）。S1（基本クロス）〜S6（リセット）を全て実機相当の呼び出し（`initializer`→`onChangeMain`→`handleInbreedButtonClick`→`memoChange`系→`window.location.reload()`）で再実行し、ベースラインと完全一致することを確認。**この過程で見つけたテスト手法上の注意点**（コードの問題ではない）: S3「途中セル上書き→削除」の削除操作は `deleteHorses(sex, id)` ではなく `onChangeMain(sex, id, null)` で行う必要がある（計画書 §4 の記述どおり）。前者を使うと「新しく作られたサブツリーのuuidだけ」を消してしまい、`categoryNumtoString` が `"11"`（上書き後のまま）に留まってしまう。`onChangeMain(sex,id,null)` に修正して再実行した結果は `S3_cleared.json`（`categoryNumtoString: "10"`, `factorNumtoString` 等）と完全一致した。PC（1280×800）・モバイル（375×812）双方のスクリーンショットで血統表の階段状レイアウト・色分け・ハートアイコンが正しく表示されることも確認。§10 の統合版メソッド対応表（実績列）も全10メソッドについて実ファイル・行番号で埋め、計画どおりの移動先と完全一致することを確認。**次に着手すべきは Phase 5-2（ドキュメント更新・最終報告）。**
+- **2026-07-03**: Phase 5-2 完了。`docs/index-component-logic-split-plan.md` 冒頭に本ドキュメントへの完了ポインタを追記。§1 チェックリストを全項目「完了」に更新（3-4 は実機確認OK受領済みとして確定）。§10 の統合版メソッド対応表は前段（Phase 5-1）で実ファイル・行番号まで埋め済み、全10メソッドが計画どおりの移動先と一致することを確認済み。§3.8 の不変条件（localStorage 6キー、保存メソッドのシグネチャ、IndexedDB `DabifacCombinationDB`、`<header ref="appHeader">` 構造、CSS クラス名）は全て変更なしであることをコード上で再確認（`grep` で `ref="appHeader"` と `DabifacCombinationDB` の存在を確認）。これで本計画（index-split-completion-plan.md）の全 Phase が完了。ユーザーへの最終報告を別途行う。
 
 
 

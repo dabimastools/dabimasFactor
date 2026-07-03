@@ -1,5 +1,7 @@
 # index.html コンポーネント・ロジック分割設計
 
+> **本計画の残タスク（root app の `data`/`computed`/`watch`/lifecycle/`methods` 分割、service worker precache 整合を含む）は [`index-split-completion-plan.md`](./index-split-completion-plan.md) により完了（2026-07-03）。index.html は 4,611 行から 362 行へ縮小し、統合版仕様が参照するメソッドの実際の移動先は同ドキュメント §10 の対応表を参照。**
+
 ## 目的
 
 `index.html` に同居している画面テンプレート、Vue コンポーネント、血統計算、保存処理、モバイル表示調整を段階的に分割し、今後の機能追加時に変更箇所を特定しやすくする。
