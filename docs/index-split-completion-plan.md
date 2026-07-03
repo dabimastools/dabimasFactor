@@ -27,7 +27,7 @@
 | 1-3 | shadow 比較の撤去（legacy 削除） | **完了**（2026-07-03） |
 | 1-4 | `inbreed-counts.js`（クロス因子集計の純粋部分）外部化 | **完了**（2026-07-03） |
 | 2-1 | `pedigree-row.js` 外部化（x-template → テンプレート文字列） | **完了**（2026-07-03） |
-| 3-1 | `common-autocomplete` を無変更で `horse-cell.js` へファイル移動 | 未着手 |
+| 3-1 | `common-autocomplete` を無変更で `horse-cell.js` へファイル移動 | **完了**（2026-07-03） |
 | 3-2 | `memo-cell.js` 分離 | 未着手 |
 | 3-3 | `desktop-horse-autocomplete.js` 分離 | 未着手 |
 | 3-4 | `mobile-horse-picker.js` 分離（★実機確認の停止ポイント） | 未着手 |
@@ -54,7 +54,11 @@
 
 - **2026-07-03**: 作業ブランチ `feature/index-split-completion` を `feature/json-split-initial-load` から作成。Phase 0-1 / 0-2 完了（`tests/fixtures/split-baseline/` にベースライン一式をコミット）。
 - **2026-07-03**: Phase 1-1 完了（`vue/logic/inbreed/inbreed-exceptions.js` 外部化、コミット `107352c`）。
-- **2026-07-03**: Phase 1-2 完了（`vue/logic/inbreed/inbreed-detector.js` へ `judgeInbreed` を純関数として外部化。index.html 側に `judgeInbreedLegacy`（旧実装、逐語のまま）＋ shadow 比較付き新 `judgeInbreed` ラッパーを追加。`window.Dabimas.debug=true` で S1〜S3 を再実行し shadow mismatch 0 件を確認済み）。- **2026-07-03**: Phase 1-3 完了（`judgeInbreedLegacy` と shadow 比較ブロックを index.html から削除。index.html が約884行減った。S1〜S3・コンソールエラー0件を確認済み）。- **2026-07-03**: Phase 1-4 完了・Phase 1 全体完了（`vue/logic/inbreed/inbreed-counts.js` へ `performInbreedFactorCounts` のマージ・集計本体を外部化。**設計変更点**: 計画書は `buildInbreedFactorCounts(sameNameGroups, siblingGroups)` の2引数を想定していたが、実装時に確認したところ元実装は「`this.inbreedList` へマージ結果を書き込んでから配列全体（今回のマージ対象外の既存エントリ＝手動クロス等も含む）を読み直して `factorCd` を作る」という、渡された2引数だけでは再現できない依存があった。そのため関数は `(sameNameGroups, siblingGroups, inbreedList)` の3引数とし、内部で `inbreedList` の複製上にマージ結果を反映してから `factorCd` を計算する形にした（挙動は完全に維持、逐語移動原則を優先した設計判断）。末尾の `console.log(this.inbreedFactorNumtoString)` は `if (window.Dabimas.debug)` ゲート化済み（計画書許容の独立変更）。S1・S2（手動クロス押下/解除で因子数が変化するケース）がベースラインと完全一致、コンソールエラー0件を確認。- **2026-07-03**: Phase 2-1 完了・Phase 2 全体完了（x-template `#pedigree-row-template` をテンプレート文字列化し `vue/components/pedigree/pedigree-row.js` へ移動。index.html から x-template ブロックと `Vue.component('pedigree-row', {...})` を削除、index.htmlはさらに約277行減。S1・S2がベースラインと完全一致、PC/モバイルのスクリーンショットが目視一致、子系統トグル・ハートボタンのUIクリック操作（emit経由）も正常動作を確認）。**次に着手すべきは Phase 3-1（`common-autocomplete` を無変更で `horse-cell.js` へファイル移動。★このPhaseはリスク最大、§7.0のIME不変条件を厳守すること）。**
+- **2026-07-03**: Phase 1-2 完了（`vue/logic/inbreed/inbreed-detector.js` へ `judgeInbreed` を純関数として外部化。index.html 側に `judgeInbreedLegacy`（旧実装、逐語のまま）＋ shadow 比較付き新 `judgeInbreed` ラッパーを追加。`window.Dabimas.debug=true` で S1〜S3 を再実行し shadow mismatch 0 件を確認済み）。
+- **2026-07-03**: Phase 1-3 完了（`judgeInbreedLegacy` と shadow 比較ブロックを index.html から削除。index.html が約884行減った。S1〜S3・コンソールエラー0件を確認済み）。
+- **2026-07-03**: Phase 1-4 完了・Phase 1 全体完了（`vue/logic/inbreed/inbreed-counts.js` へ `performInbreedFactorCounts` のマージ・集計本体を外部化。**設計変更点**: 計画書は `buildInbreedFactorCounts(sameNameGroups, siblingGroups)` の2引数を想定していたが、実装時に確認したところ元実装は「`this.inbreedList` へマージ結果を書き込んでから配列全体（今回のマージ対象外の既存エントリ＝手動クロス等も含む）を読み直して `factorCd` を作る」という、渡された2引数だけでは再現できない依存があった。そのため関数は `(sameNameGroups, siblingGroups, inbreedList)` の3引数とし、内部で `inbreedList` の複製上にマージ結果を反映してから `factorCd` を計算する形にした（挙動は完全に維持、逐語移動原則を優先した設計判断）。末尾の `console.log(this.inbreedFactorNumtoString)` は `if (window.Dabimas.debug)` ゲート化済み（計画書許容の独立変更）。S1・S2（手動クロス押下/解除で因子数が変化するケース）がベースラインと完全一致、コンソールエラー0件を確認。
+- **2026-07-03**: Phase 2-1 完了・Phase 2 全体完了（x-template `#pedigree-row-template` をテンプレート文字列化し `vue/components/pedigree/pedigree-row.js` へ移動。index.html から x-template ブロックと `Vue.component('pedigree-row', {...})` を削除、index.htmlはさらに約277行減。S1・S2がベースラインと完全一致、PC/モバイルのスクリーンショットが目視一致、子系統トグル・ハートボタンのUIクリック操作（emit経由）も正常動作を確認）。
+- **2026-07-03**: Phase 3-1 完了（`Vue.component("common-autocomplete", {...})` 一式（テンプレート・props・data・computed・watch・methods・beforeDestroy、610行）を無変更で `vue/components/pedigree/horse-cell.js` へ移動。`horseListKeyCache`/`horseListKeySeq` もIIFEスコープへ一緒に移動。コンポーネント登録名は `common-autocomplete` のまま。**気づき**: preview環境の「PC」既定ビューポートは実際には約628px幅で Vuetify の `sm` ブレークポイント（モバイルレイアウト）になっていたため、真の PC（`v-autocomplete`）経路は明示的に 1280×800 にリサイズしないと検証できない。以後の Phase 3 検証では PC 確認時に明示的な width/height 指定が必要。検証: verify-index-exp OK、コンソールエラー0件、S1・S2・S4がベースラインと完全一致、**真のPC幅(1280×800)**でのv-autocomplete検索→選択（オグリキャップへ変更→祖先ツリー再構築を確認）、モバイルのIMEシミュレーション（候補80件・タップ選択・ダイアログクローズ・クエリクリア）が全てベースラインと一致することを確認。**次に着手すべきは Phase 3-2（`memo-cell.js` 分離）。**
 
 
 
