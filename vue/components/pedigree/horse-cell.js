@@ -167,23 +167,13 @@
         </template>
           </v-autocomplete>
         </template>
-      <v-row no-gutters v-else>
-        <v-col :style="getWidth(index,0)">
-          <v-text-field
-            :value="category[index]"
-            solo
-            readonly
-          ></v-text-field>
-        </v-col>
-        <v-col :style="getWidth(index,1)">
-          <v-text-field
-            placeholder="メモ入力"
-            :value="inputed[index]"
-            @change="memoChange(index, $event)"
-            solo
-          ></v-text-field>
-        </v-col>
-      </v-row>
+      <memo-cell
+        v-else
+        :index="index"
+        :category="category"
+        :inputed="inputed"
+        @memo-change="memoChange(index, $event)"
+      ></memo-cell>
     </div>    `,
       props: {
         index: {
@@ -270,42 +260,7 @@
         filterHorse(horse, queryText, itemText) {
           return window.Dabimas.logic.horses.filterHorse(horse, queryText, itemText);
         },
-        getWidth(index, type) {
-          let coefficient = 0;
-          switch (index % 16) {
-            case 0:
-              coefficient = 0;
-              break;
-            case 1:
-              coefficient = 1;
-              break;
-            case 2:
-            case 3:
-              coefficient = 2;
-              break;
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-              coefficient = 3;
-              break;
-            default:
-              coefficient = 4;
-              break;
-          }
-
-          // コンテンツ（デバイス）の高さで幅を変えるロジック
-          const width = window.innerHeight >= 960 ? 20 : 12;
-
-          const adjustment = coefficient * width;
-          if (type === 0) {
-            // 左側カラム: (100% - adjustment) / 2
-            return { maxWidth: `calc(100% - calc((100% + ${adjustment}px) * 0.35 ))` };
-          } else {
-            // 右側カラム: 残りの幅
-            return { maxWidth: `calc((100% + ${adjustment}px) * 0.35 )` };
-          }
-        },
+        // getWidth は vue/components/pedigree/memo-cell.js に外部化済み。
         getHorse(horse) {
           if (!horse?.disabled) {
             const natureTag = horse.nature ? `[${horse.nature.charAt(0)}]` : '';
