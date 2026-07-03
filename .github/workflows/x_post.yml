@@ -6,8 +6,10 @@ on:
   # GitHub Actions 画面から手動実行
   workflow_dispatch:
   schedule:
-    # cron は UTC 指定: 毎週金曜 09:15 UTC (= 18:15 JST)
-    - cron: "15 9 * * 5"
+    # cron は UTC 指定: 毎週金曜 04:07 UTC (= 13:07 JST) に前倒しで起動し、
+    # ジョブ先頭で 18:30 JST まで待機する（GitHub schedule の数時間遅延への対策）。
+    # 詳細: docs/x-post-schedule-fix-plan.md
+    - cron: "7 4 * * 5"
 
 permissions:
   # JSON 更新結果を commit/push するために必要
@@ -20,11 +22,25 @@ concurrency:
 
 jobs:
   weekly-pipeline:
-    # 実行環境と制限時間
+    # 実行環境と制限時間（18:30 JST までの待機 最大約5.5h + 実処理 1h をカバー）
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 360
     steps:
-      # リポジトリのコードを runner に取得
+      # 前倒し起動からデータ公開後の 18:30 JST まで待つ。
+      # 起動が 18:30 を過ぎるほど遅延した場合は待たずに即実行する。
+      - name: Wait until 18:30 JST
+        if: github.event_name == 'schedule'
+        run: |
+          target=$(TZ=Asia/Tokyo date -d 'today 18:30' +%s)
+          now=$(date +%s)
+          if [ "$now" -lt "$target" ]; then
+            echo "Waiting $(( (target - now) / 60 )) minutes until 18:30 JST..."
+            sleep $(( target - now ))
+          else
+            echo "Already past 18:30 JST. Run immediately."
+          fi
+
+      # リポジトリのコードを runner に取得（待機後に取得して最新の main を使う）
       - uses: actions/checkout@v5
 
       # Python 実行環境を準備
