@@ -35,7 +35,7 @@
 | 4-0 | `vue/app/` 足場＋guard スクリプト更新（★必須の先行作業） | **完了**（2026-07-03） |
 | 4-1 | methods スライス: ui-viewport | **完了**（2026-07-03） |
 | 4-2 | methods スライス: combination / storage | **完了**（2026-07-03） |
-| 4-3 | methods スライス: horse-loading | 未着手 |
+| 4-3 | methods スライス: horse-loading | **完了**（2026-07-03） |
 | 4-4 | methods スライス: bootstrap | 未着手 |
 | 4-5 | methods スライス: selection | 未着手 |
 | 4-6 | methods スライス: inbreed-ui | 未着手 |
@@ -77,6 +77,7 @@
   index.html 側は `window.Dabimas.app = window.Dabimas.app || {}; window.Dabimas.app.methods = window.Dabimas.app.methods || {};` を boot スクリプトに追加し、root app の `methods: {` を `methods: Object.assign({}, window.Dabimas.app.methods, {` に、閉じ側の `},` を `}),` に変更（全メソッドはこの時点では全部インラインのまま）。検証: 更新後のverify-index-expがBOM仕込みファイルで失敗・スニペット欠落ファイルで失敗・vue/app配下に該当スニペットがあれば成功、という3パターンを手動テストで確認。実アプリはverify-index-exp OK、コンソールエラー0件、S1がベースラインと完全一致。**次に着手すべきは Phase 4-1（methodsスライス: ui-viewport）。**
 - **2026-07-03**: Phase 4-1 完了。ビューポート計算・レイアウト固定・スクリーンショット関連17メソッド（getStableViewportHeight〜markPedigreeStairEdges、408行、モジュールスコープ定数への依存なし）を逐語コピーで `vue/app/methods/ui-viewport.js` へ外部化し、`Object.assign(window.Dabimas.app.methods, {...})` として登録。index.htmlからは該当ブロックを削除（コメント「インブリード例外ルールを読み込む」はloadInbreedExceptionsの直前コメントとして元々あった位置に残置、ui-viewport側には持っていかない：このコメントはui-viewportではなくloadInbreedExceptionsの説明だったため）。scriptタグをpedigree-card.jsの後・inline bootスクリプトの前に追加。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、モバイルで`applyMobileViewportLayout()`・画面表示・スクリーンショット撮影（html2canvas経由、PNG生成まで）が正常動作することを確認。**次に着手すべきは Phase 4-2（methodsスライス: combination / storage）。**
 - **2026-07-03**: Phase 4-2 完了。配合保存ダイアログ・手動クロス永続化関連11メソッド（combinationDialog〜refreshLocalDataFromStorage、218行）を逐語コピーで `vue/app/methods/combination.js` へ外部化。モジュールスコープ定数 `MANUAL_INBREED_STORAGE_KEY`（"dabimasManualInbreed"）をIIFE先頭で再宣言。**発見メモ**: `fetchSavedCombinations`/`enforceCombinationLimit` が `COMBINATION_STORE_NAME` という index.html のどこにも宣言されていない変数を参照している（未定義参照。呼ばれればReferenceError）が、両メソッドともコードベースのどこからも呼び出されていない到達不能コードのため実害なし。逐語移動原則によりそのまま移した（修正しない）。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、手動クロス（`handleInbreedButtonClick`→`persistManualInbreedState`→`dabimasManualInbreed`保存）とリロード後の復元（`restoreInputData`/`restoreManualInbreedState`経由）が正常動作、配合保存ダイアログ（`handleCombinationCellClick`）が正常に開くことを確認。**次に着手すべきは Phase 4-3（methodsスライス: horse-loading）。**
+- **2026-07-03**: Phase 4-3 完了。JSON分割ロード（summary + detail chunk）関連15メソッド（normalizeHorseSummary〜dbinitializer、389行、モジュールスコープ定数への依存なし）を逐語コピーで `vue/app/methods/horse-loading.js` へ外部化。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、Networkログで初期ロードが `dabimasFactor.summary.json` 経由であり4.8MBの `dabimasFactor.json` を取得していないことを確認、選択時のdetail chunk取得（`dabimasFactor-details/*.json`）も正常動作、メモ入力→`persistSelectedToStorage`経由のlocalStorage保存も正常動作。**次に着手すべきは Phase 4-4（methodsスライス: bootstrap）。**
 
 
 
