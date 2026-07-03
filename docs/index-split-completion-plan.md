@@ -41,7 +41,7 @@
 | 4-6 | methods スライス: inbreed-ui | **完了**（2026-07-03） |
 | 4-7 | methods スライス: pedigree-cells | **完了**（2026-07-03。root app の methods 全スライス完了） |
 | 4-8 | app-state.js（data 外部化） | **完了**（2026-07-03） |
-| 4-9 | app-computed.js（computed / watch 外部化） | 未着手 |
+| 4-9 | app-computed.js（computed / watch 外部化） | **完了**（2026-07-03） |
 | 4-10 | app-lifecycle.js（created / mounted / beforeDestroy） | 未着手 |
 | 4-11 | app-options.js + main.js（new Vue の外部化） | 未着手 |
 | 4-12 | boot.js（初期ローダ・SW 登録・iOS viewport）※任意 | 未着手 |
@@ -83,6 +83,7 @@
 - **2026-07-03**: Phase 4-6 完了。インブリード表示の入口4メソッド（dispInbreed, dispInbreedFactorCounts, performInbreedFactorCounts, judgeInbreed（Phase 1純関数への薄いラッパ）、102行、連続ブロック）を逐語コピーで `vue/app/methods/inbreed-ui.js` へ外部化。モジュールスコープ定数への依存なし。検証: verify-index-exp OK、コンソールエラー0件、S1・S2（手動クロス押下/解除）がベースラインと完全一致。**次に着手すべきは Phase 4-7（methodsスライス: pedigree-cells）。**
 - **2026-07-03**: Phase 4-7 完了・root appのmethodsスライス全体（Phase 4-1〜4-7）完了。血統表セル反映関連13メソッド（dispTheory, applyManualFactors, dispFactorCounts, dispCategoryCount, judgeSetParentLine, fillInFactorCells, fillInParentLineCells, setFactorName, setFactorCd, setFactorCss, setParentLine, setPedigree, getCss、441行、連続ブロック＝root app methods内の最後のスライス）を逐語コピーで `vue/app/methods/pedigree-cells.js` へ外部化。モジュールスコープ定数 `factorMap` をIIFE先頭で再宣言。この結果index.html側の `methods: Object.assign({}, window.Dabimas.app.methods, {})` は空になった（全メソッドがvue/app/methods/配下の7ファイルへ移動完了）。検証: verify-index-exp OK、コンソールエラー0件、S1〜S6全シナリオ（基本クロス・手動クロス押下解除・途中セル上書き削除・メモ3種・リロード復元・リセット）が全てベースラインと完全一致、PC/モバイル画面表示・モバイルIMEシミュレーション（候補80件）・配合保存ダイアログの表示、全て正常動作を確認。index.htmlは4,611行→786行まで減少。**次に着手すべきは Phase 4-8（app-state.js。data()の外部化）。**
 - **2026-07-03**: Phase 4-8 完了。`data()` の戻り値オブジェクト（105行）を `window.Dabimas.app.createInitialState()` として `vue/app/app-state.js` へ外部化。モジュールスコープ定数 `INDEX_GENERATION_ASSIGNMENTS` をIIFE先頭で再宣言。「rowConfigsをあえて宣言しない」等の非リアクティブプロパティに関する注意コメントもファイル冒頭に引き継いだ（data には追加していない）。index.html側は `data() { return window.Dabimas.app.createInitialState(); },` の3行になった。scriptタグをmethods/*.jsより前に追加。検証: verify-index-exp OK、コンソールエラー0件、S1完全一致、S6（`initializer()`によるリセット）も正常動作を確認。**次に着手すべきは Phase 4-9（app-computed.js。computed/watchの外部化）。**
+- **2026-07-03**: Phase 4-9 完了。computed（rowConfigsOptimized〜rowDisplayOptions、8件）とwatch（dispCategory）を `window.Dabimas.app.computed` / `window.Dabimas.app.watch` として `vue/app/app-computed.js` へ外部化。モジュールスコープ定数への依存なし（`this.INDEX_GENERATION_ASSIGNMENTS`はdataプロパティ経由で参照済み）。index.html側は `computed: window.Dabimas.app.computed, watch: window.Dabimas.app.watch,` の2行になった。Phase 4-0のguard緩和（`"watch: {"` → `"watch:"`）がここで実際に効くことを確認（`watch: window.Dabimas.app.watch,`でもverify-index-exp OK）。検証: S1完全一致、コンソールエラー0件、`dispCategory`切替による`dispButtonName`（"子系統"⇔"因　子"）のwatch動作を確認。**次に着手すべきは Phase 4-10（app-lifecycle.js。created/mounted/beforeDestroyの外部化）。**
 
 
 
