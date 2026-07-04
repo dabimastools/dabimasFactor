@@ -211,16 +211,8 @@
           this.styleThoeryClass = "";
           // インブリードされているところを格納する変数
           this.inbreedList = Array.from(new Array(32).fill(null));
-          this.sameNameGroups = {
-            byIndex: [[], []],
-            indexes: [],
-            special: {
-              sameName: {
-                byGroup: [],
-                byIndex: [],
-              },
-            },
-          };
+          this.sameNameGroups = [];
+          this.siblingGroups = [];
           this.sameNameSpecialChecks = [];
           this.sameNameSpecialChecksByIndex = Array.from(
             new Array(32).fill(false)

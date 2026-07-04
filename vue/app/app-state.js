@@ -100,16 +100,7 @@
           // インブリードされているところを格納する変数
           inbreedList: Array.from(new Array(32).fill(null)),
           // 同名・全兄妹の組み合わせ一覧
-          sameNameGroups: {
-            byIndex: [[], []],
-            indexes: [],
-            special: {
-              sameName: {
-                byGroup: [],
-                byIndex: [],
-              },
-            },
-          },
+          sameNameGroups: [],
           sameNameSpecialChecks: [],
           sameNameSpecialChecksByIndex: Array.from(new Array(32).fill(false)),
           reload: 0,
