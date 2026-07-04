@@ -31,6 +31,17 @@
       window.__debugAppInstance.notifyHorseDetailError("DEBUG rejection: " + msg);
     }
   });
+  // Vueが自前で捕まえて握りつぶす系（コンポーネントのメソッド/ライフサイクル/
+  // レンダー内の同期例外）は上の window "error" では拾えないため、
+  // Vue.config.errorHandler からも同じ通知先へ橋渡しする。
+  Vue.config.errorHandler = function (err, vm, info) {
+    console.error(err);
+    if (window.__debugAppInstance && typeof window.__debugAppInstance.notifyHorseDetailError === "function") {
+      window.__debugAppInstance.notifyHorseDetailError(
+        "DEBUG vue-error: " + (err && err.message ? err.message : String(err)) + (info ? " @ " + info : "")
+      );
+    }
+  };
 
   window.__debugAppInstance = new Vue(window.Dabimas.app.createAppOptions());
 })(window, window.Vue);
