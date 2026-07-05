@@ -135,9 +135,9 @@
     // 因子をコード変換する。Ex.速→02にさせる
     if (inbreedArraySimple) {
       inbreedArraySimple.map((element, index) => {
-        factorCd[index][0] = factorMap.get(element?.factors[0]) ?? "00";
-        factorCd[index][1] = factorMap.get(element?.factors[1]) ?? "00";
-        factorCd[index][2] = factorMap.get(element?.factors[2]) ?? "00";
+        factorCd[index][0] = factorMap.get(element?.factors?.[0]) ?? "00";
+        factorCd[index][1] = factorMap.get(element?.factors?.[1]) ?? "00";
+        factorCd[index][2] = factorMap.get(element?.factors?.[2]) ?? "00";
       });
     }
 

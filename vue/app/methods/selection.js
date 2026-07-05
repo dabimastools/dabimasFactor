@@ -66,7 +66,7 @@
           this.applyManualFactors(payload.index, payload.factors);
         },
         memoChange: function (index, input) {
-          this.$set(this.inputed, index, event.target.value);
+          this.$set(this.inputed, index, input);
           localStorage.setItem("dabimasMemo", JSON.stringify(this.inputed));
         },
         memoChangeStallion: function (input) {

@@ -31,7 +31,10 @@
  */
 (function (window, Vue) {
   //loadingAnimation
-  const INITIAL_LOADER_FAILSAFE_MS = 4000;
+  // 通常は保存データの復元完了と連動して隠れる（app-lifecycle.js の mounted）。
+  // これは復元処理が万一ハングした場合だけに効く保険なので、遅い回線でも
+  // 復元完了より先に発火して空の血統表を見せてしまわないよう長めに取る。
+  const INITIAL_LOADER_FAILSAFE_MS = 10000;
 
   function hideInitialLoader() {
     const loader = document.getElementById("loader");
@@ -57,10 +60,9 @@
   window.Dabimas.boot = window.Dabimas.boot || {};
   window.Dabimas.boot.scheduleInitialLoaderHide = scheduleInitialLoaderHide;
 
-  window.addEventListener("load", () => {
-    setTimeout(scheduleInitialLoaderHide, 600);
-  }, { once: true });
-
+  // 通常の非表示は app-lifecycle.js の mounted() が復元処理完了後に呼ぶ
+  // scheduleInitialLoaderHide() 経由。window の load イベント基準のタイマーは
+  // 復元完了より先に発火して空の血統表を見せてしまうため置かない。
   setTimeout(hideInitialLoader, INITIAL_LOADER_FAILSAFE_MS);
 
   // service workerの登録関係

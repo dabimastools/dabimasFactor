@@ -344,7 +344,12 @@
               "血統データの取得に失敗しました。通信状況を確認して、もう一度選択してください。",
           };
         },
-        dbinitializer() {
+        // readyPromise: インブリード例外ルール読み込み（loadInbreedExceptions）の Promise。
+        // summary fetch と並行に読み込みを開始しつつ、復元処理（c4 内の dispInbreed が
+        // 例外ルールを使う）だけはこの Promise の解決を待ってから行う。
+        dbinitializer(readyPromise) {
+          const waitReady = () => Promise.resolve(readyPromise);
+
           // 旧 full JSON を読み込む退避経路（summary 取得失敗時のフォールバック）。
           const loadFullJsonFallback = () =>
             fetch("./json/dabimasFactor.json")
@@ -357,11 +362,13 @@
               .then((json) => {
                 this.horseSummaryLoaded = false;
                 this.buildHorseLists(json.horseLists);
-                this.c4();
+                return waitReady().then(() => this.c4());
               });
 
           // 通常経路: 軽量 summary を読み込む。descendants はここでは持たない。
-          fetch("./json/dabimasFactor.summary.json")
+          // dbinitializer 呼び出し元（bootstrap.js の c1）へ、復元処理まで終わった
+          // ことを伝えるため Promise を返す（起動ローダーを隠すタイミングに使う）。
+          const restorePromise = fetch("./json/dabimasFactor.summary.json")
             .then((response) => {
               if (!response.ok) {
                 throw new Error("summary fetch failed: " + response.status);
@@ -381,9 +388,10 @@
               this.horseSummaryLoaded = true;
               this.buildHorseLists(horsesList);
               // 保存されていた場合はリストア処理を行う
-              this.c4();
+              const restoreDone = waitReady().then(() => this.c4());
               // 初期表示を邪魔しない idle のタイミングで detail を先読みする
               this.prefetchHorseDetails();
+              return restoreDone;
             })
             .catch((error) => {
               // summary が無い・壊れている場合は従来の full JSON へ退避する（指摘 G）
@@ -397,7 +405,7 @@
               console.error("dbinitializer failed", error);
             });
 
-            // 全兄弟データを読み込む
+            // 全兄弟データを読み込む（血統表の初期表示を待たせない・並行実行のまま）
             fetch("./json/brosData.json")
             .then((response) => {
               return response.json();
@@ -408,6 +416,8 @@
               brosDataList.forEach(bros => Object.freeze(bros));
               this.brosData = Object.freeze(brosDataList);
             });
+
+          return restorePromise;
         },
   });
 })(window, window.Vue);

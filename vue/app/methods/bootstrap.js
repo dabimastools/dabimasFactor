@@ -39,13 +39,11 @@
               this.inbreedExceptions = [];
             });
         },
-        c1: function () {
-          return new Promise((resolve, reject) => {
-            // jsonファイル読み込みが終わるまで非同期処理を待つ（async/await）
-            // await this.dbinitializer();
-            this.dbinitializer();
-            resolve(() => {});
-          });
+        c1: function (readyPromise) {
+          // dbinitializer が返す Promise（summary 読み込み→復元処理まで）をそのまま返す。
+          // readyPromise（loadInbreedExceptions の Promise）はそのまま dbinitializer へ渡し、
+          // 復元処理内の dispInbreed が例外ルールの読み込み完了を待てるようにする。
+          return this.dbinitializer(readyPromise);
         },
         c2: function () {
           return new Promise((resolve, reject) => {
@@ -118,11 +116,11 @@
             const factorCdArray = this.factorCd[index];
             
             for (let i = 0; i < 3; i++) {
-              this.setFactorName(index, i, element?.factors[i]);
+              this.setFactorName(index, i, element?.factors?.[i]);
               this.setFactorCd(
                 index,
                 i,
-                factorMap.get(element?.factors[i]) ?? "00"
+                factorMap.get(element?.factors?.[i]) ?? "00"
               );
               this.setFactorCss(
                 index,

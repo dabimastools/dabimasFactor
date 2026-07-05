@@ -55,9 +55,16 @@
 
       mounted: function () {
         try {
-          // インブリード例外ルールを読み込む
-          this.loadInbreedExceptions()
-            .then(() => this.c1())
+          // インブリード例外ルールの読み込み（loadInbreedExceptions）と血統データの
+          // 読み込み（c1 → dbinitializer の summary fetch）は互いに依存しないため、
+          // 直列 then ではなく並行に開始する（起動時のネットワーク待ちを縮める）。
+          // 復元処理（c4 内の dispInbreed）だけが例外ルールを使うため、その待ち合わせは
+          // dbinitializer 内部（readyPromise）で行う。
+          const inbreedExceptionsPromise = this.loadInbreedExceptions();
+          const dataReadyPromise = this.c1(inbreedExceptionsPromise);
+          // c2 / c3 は取得済みデータに依存しないため、復元処理の完了を待たず実行する
+          // （従来どおりの速さで画面サイズ・CSS初期設定を終わらせる）。
+          Promise.resolve()
             .then(() => this.c2())
             .then(() => this.c3())
             .finally(() => {
@@ -66,10 +73,14 @@
                 this.scheduleInitialMobileViewportLayout();
               });
             });
-          // .finally(() => this.c4());
+          // 血統表の復元（保存データの反映）が終わるまで起動ローダーを隠さない。
+          // 以前は c1 の完了を待たずに隠していたため、復元前の空の血統表が
+          // 一瞬見えてしまうことがあった。
+          Promise.resolve(dataReadyPromise).finally(() => {
+            window.Dabimas.boot.scheduleInitialLoaderHide();
+          });
           this.$nextTick(() => {
             this.scheduleInitialMobileViewportLayout();
-            window.Dabimas.boot.scheduleInitialLoaderHide();
           });
           this.onOrientationChangeHandler = () => {
             if (this.$vuetify.breakpoint.smAndDown) {
